@@ -1,0 +1,63 @@
+import Image from 'next/image'
+import Link from 'next/link'
+import {urlFor} from '@/sanity/lib/image'
+
+interface BlogPost {
+  _id: string
+  title?: string
+  slug?: {current?: string}
+  excerpt?: string
+  publishedAt?: string
+  author?: string
+  coverImage?: {asset?: {_id: string; metadata?: {lqip?: string}}; alt?: string}
+}
+
+export function BlogCard({post}: {post: BlogPost}) {
+  const slug = post.slug?.current
+  if (!slug) return null
+
+  return (
+    <article className="group">
+      <Link href={`/blog/${slug}`} className="block">
+        {post.coverImage?.asset && (
+          <div className="overflow-hidden rounded-xl">
+            <Image
+              src={urlFor(post.coverImage).width(600).height(340).url()}
+              alt={post.coverImage.alt || post.title || ''}
+              width={600}
+              height={340}
+              className="aspect-[16/9] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              placeholder={post.coverImage.asset.metadata?.lqip ? 'blur' : undefined}
+              blurDataURL={post.coverImage.asset.metadata?.lqip || undefined}
+            />
+          </div>
+        )}
+        <div className="mt-4">
+          <div className="flex items-center gap-2 text-xs text-muted">
+            {post.publishedAt && (
+              <time dateTime={post.publishedAt}>
+                {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
+            )}
+            {post.author && (
+              <>
+                <span>&middot;</span>
+                <span>{post.author}</span>
+              </>
+            )}
+          </div>
+          <h2 className="mt-2 text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
+            {post.title}
+          </h2>
+          {post.excerpt && (
+            <p className="mt-1 line-clamp-2 text-sm text-muted">{post.excerpt}</p>
+          )}
+        </div>
+      </Link>
+    </article>
+  )
+}

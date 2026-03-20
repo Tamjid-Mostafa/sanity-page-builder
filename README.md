@@ -1,90 +1,68 @@
-# Sanity Template Kit
+# Sanity Page Builder
 
-A minimal scaffolding template for creating your own [Sanity template](https://www.sanity.io/docs/create-your-own-sanity-template). Intended for template creators — customize as needed!
+The most complete open-source page builder template for **Sanity + Next.js**.
 
-## Folder Structure
+26 content blocks, 16 custom studio inputs, drag-and-drop grid layout, full visual editing.
 
-```plaintext
-├── frontend/          # Your frontend application
-├── studio/            # Sanity Studio
-└── package.json       # Root workspace configuration
+![Sanity Page Builder](sanity-page-builder.png)
+
+## Structure
+
+```
+├── studio/       Sanity Studio (standalone, port 3333)
+├── frontend/     Next.js app (port 3000)
+└── package.json  root workspace orchestrator
 ```
 
 ## Getting Started
 
-> A more in-depth guide is available in the [Sanity documentation](https://www.sanity.io/docs/create-your-own-sanity-template).
-> Need inspiration or help creating a template? Join the [#template-creators channel in Sanity’s Slack community](https://slack.sanity.io) to connect with others and get feedback.
-
-### Clone the Repository
-
-Clone the template repository to your local machine.
-
-### Install Dependencies
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-### Add a Frontend Framework
-
-Install your preferred frontend framework. The command below installs a new Next.js project in the `frontend` directory.
+### 2. Set up environment variables
 
 ```bash
-npx create-next-app@latest frontend
+cp studio/.env.example studio/.env
+cp frontend/.env.example frontend/.env
 ```
 
-### Customize Frontend Package
+Fill in your Sanity project ID and dataset in both `.env` files.
 
-The frontend package is already defined as a workspace in the root `package.json`, but you may need to customize as needed.
+### 3. Seed demo data (optional)
 
-### Configure Environment Variables
-
-Create an `.env.example` file in your frontend directory with the following variables:
-
-```dotenv
-SANITY_PROJECT_ID=
-SANITY_DATASET=
+```bash
+npm run seed
 ```
 
-For Next.js projects, prefix the variables with `NEXT_PUBLIC_`:
-
-```dotenv
-NEXT_PUBLIC_SANITY_PROJECT_ID=
-NEXT_PUBLIC_SANITY_DATASET=
-```
-
-### Run the app
+### 4. Start development
 
 ```bash
 npm run dev
 ```
 
+- **Frontend:** [http://localhost:3000](http://localhost:3000)
+- **Studio:** [http://localhost:3333](http://localhost:3333)
+
+## Content Blocks
+
+Hero Section, Grid Row, Call to Action, Rich Text, Image, Image Gallery, FAQ, Form, Feature Card Grid, Testimonial Carousel, Testimonial Quote, Accordion, Tabbed Content, Button Group, Icon Text, Stat Metric, Pricing Card, Alert Notice, Code Block, Data Table, Social Embed, Logo Row, Map Embed, Countdown Timer, Lottie Animation, Spacer/Divider, Table of Contents.
+
 ## Deployment
 
-### Deploy Studio
-
-To deploy your Sanity Studio to production:
-
-1. Make sure you're logged in to your Sanity account:
-
-```bash
-npx sanity login
-```
-
-2. Deploy the studio:
+### Studio
 
 ```bash
 npm run deploy:studio
 ```
 
-### Deploy Frontend
+### Frontend
 
-You have the freedom to deploy your app to your hosting provider of choice. With Vercel and GitHub being a popular choice, we'll cover the basics of that approach:
+Deploy the `frontend/` directory to Vercel, Netlify, or any Node.js host.
 
-1. Create a GitHub repository from this project. Learn more.
-2. Create a new Vercel project and connect it to your Github repository.
-3. Set the Root Directory to your `frontend` directory.
-4. Configure your Environment Variables.
+Set the **Root Directory** to `frontend` in your hosting provider.
 
 ### Validate Template
 
@@ -92,8 +70,14 @@ You have the freedom to deploy your app to your hosting provider of choice. With
 npm run validate
 ```
 
-This command ensures the Sanity CLI can properly read your template configuration.
+Ensures the Sanity CLI can properly read your template configuration.
 
 ## More Info
 
-For details on the template validator, visit [sanity-io/template-validator](https://github.com/sanity-io/template-validator).
+- [Create your own Sanity template](https://www.sanity.io/docs/create-your-own-sanity-template)
+- [Template validator](https://github.com/sanity-io/template-validator)
+- [#template-creators on Sanity Slack](https://slack.sanity.io)
+
+## License
+
+MIT

@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "main": "package.json",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "dev": "sanity dev",
     "start": "sanity start",
@@ -15,15 +15,20 @@
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "^3.68.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sanity": "^3.68.3",
-    "styled-components": "^6.1.8"
+    "@sanity/color-input": "^6.0.4",
+    "@sanity/icons": "^3.7.4",
+    "@sanity/table": "^2.0.1",
+    "@sanity/ui": "^3.1.14",
+    "@sanity/vision": "^5.17.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "sanity": "^5.17.1",
+    "sanity-plugin-media": "^4.1.1",
+    "styled-components": "^6.3.12"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^5.0.1",
-    "@types/react": "^18.0.25",
+    "@types/react": "^19",
     "eslint": "^9.9.0",
     "prettier": "^3.0.2",
     "typescript": "^5.1.6"
