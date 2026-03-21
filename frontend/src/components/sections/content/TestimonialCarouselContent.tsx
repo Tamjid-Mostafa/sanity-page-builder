@@ -1,7 +1,7 @@
 'use client'
 
 import {useState, useEffect, useCallback, useRef} from 'react'
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 import type {TestimonialCarouselData} from '@/types/sanity'
 
@@ -83,7 +83,7 @@ export function TestimonialCarouselContent({data}: {data: TestimonialCarouselDat
               <div className="mt-6 flex items-center gap-3">
                 {t.avatar?.asset && (
                   <Image
-                    src={urlFor(t.avatar).width(48).height(48).url()}
+                    src={urlFor(t.avatar).width(48).height(48).fit('max').url()}
                     alt={t.name || ''}
                     width={48}
                     height={48}

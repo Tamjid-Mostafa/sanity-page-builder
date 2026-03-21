@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 import {PortableTextRenderer} from '../shared/PortableTextRenderer'
 import type {BlogPostData} from '@/types/sanity'
@@ -34,10 +34,12 @@ export function BlogPost({post}: {post: BlogPostData}) {
       {post.coverImage?.asset && (
         <div className="mb-10 overflow-hidden rounded-2xl">
           <Image
-            src={urlFor(post.coverImage).width(1200).quality(85).url()}
+            src={urlFor(post.coverImage).width(1200).fit('max').url()}
             alt={post.coverImage.alt || post.title || ''}
             width={post.coverImage.asset.metadata?.dimensions?.width || 1200}
             height={post.coverImage.asset.metadata?.dimensions?.height || 675}
+            sizes="(max-width: 768px) 100vw, 768px"
+            quality={80}
             className="w-full"
             priority
             placeholder={post.coverImage.asset.metadata?.lqip ? 'blur' : undefined}

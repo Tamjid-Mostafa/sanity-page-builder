@@ -1,5 +1,5 @@
 import {stegaClean} from 'next-sanity'
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 import type {FeatureCardGridData} from '@/types/sanity'
 
@@ -46,7 +46,7 @@ export function FeatureCardGridContent({data}: {data: FeatureCardGridData}) {
             {card.icon?.asset && (
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 <Image
-                  src={urlFor(card.icon).width(40).height(40).url()}
+                  src={urlFor(card.icon).width(40).height(40).fit('max').url()}
                   alt=""
                   width={40}
                   height={40}

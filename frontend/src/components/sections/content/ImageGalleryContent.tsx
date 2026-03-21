@@ -2,7 +2,7 @@
 
 import {stegaClean} from 'next-sanity'
 import {useState, useCallback} from 'react'
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 import type {ImageGalleryData} from '@/types/sanity'
 
@@ -115,7 +115,7 @@ function GalleryItem({
         disabled={!clickable}
       >
         <Image
-          src={urlFor(image.image).width(600).quality(80).url()}
+          src={urlFor(image.image).width(600).fit('max').url()}
           alt={image.alt || ''}
           width={dims?.width || 600}
           height={dims?.height || 400}
@@ -196,7 +196,7 @@ function Lightbox({
 
       <div onClick={(e) => e.stopPropagation()}>
         <Image
-          src={urlFor(current.image).width(1200).quality(90).url()}
+          src={urlFor(current.image).width(1200).fit('max').url()}
           alt={current.alt || ''}
           width={1200}
           height={800}

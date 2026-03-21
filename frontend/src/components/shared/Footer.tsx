@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 import type {SiteSettings} from '@/types/sanity'
 
@@ -83,7 +83,7 @@ export function Footer({settings}: {settings: SiteSettings | null}) {
             <Link href="/" className={`inline-flex items-center gap-2 font-bold text-lg ${textHeading}`}>
               {settings?.logo?.asset ? (
                 <Image
-                  src={urlFor(settings.logo).width(120).height(40).url()}
+                  src={urlFor(settings.logo).width(120).height(40).fit('max').url()}
                   alt={settings.logo.alt || siteName}
                   width={120}
                   height={40}

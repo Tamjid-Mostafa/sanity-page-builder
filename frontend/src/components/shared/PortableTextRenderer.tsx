@@ -2,7 +2,7 @@ import {PortableText, type PortableTextComponents} from 'next-sanity'
 import type {PortableTextBlock} from '@portabletext/types'
 
 type PortableTextInput = PortableTextBlock[] | Array<Record<string, unknown>>
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 
 function slugify(text: string): string {
@@ -30,10 +30,12 @@ const components: PortableTextComponents = {
       return (
         <figure className="my-6">
           <Image
-            src={urlFor(value).width(800).url()}
+            src={urlFor(value).width(1200).fit('max').url()}
             alt={value.alt || ''}
-            width={800}
-            height={500}
+            width={1200}
+            height={750}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 800px"
+            quality={75}
             className="rounded-lg"
           />
           {value.alt && (

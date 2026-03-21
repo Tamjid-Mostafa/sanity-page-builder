@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import {Image as SanityImg} from 'next-sanity/image'
 import {stegaClean} from 'next-sanity'
 import {urlFor} from '@/sanity/lib/image'
 import {BlockStylesWrapper} from '../shared/BlockStylesWrapper'
@@ -69,10 +69,12 @@ function FullWidthHero({data}: {data: HeroSectionData}) {
     <section className="relative flex items-center overflow-hidden" style={buildBackground(data)}>
       {/* Background image */}
       {bgType === 'image' && data.backgroundImage?.asset && (
-        <Image
-          src={urlFor(data.backgroundImage).width(1920).quality(80).url()}
+        <SanityImg
+          src={urlFor(data.backgroundImage).width(1920).fit('max').url()}
           alt=""
           fill
+          sizes="100vw"
+          quality={80}
           className="object-cover"
           priority
         />
@@ -164,11 +166,13 @@ function SplitHero({data}: {data: HeroSectionData}) {
           {/* Media column */}
           <div className={isMediaLeft ? 'order-1' : 'order-2 md:order-2'}>
             {data.mediaImage?.asset && (
-              <Image
-                src={urlFor(data.mediaImage).width(800).quality(80).url()}
+              <SanityImg
+                src={urlFor(data.mediaImage).width(1200).fit('max').url()}
                 alt={data.mediaImage.alt || ''}
-                width={data.mediaImage.asset.metadata?.dimensions?.width || 800}
-                height={data.mediaImage.asset.metadata?.dimensions?.height || 600}
+                width={data.mediaImage.asset.metadata?.dimensions?.width || 1200}
+                height={data.mediaImage.asset.metadata?.dimensions?.height || 750}
+                sizes="(max-width: 768px) 100vw, 50vw"
+                quality={75}
                 className="w-full rounded-2xl"
                 priority
               />

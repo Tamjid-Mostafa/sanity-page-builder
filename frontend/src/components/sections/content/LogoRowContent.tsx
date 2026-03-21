@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 import type {LogoRowData} from '@/types/sanity'
 

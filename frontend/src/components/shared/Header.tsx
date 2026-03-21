@@ -2,7 +2,7 @@
 
 import {useState, useRef, useEffect, useCallback} from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import {urlFor} from '@/sanity/lib/image'
 import type {SiteSettings, NavItem, NavLink, NavDropdown} from '@/types/sanity'
 
@@ -32,7 +32,7 @@ export function Header({settings}: {settings: SiteSettings | null}) {
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
           {settings?.logo?.asset ? (
             <Image
-              src={urlFor(settings.logo).width(120).height(40).url()}
+              src={urlFor(settings.logo).width(120).height(40).fit('max').url()}
               alt={settings.logo.alt || siteName}
               width={120}
               height={40}
@@ -169,7 +169,7 @@ function DesktopDropdown({item}: {item: NavDropdown}) {
             >
               {child.icon?.asset && (
                 <Image
-                  src={urlFor(child.icon).width(32).height(32).url()}
+                  src={urlFor(child.icon).width(32).height(32).fit('max').url()}
                   alt=""
                   width={32}
                   height={32}

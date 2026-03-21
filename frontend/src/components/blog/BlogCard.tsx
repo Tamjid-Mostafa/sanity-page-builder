@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import {Image} from 'next-sanity/image'
 import Link from 'next/link'
 import {urlFor} from '@/sanity/lib/image'
 import type {BlogPostListItem} from '@/types/sanity'
@@ -13,10 +13,12 @@ export function BlogCard({post}: {post: BlogPostListItem}) {
         {post.coverImage?.asset && (
           <div className="overflow-hidden rounded-xl">
             <Image
-              src={urlFor(post.coverImage).width(600).height(340).url()}
+              src={urlFor(post.coverImage).width(600).height(340).fit('max').url()}
               alt={post.coverImage.alt || post.title || ''}
               width={600}
               height={340}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              quality={75}
               className="aspect-[16/9] w-full object-cover transition-transform duration-300 group-hover:scale-105"
               placeholder={post.coverImage.asset.metadata?.lqip ? 'blur' : undefined}
               blurDataURL={post.coverImage.asset.metadata?.lqip || undefined}
