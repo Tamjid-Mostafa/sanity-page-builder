@@ -1,4 +1,5 @@
 import {stegaClean} from 'next-sanity'
+import type {StatMetricData} from '@/types/sanity'
 
 const SIZE_CLASSES: Record<string, {value: string; label: string}> = {
   small: {
@@ -15,27 +16,22 @@ const SIZE_CLASSES: Record<string, {value: string; label: string}> = {
   },
 }
 
-export function StatMetricContent({data}: {data: Record<string, unknown>}) {
-  const prefix = data.prefix as string | undefined
-  const value = data.value as string | undefined
-  const suffix = data.suffix as string | undefined
-  const label = data.label as string | undefined
-  const size = (data.size as string) || 'medium'
+export function StatMetricContent({data}: {data: StatMetricData}) {
+  if (!data.value) return null
 
-  if (!value) return null
-
+  const size = data.size || 'medium'
   const sizeClasses = SIZE_CLASSES[stegaClean(size)] || SIZE_CLASSES.medium
 
   return (
     <div className="text-center">
       <div className={`font-bold tracking-tight text-foreground ${sizeClasses.value}`}>
-        {prefix && <span className="text-muted">{prefix}</span>}
-        {value}
-        {suffix && <span className="text-muted">{suffix}</span>}
+        {data.prefix && <span className="text-muted">{data.prefix}</span>}
+        {data.value}
+        {data.suffix && <span className="text-muted">{data.suffix}</span>}
       </div>
-      {label && (
+      {data.label && (
         <p className={`mt-2 font-medium text-muted ${sizeClasses.label}`}>
-          {label}
+          {data.label}
         </p>
       )}
     </div>

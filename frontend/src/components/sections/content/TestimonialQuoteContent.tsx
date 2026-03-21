@@ -1,21 +1,5 @@
 import {SanityImage} from '../../shared/SanityImage'
-
-interface AvatarImage {
-  asset?: {
-    _id?: string
-    url?: string
-    metadata?: {lqip?: string; dimensions?: {width: number; height: number}}
-  }
-  alt?: string
-}
-
-interface TestimonialQuoteData {
-  quote?: string
-  name?: string
-  title?: string
-  rating?: number
-  avatar?: AvatarImage
-}
+import type {TestimonialQuoteData} from '@/types/sanity'
 
 function StarRating({rating}: {rating: number}) {
   const clamped = Math.max(0, Math.min(5, Math.round(rating)))
@@ -36,12 +20,10 @@ function StarRating({rating}: {rating: number}) {
   )
 }
 
-export function TestimonialQuoteContent({data}: {data: Record<string, unknown>}) {
-  const {quote, name, title, rating, avatar} = data as unknown as TestimonialQuoteData
+export function TestimonialQuoteContent({data}: {data: TestimonialQuoteData}) {
+  if (!data.quote) return null
 
-  if (!quote) return null
-
-  const validRating = typeof rating === 'number' && rating >= 1 && rating <= 5 ? rating : 0
+  const validRating = typeof data.rating === 'number' && data.rating >= 1 && data.rating <= 5 ? data.rating : 0
 
   return (
     <blockquote className="my-6 text-center">
@@ -53,7 +35,7 @@ export function TestimonialQuoteContent({data}: {data: Record<string, unknown>})
       </span>
 
       <p className="mx-auto max-w-2xl text-lg leading-relaxed text-foreground italic md:text-xl">
-        {quote}
+        {data.quote}
       </p>
 
       {validRating > 0 && (
@@ -63,10 +45,10 @@ export function TestimonialQuoteContent({data}: {data: Record<string, unknown>})
       )}
 
       <footer className="mt-6 flex items-center justify-center gap-4">
-        {avatar?.asset && (
+        {data.avatar?.asset && (
           <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
             <SanityImage
-              value={avatar}
+              value={data.avatar}
               width={96}
               height={96}
               className="h-full w-full object-cover"
@@ -74,15 +56,15 @@ export function TestimonialQuoteContent({data}: {data: Record<string, unknown>})
           </div>
         )}
 
-        {(name || title) && (
+        {(data.name || data.title) && (
           <div className="text-left">
-            {name && (
+            {data.name && (
               <cite className="block text-sm font-semibold not-italic text-foreground">
-                {name}
+                {data.name}
               </cite>
             )}
-            {title && (
-              <span className="block text-sm text-muted">{title}</span>
+            {data.title && (
+              <span className="block text-sm text-muted">{data.title}</span>
             )}
           </div>
         )}

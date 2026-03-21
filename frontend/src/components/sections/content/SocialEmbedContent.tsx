@@ -1,8 +1,4 @@
-interface SocialEmbedData {
-  platform?: 'instagram' | 'tiktok' | 'twitter' | 'facebook'
-  url?: string
-  caption?: string
-}
+import type {SocialEmbedData} from '@/types/sanity'
 
 const PLATFORM_CONFIG: Record<
   string,
@@ -32,14 +28,18 @@ const PLATFORM_CONFIG: Record<
     bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100',
     icon: 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z',
   },
+  other: {
+    label: 'Social',
+    color: 'text-foreground',
+    bgColor: 'bg-gradient-to-br from-gray-50 to-gray-100',
+    icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z',
+  },
 }
 
-export function SocialEmbedContent({data}: {data: Record<string, unknown>}) {
-  const {platform, url, caption} = data as unknown as SocialEmbedData
+export function SocialEmbedContent({data}: {data: SocialEmbedData}) {
+  if (!data.embedUrl) return null
 
-  if (!url) return null
-
-  const platformKey = platform && platform in PLATFORM_CONFIG ? platform : 'twitter'
+  const platformKey = data.platform && data.platform in PLATFORM_CONFIG ? data.platform : 'twitter'
   const config = PLATFORM_CONFIG[platformKey]
 
   return (
@@ -62,10 +62,10 @@ export function SocialEmbedContent({data}: {data: Record<string, unknown>}) {
 
         <div className="flex flex-col items-center gap-4 px-6 py-8">
           <p className="max-w-md break-all text-center text-xs text-muted">
-            {url}
+            {data.embedUrl}
           </p>
           <a
-            href={url}
+            href={data.embedUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
@@ -78,8 +78,8 @@ export function SocialEmbedContent({data}: {data: Record<string, unknown>}) {
         </div>
       </div>
 
-      {caption && (
-        <p className="mt-2 text-center text-sm text-muted">{caption}</p>
+      {data.caption && (
+        <p className="mt-2 text-center text-sm text-muted">{data.caption}</p>
       )}
     </div>
   )

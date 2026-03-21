@@ -1,14 +1,7 @@
 import {stegaClean} from 'next-sanity'
 import Image from 'next/image'
 import {urlFor} from '@/sanity/lib/image'
-
-interface FeatureCard {
-  _key: string
-  icon?: {asset?: {_id: string}}
-  title?: string
-  description?: string
-  cta?: {label?: string; href?: string}
-}
+import type {FeatureCardGridData} from '@/types/sanity'
 
 const COLS_MAP: Record<string, string> = {
   '2': 'sm:grid-cols-2',
@@ -23,12 +16,10 @@ const CARD_STYLES: Record<string, string> = {
   highlighted: 'border border-primary/20 bg-primary/5',
 }
 
-export function FeatureCardGridContent({data}: {data: Record<string, unknown>}) {
-  const title = data.title as string | undefined
-  const subtitle = data.subtitle as string | undefined
-  const cards = (data.cards as FeatureCard[] | undefined) || []
-  const columns = (data.columns as string) || '3'
-  const style = (data.style as string) || 'simple'
+export function FeatureCardGridContent({data}: {data: FeatureCardGridData}) {
+  const cards = data.cards || []
+  const columns = data.columns || '3'
+  const style = data.style || 'simple'
 
   if (cards.length === 0) return null
 
@@ -37,16 +28,16 @@ export function FeatureCardGridContent({data}: {data: Record<string, unknown>}) 
 
   return (
     <div>
-      {title && (
+      {data.title && (
         <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {title}
+          {data.title}
         </h2>
       )}
-      {subtitle && (
-        <p className="mt-2 text-base text-muted">{subtitle}</p>
+      {data.subtitle && (
+        <p className="mt-2 text-base text-muted">{data.subtitle}</p>
       )}
 
-      <div className={`${title || subtitle ? 'mt-8' : ''} grid grid-cols-1 gap-6 ${colClass}`}>
+      <div className={`${data.title || data.subtitle ? 'mt-8' : ''} grid grid-cols-1 gap-6 ${colClass}`}>
         {cards.map((card) => (
           <div
             key={card._key}

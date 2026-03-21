@@ -1,18 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {urlFor} from '@/sanity/lib/image'
+import type {BlogPostListItem} from '@/types/sanity'
 
-interface BlogPost {
-  _id: string
-  title?: string
-  slug?: {current?: string}
-  excerpt?: string
-  publishedAt?: string
-  author?: string
-  coverImage?: {asset?: {_id: string; metadata?: {lqip?: string}}; alt?: string}
-}
-
-export function BlogCard({post}: {post: BlogPost}) {
+export function BlogCard({post}: {post: BlogPostListItem}) {
   const slug = post.slug?.current
   if (!slug) return null
 

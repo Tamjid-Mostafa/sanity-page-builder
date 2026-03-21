@@ -1,15 +1,7 @@
 import Image from 'next/image'
-import type {PortableTextBlock} from '@portabletext/types'
 import {urlFor} from '@/sanity/lib/image'
 import {PortableTextRenderer} from '../shared/PortableTextRenderer'
-
-interface BlogPostData {
-  title?: string
-  publishedAt?: string
-  author?: string
-  coverImage?: {asset?: {_id: string; metadata?: {lqip?: string; dimensions?: {width: number; height: number}}}; alt?: string}
-  body?: PortableTextBlock[]
-}
+import type {BlogPostData} from '@/types/sanity'
 
 export function BlogPost({post}: {post: BlogPostData}) {
   return (

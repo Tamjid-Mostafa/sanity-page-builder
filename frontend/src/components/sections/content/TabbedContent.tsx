@@ -1,17 +1,11 @@
 'use client'
 
 import {useState} from 'react'
-import type {PortableTextBlock} from '@portabletext/types'
 import {PortableTextRenderer} from '../../shared/PortableTextRenderer'
+import type {TabbedContentData} from '@/types/sanity'
 
-interface Tab {
-  _key: string
-  label?: string
-  content?: PortableTextBlock[]
-}
-
-export function TabbedContent({data}: {data: Record<string, unknown>}) {
-  const tabs = (data.tabs as Tab[] | undefined) || []
+export function TabbedContent({data}: {data: TabbedContentData}) {
+  const tabs = data.tabs || []
   const [activeIndex, setActiveIndex] = useState(0)
 
   if (tabs.length === 0) return null
@@ -49,7 +43,7 @@ export function TabbedContent({data}: {data: Record<string, unknown>}) {
       >
         {activeTab?.content && activeTab.content.length > 0 ? (
           <div className="prose prose-slate max-w-none">
-            <PortableTextRenderer value={activeTab.content} />
+            <PortableTextRenderer value={activeTab.content as unknown as Parameters<typeof PortableTextRenderer>[0]['value']} />
           </div>
         ) : (
           <p className="text-sm text-muted">No content for this tab.</p>

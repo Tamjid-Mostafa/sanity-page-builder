@@ -4,44 +4,14 @@ import {useState, useRef, useEffect, useCallback} from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {urlFor} from '@/sanity/lib/image'
+import type {SiteSettings, NavItem, NavLink, NavDropdown} from '@/types/sanity'
 
-interface DropdownItem {
-  _key: string
-  label: string
-  href: string
-  description?: string
-  icon?: {asset?: {_id: string}}
-}
-
-interface NavLink {
-  _key: string
-  _type: 'navLink'
-  label: string
-  href: string
-  isButton?: boolean
-}
-
-interface NavDropdown {
-  _key: string
-  _type: 'navDropdown'
-  label: string
-  items?: DropdownItem[]
-}
-
-type NavItem = NavLink | NavDropdown
-
-interface Settings {
-  siteName?: string
-  logo?: {asset?: {_id: string}; alt?: string}
-  mainNav?: NavItem[]
-}
-
-export function Header({settings}: {settings: Settings | null}) {
+export function Header({settings}: {settings: SiteSettings | null}) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   const siteName = settings?.siteName || 'Page Builder'
-  const nav = (settings?.mainNav ?? []) as NavItem[]
+  const nav = settings?.mainNav ?? []
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)

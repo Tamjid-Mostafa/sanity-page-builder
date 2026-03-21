@@ -1,17 +1,11 @@
-interface Feature {
-  text?: string
-  included?: boolean
-}
+import type {PricingCardData} from '@/types/sanity'
 
-interface PricingCardData {
-  badge?: string
-  title?: string
-  price?: string
-  priceSubtext?: string
-  features?: Feature[]
-  isHighlighted?: boolean
-  ctaLabel?: string
-  ctaLink?: Array<{href?: string}>
+function resolveCtaHref(cta: NonNullable<PricingCardData['cta']>): string | null {
+  const item = cta.link?.[0]
+  if (!item) return null
+  if (item._type === 'linkExternal') return item.url || null
+  if (item._type === 'pageSlug') return item.slug ? `/${item.slug}` : null
+  return null
 }
 
 function CheckIcon() {
@@ -30,22 +24,11 @@ function XIcon() {
   )
 }
 
-export function PricingCardContent({data}: {data: Record<string, unknown>}) {
-  const {
-    badge,
-    title,
-    price,
-    priceSubtext,
-    features,
-    isHighlighted,
-    ctaLabel,
-    ctaLink,
-  } = data as unknown as PricingCardData
+export function PricingCardContent({data}: {data: PricingCardData}) {
+  if (!data.title && !data.price) return null
 
-  if (!title && !price) return null
-
-  const href = ctaLink?.[0]?.href
-  const highlightBorder = isHighlighted
+  const features = data.features || []
+  const highlightBorder = data.isHighlighted
     ? 'border-primary shadow-lg shadow-primary/10'
     : 'border-border'
 
@@ -53,31 +36,31 @@ export function PricingCardContent({data}: {data: Record<string, unknown>}) {
     <div
       className={`relative my-4 flex flex-col rounded-2xl border-2 bg-card p-6 ${highlightBorder}`}
     >
-      {badge && (
+      {data.badge && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-          {badge}
+          {data.badge}
         </span>
       )}
 
-      {title && (
-        <h3 className="text-lg font-semibold text-card-foreground">{title}</h3>
+      {data.title && (
+        <h3 className="text-lg font-semibold text-card-foreground">{data.title}</h3>
       )}
 
-      {price && (
+      {data.price && (
         <div className="mt-4">
           <span className="text-4xl font-bold tracking-tight text-card-foreground">
-            {price}
+            {data.price}
           </span>
-          {priceSubtext && (
-            <span className="ml-1 text-sm text-muted">{priceSubtext}</span>
+          {data.priceSubtext && (
+            <span className="ml-1 text-sm text-muted">{data.priceSubtext}</span>
           )}
         </div>
       )}
 
-      {features && features.length > 0 && (
+      {features.length > 0 && (
         <ul className="mt-6 flex flex-col gap-3" role="list">
-          {features.map((feature, index) => (
-            <li key={index} className="flex items-center gap-3">
+          {features.map((feature) => (
+            <li key={feature._key} className="flex items-center gap-3">
               {feature.included ? <CheckIcon /> : <XIcon />}
               <span
                 className={`text-sm ${
@@ -91,32 +74,35 @@ export function PricingCardContent({data}: {data: Record<string, unknown>}) {
         </ul>
       )}
 
-      {ctaLabel && (
+      {data.cta?.label && (() => {
+        const href = resolveCtaHref(data.cta)
+        return (
         <div className="mt-8 pt-2">
           {href ? (
             <a
               href={href}
               className={`block w-full rounded-lg px-4 py-3 text-center text-sm font-semibold transition-colors ${
-                isHighlighted
-                  ? 'bg-primary text-primary-foreground hover:opacity-90'
+                data.isHighlighted
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                   : 'bg-foreground/5 text-card-foreground hover:bg-foreground/10'
               }`}
             >
-              {ctaLabel}
+              {data.cta.label}
             </a>
           ) : (
             <span
               className={`block w-full rounded-lg px-4 py-3 text-center text-sm font-semibold ${
-                isHighlighted
+                data.isHighlighted
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-foreground/5 text-card-foreground'
               }`}
             >
-              {ctaLabel}
+              {data.cta.label}
             </span>
           )}
         </div>
-      )}
+        )
+      })()}
     </div>
   )
 }

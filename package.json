@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ognjenio/sanity-page-builder.git"
+    "url": "https://github.com/ogi988/sanity-page-builder.git"
   },
   "scripts": {
     "dev": "npm-run-all --parallel dev:*",
@@ -25,7 +25,8 @@
     "build:studio": "cd studio && npm run build",
     "deploy:studio": "cd studio && sanity deploy",
     "validate": "sanity-template-validate",
-    "seed": "cd frontend && npm run seed"
+    "seed": "cd frontend && npm run seed",
+    "typegen": "cd studio && npx sanity schema extract --enforce-required-fields && npx sanity typegen generate"
   },
   "workspaces": [
     "frontend",

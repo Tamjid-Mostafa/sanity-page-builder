@@ -1,6 +1,7 @@
 'use client'
 
 import {useState, useEffect} from 'react'
+import type {TocBlockData} from '@/types/sanity'
 
 interface Heading {
   id: string
@@ -8,8 +9,10 @@ interface Heading {
   level: number
 }
 
-export function TocBlockContent({data}: {data: Record<string, unknown>}) {
-  const title = (data.title as string) || 'Table of Contents'
+const OFFSET_PX = 100
+
+export function TocBlockContent({data}: {data: TocBlockData}) {
+  const title = data.title || 'Table of Contents'
   const [headings, setHeadings] = useState<ReadonlyArray<Heading>>([])
   const [activeId, setActiveId] = useState<string>('')
 
@@ -26,7 +29,6 @@ export function TocBlockContent({data}: {data: Record<string, unknown>}) {
   useEffect(() => {
     if (headings.length === 0) return
 
-    const OFFSET_PX = 100
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.find((e) => e.isIntersecting)

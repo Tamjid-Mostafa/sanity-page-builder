@@ -5,21 +5,14 @@ import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {SectionRenderer} from '@/components/SectionRenderer'
 
-interface SeoData {
-  metaTitle?: string
-  metaDescription?: string
-  ogImage?: {asset?: {url?: string}}
-  noIndex?: boolean
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const [{data: page}, {data: settings}] = await Promise.all([
     sanityFetch({query: HOME_PAGE_QUERY}),
     sanityFetch({query: SITE_SETTINGS_QUERY}),
   ])
 
-  const seo = (page as Record<string, unknown> | null)?.seo as SeoData | undefined
-  const siteName = (settings as Record<string, unknown> | null)?.siteName as string | undefined
+  const seo = page?.seo
+  const siteName = settings?.siteName
 
   return {
     title: seo?.metaTitle || siteName || 'Home',

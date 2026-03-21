@@ -1,12 +1,6 @@
 import {stegaClean} from 'next-sanity'
 import {SanityImage} from '../../shared/SanityImage'
-
-interface IconImageValue {
-  asset?: {_id?: string; url?: string; metadata?: {lqip?: string; dimensions?: {width: number; height: number}}}
-  alt?: string
-  hotspot?: {x: number; y: number}
-  crop?: {top: number; bottom: number; left: number; right: number}
-}
+import type {IconTextData} from '@/types/sanity'
 
 const LAYOUT_CLASSES: Record<string, {container: string; text: string}> = {
   left: {
@@ -23,20 +17,16 @@ const LAYOUT_CLASSES: Record<string, {container: string; text: string}> = {
   },
 }
 
-export function IconTextContent({data}: {data: Record<string, unknown>}) {
-  const icon = data.icon as IconImageValue | undefined
-  const title = data.title as string | undefined
-  const description = data.description as string | undefined
-  const alignment = (data.alignment as string) || 'left'
-
+export function IconTextContent({data}: {data: IconTextData}) {
+  const alignment = data.alignment || 'left'
   const layout = LAYOUT_CLASSES[stegaClean(alignment)] || LAYOUT_CLASSES.left
 
   return (
     <div className={layout.container}>
-      {icon?.asset && (
+      {data.icon?.asset && (
         <div className="shrink-0">
           <SanityImage
-            value={icon}
+            value={data.icon}
             width={48}
             height={48}
             className="h-12 w-12 object-contain"
@@ -44,14 +34,14 @@ export function IconTextContent({data}: {data: Record<string, unknown>}) {
         </div>
       )}
       <div className={layout.text}>
-        {title && (
+        {data.title && (
           <h4 className="text-lg font-semibold text-foreground">
-            {title}
+            {data.title}
           </h4>
         )}
-        {description && (
+        {data.description && (
           <p className="mt-1 text-sm leading-relaxed text-muted">
-            {description}
+            {data.description}
           </p>
         )}
       </div>

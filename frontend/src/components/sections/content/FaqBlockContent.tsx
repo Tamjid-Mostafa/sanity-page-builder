@@ -1,24 +1,11 @@
 'use client'
 
 import {useState, useCallback} from 'react'
-import type {PortableTextBlock} from '@portabletext/types'
 import {PortableTextRenderer} from '../../shared/PortableTextRenderer'
 import {toPlainText} from '@portabletext/toolkit'
+import type {FaqBlockData} from '@/types/sanity'
 
-interface FaqItem {
-  _key: string
-  question?: string
-  answer?: PortableTextBlock[]
-}
-
-interface FaqData {
-  title?: string
-  subtitle?: string
-  items?: FaqItem[]
-  enableSchema?: boolean
-  allowMultipleOpen?: boolean
-  firstOpenByDefault?: boolean
-}
+type FaqItem = FaqBlockData['items'][number]
 
 function buildJsonLd(items: FaqItem[]) {
   return {
@@ -37,9 +24,11 @@ function buildJsonLd(items: FaqItem[]) {
   }
 }
 
-export function FaqBlockContent({data}: {data: Record<string, unknown>}) {
-  const {title, subtitle, enableSchema = true, allowMultipleOpen = true, firstOpenByDefault = false} = data as unknown as FaqData
-  const items = ((data as unknown as FaqData).items || []) as FaqItem[]
+export function FaqBlockContent({data}: {data: FaqBlockData}) {
+  const enableSchema = data.enableSchema ?? true
+  const allowMultipleOpen = data.allowMultipleOpen ?? true
+  const firstOpenByDefault = data.firstOpenByDefault ?? false
+  const items = data.items || []
 
   const initialOpen = firstOpenByDefault && items.length > 0
     ? new Set([items[0]._key])
@@ -74,16 +63,16 @@ export function FaqBlockContent({data}: {data: Record<string, unknown>}) {
         />
       )}
 
-      {title && (
+      {data.title && (
         <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {title}
+          {data.title}
         </h2>
       )}
-      {subtitle && (
-        <p className="mt-2 text-base text-muted">{subtitle}</p>
+      {data.subtitle && (
+        <p className="mt-2 text-base text-muted">{data.subtitle}</p>
       )}
 
-      <div className={`${title || subtitle ? 'mt-8' : ''} divide-y divide-border rounded-xl border border-border`}>
+      <div className={`${data.title || data.subtitle ? 'mt-8' : ''} divide-y divide-border rounded-xl border border-border`}>
         {items.map((item) => {
           const isOpen = openKeys.has(item._key)
           return (

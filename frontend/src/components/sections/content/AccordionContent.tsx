@@ -1,18 +1,11 @@
 'use client'
 
 import {useState, useCallback} from 'react'
-import type {PortableTextBlock} from '@portabletext/types'
 import {PortableTextRenderer} from '../../shared/PortableTextRenderer'
+import type {AccordionData} from '@/types/sanity'
 
-interface Panel {
-  _key: string
-  title?: string
-  content?: PortableTextBlock[]
-}
-
-export function AccordionContent({data}: {data: Record<string, unknown>}) {
-  const title = data.title as string | undefined
-  const panels = (data.panels as Panel[] | undefined) || []
+export function AccordionContent({data}: {data: AccordionData}) {
+  const panels = data.panels || []
   const [openKeys, setOpenKeys] = useState<ReadonlySet<string>>(new Set())
 
   const togglePanel = useCallback((key: string) => {
@@ -31,9 +24,9 @@ export function AccordionContent({data}: {data: Record<string, unknown>}) {
 
   return (
     <div>
-      {title && (
+      {data.title && (
         <h3 className="mb-4 text-xl font-semibold text-foreground">
-          {title}
+          {data.title}
         </h3>
       )}
       <div className="divide-y divide-border rounded-lg border border-border">

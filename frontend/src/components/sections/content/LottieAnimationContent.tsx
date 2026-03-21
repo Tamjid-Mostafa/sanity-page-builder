@@ -1,21 +1,13 @@
 'use client'
 
 import {useEffect, useRef} from 'react'
+import type {LottieAnimationData} from '@/types/sanity'
 
-interface LottieAnimationData {
-  url?: string
-  autoplay?: boolean
-  loop?: boolean
-  speed?: number
-  caption?: string
-}
-
-export function LottieAnimationContent({data}: {data: Record<string, unknown>}) {
+export function LottieAnimationContent({data}: {data: LottieAnimationData}) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const {url, autoplay, loop, speed, caption} = data as unknown as LottieAnimationData
 
   useEffect(() => {
-    if (!url || !containerRef.current) return
+    if (!data.url || !containerRef.current) return
 
     // Attempt to load lottie-web dynamically for real animation support.
     // If lottie-web is not installed, the placeholder UI remains visible.
@@ -32,13 +24,13 @@ export function LottieAnimationContent({data}: {data: Record<string, unknown>}) 
         animation = lottie.default.loadAnimation({
           container: containerRef.current,
           renderer: 'svg',
-          loop: loop !== false,
-          autoplay: autoplay !== false,
-          path: url,
+          loop: data.loop !== false,
+          autoplay: data.autoplay !== false,
+          path: data.url,
         })
 
-        if (typeof speed === 'number' && speed > 0 && animation.setSpeed) {
-          animation.setSpeed(speed)
+        if (typeof data.speed === 'number' && data.speed > 0 && animation.setSpeed) {
+          animation.setSpeed(data.speed)
         }
       })
       .catch(() => {
@@ -48,9 +40,9 @@ export function LottieAnimationContent({data}: {data: Record<string, unknown>}) 
     return () => {
       animation?.destroy()
     }
-  }, [url, autoplay, loop, speed])
+  }, [data.url, data.autoplay, data.loop, data.speed])
 
-  if (!url) return null
+  if (!data.url) return null
 
   return (
     <div className="my-4">
@@ -64,8 +56,8 @@ export function LottieAnimationContent({data}: {data: Record<string, unknown>}) 
           <p className="text-xs opacity-60">Install lottie-web to enable</p>
         </div>
       </div>
-      {caption && (
-        <p className="mt-2 text-center text-sm text-muted">{caption}</p>
+      {data.alt && (
+        <p className="mt-2 text-center text-sm text-muted">{data.alt}</p>
       )}
     </div>
   )

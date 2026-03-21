@@ -26,15 +26,10 @@ import {FeatureCardGridContent} from './content/FeatureCardGridContent'
 import {TestimonialCarouselContent} from './content/TestimonialCarouselContent'
 import {ImageGalleryContent} from './content/ImageGalleryContent'
 import {TocBlockContent} from './content/TocBlockContent'
+import type {ContentBlock} from '@/types/sanity'
 
-interface Block {
-  _key: string
-  _type: string
-  blockStyles?: Record<string, unknown>
-  [k: string]: unknown
-}
-
-const CONTENT_MAP: Record<string, React.ComponentType<{data: Record<string, unknown>}>> = {
+/* eslint-disable @typescript-eslint/no-explicit-any -- component map requires flexible typing */
+const CONTENT_MAP: Record<string, React.ComponentType<{data: any}>> = {
   richTextBlock: RichTextContent,
   imageBlock: ImageContent,
   callToAction: CallToActionContent,
@@ -63,8 +58,9 @@ const CONTENT_MAP: Record<string, React.ComponentType<{data: Record<string, unkn
   imageGallery: ImageGalleryContent,
   tocBlock: TocBlockContent,
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-export function ContentRenderer({block}: {block: Block}) {
+export function ContentRenderer({block}: {block: ContentBlock}) {
   const Component = CONTENT_MAP[stegaClean(block._type)]
 
   if (!Component) {
@@ -76,8 +72,8 @@ export function ContentRenderer({block}: {block: Block}) {
   }
 
   return (
-    <BlockStylesWrapper blockStyles={block.blockStyles as never}>
-      <Component data={block as Record<string, unknown>} />
+    <BlockStylesWrapper blockStyles={block.blockStyles}>
+      <Component data={block} />
     </BlockStylesWrapper>
   )
 }

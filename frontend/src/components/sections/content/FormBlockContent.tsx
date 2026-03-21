@@ -2,46 +2,17 @@
 
 import {stegaClean} from 'next-sanity'
 import {useState, useCallback} from 'react'
+import type {FormBlockData} from '@/types/sanity'
 
-interface FormField {
-  _key: string
-  label?: string
-  name?: string
-  type?: string
-  placeholder?: string
-  required?: boolean
-  options?: string[]
-  width?: string
-}
-
-interface FormData {
-  formTitle?: string
-  formDescription?: string
-  fields?: FormField[]
-  submitLabel?: string
-  submitAction?: string
-  webhookUrl?: string
-  customEndpoint?: string
-  successMessage?: string
-  errorMessage?: string
-  buttonColor?: string
-}
-
+type FormField = FormBlockData['fields'][number]
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error'
 
-export function FormBlockContent({data}: {data: Record<string, unknown>}) {
-  const {
-    formTitle,
-    formDescription,
-    fields = [],
-    submitLabel = 'Submit',
-    submitAction = 'webhook',
-    webhookUrl,
-    customEndpoint,
-    successMessage = 'Thank you! Your submission has been received.',
-    errorMessage = 'Something went wrong. Please try again.',
-    buttonColor,
-  } = data as unknown as FormData
+export function FormBlockContent({data}: {data: FormBlockData}) {
+  const fields = data.fields || []
+  const submitLabel = data.submitLabel || 'Submit'
+  const submitAction = data.submitAction || 'webhook'
+  const successMessage = data.successMessage || 'Thank you! Your submission has been received.'
+  const errorMessage = data.errorMessage || 'Something went wrong. Please try again.'
 
   const [state, setState] = useState<SubmitState>('idle')
 
@@ -60,12 +31,12 @@ export function FormBlockContent({data}: {data: Record<string, unknown>}) {
       const endpoint =
         cleanAction === 'webhook'
           ? '/api/form-submit'
-          : (customEndpoint || '/api/form-submit')
+          : (data.customEndpoint || '/api/form-submit')
 
       try {
         const body =
           cleanAction === 'webhook'
-            ? JSON.stringify({webhookUrl, data: payload})
+            ? JSON.stringify({webhookUrl: data.webhookUrl, data: payload})
             : JSON.stringify(payload)
 
         const res = await fetch(endpoint, {
@@ -80,7 +51,7 @@ export function FormBlockContent({data}: {data: Record<string, unknown>}) {
         setState('error')
       }
     },
-    [submitAction, webhookUrl, customEndpoint],
+    [submitAction, data.webhookUrl, data.customEndpoint],
   )
 
   if (state === 'success') {
@@ -93,19 +64,19 @@ export function FormBlockContent({data}: {data: Record<string, unknown>}) {
 
   return (
     <div>
-      {formTitle && (
-        <h3 className="text-xl font-semibold text-foreground">{formTitle}</h3>
+      {data.formTitle && (
+        <h3 className="text-xl font-semibold text-foreground">{data.formTitle}</h3>
       )}
-      {formDescription && (
-        <p className="mt-1 text-sm text-muted">{formDescription}</p>
+      {data.formDescription && (
+        <p className="mt-1 text-sm text-muted">{data.formDescription}</p>
       )}
 
       <form
         onSubmit={handleSubmit}
-        className={`${formTitle || formDescription ? 'mt-6' : ''} space-y-4`}
+        className={`${data.formTitle || data.formDescription ? 'mt-6' : ''} space-y-4`}
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {(fields as FormField[]).map((field) => {
+          {fields.map((field) => {
             const isHalf = stegaClean(field.width) === 'half'
             const wrapClass = isHalf ? '' : 'sm:col-span-2'
 
@@ -129,7 +100,7 @@ export function FormBlockContent({data}: {data: Record<string, unknown>}) {
           type="submit"
           disabled={state === 'submitting'}
           className="inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 disabled:opacity-50"
-          style={{backgroundColor: stegaClean(buttonColor) || 'var(--primary)'}}
+          style={{backgroundColor: stegaClean(data.buttonColor) || 'var(--primary)'}}
         >
           {state === 'submitting' ? 'Sending...' : submitLabel}
         </button>

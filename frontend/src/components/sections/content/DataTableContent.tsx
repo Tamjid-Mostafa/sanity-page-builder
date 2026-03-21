@@ -1,46 +1,25 @@
-interface TableHeader {
-  text?: string
-}
+import type {DataTableData} from '@/types/sanity'
 
-interface TableCell {
-  text?: string
-}
+export function DataTableContent({data}: {data: DataTableData}) {
+  if (!data.headers || data.headers.length === 0) return null
 
-interface TableRow {
-  cells?: TableCell[]
-}
-
-interface DataTableData {
-  caption?: string
-  headers?: TableHeader[]
-  rows?: TableRow[]
-  striped?: boolean
-  compact?: boolean
-}
-
-export function DataTableContent({data}: {data: Record<string, unknown>}) {
-  const {caption, headers, rows, striped, compact} =
-    data as unknown as DataTableData
-
-  if (!headers || headers.length === 0) return null
-
-  const cellPadding = compact ? 'px-3 py-1.5' : 'px-4 py-3'
+  const cellPadding = data.compact ? 'px-3 py-1.5' : 'px-4 py-3'
 
   return (
     <figure className="my-4">
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="w-full text-left text-sm">
-          {caption && (
+          {data.caption && (
             <caption className="bg-card px-4 py-3 text-left text-sm font-medium text-foreground">
-              {caption}
+              {data.caption}
             </caption>
           )}
 
           <thead>
             <tr className="border-b border-border bg-foreground/5">
-              {headers.map((header, index) => (
+              {data.headers.map((header) => (
                 <th
-                  key={index}
+                  key={header._key}
                   scope="col"
                   className={`${cellPadding} text-xs font-semibold uppercase tracking-wider text-muted`}
                 >
@@ -51,16 +30,16 @@ export function DataTableContent({data}: {data: Record<string, unknown>}) {
           </thead>
 
           <tbody className="divide-y divide-border">
-            {rows?.map((row, rowIndex) => (
+            {data.rows?.map((row, rowIndex) => (
               <tr
-                key={rowIndex}
+                key={row._key}
                 className={
-                  striped && rowIndex % 2 === 1
+                  data.striped && rowIndex % 2 === 1
                     ? 'bg-foreground/[0.02]'
                     : 'bg-card'
                 }
               >
-                {headers.map((_, cellIndex) => {
+                {data.headers.map((_, cellIndex) => {
                   const cell = row.cells?.[cellIndex]
                   return (
                     <td

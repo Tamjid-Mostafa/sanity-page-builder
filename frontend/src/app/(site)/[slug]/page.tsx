@@ -7,16 +7,9 @@ import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {SectionRenderer} from '@/components/SectionRenderer'
 
-interface SeoData {
-  metaTitle?: string
-  metaDescription?: string
-  ogImage?: {asset?: {url?: string}}
-  noIndex?: boolean
-}
-
 export async function generateStaticParams() {
   const data = await client.withConfig({useCdn: false}).fetch(PAGE_SLUGS_QUERY)
-  return (data ?? []).map((page: {slug: string}) => ({slug: page.slug}))
+  return (data ?? []).map((page) => ({slug: page.slug}))
 }
 
 export async function generateMetadata({
@@ -29,10 +22,10 @@ export async function generateMetadata({
 
   if (!page) return {}
 
-  const seo = (page as Record<string, unknown>).seo as SeoData | undefined
+  const seo = page.seo
 
   return {
-    title: seo?.metaTitle || (page as Record<string, unknown>).title as string || undefined,
+    title: seo?.metaTitle || page.title || undefined,
     description: seo?.metaDescription || undefined,
     robots: seo?.noIndex ? {index: false, follow: false} : undefined,
     openGraph: seo?.ogImage?.asset?.url

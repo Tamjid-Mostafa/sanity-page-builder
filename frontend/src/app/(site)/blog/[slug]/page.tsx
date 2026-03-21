@@ -7,16 +7,9 @@ import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {BlogPost} from '@/components/blog/BlogPost'
 
-interface SeoData {
-  metaTitle?: string
-  metaDescription?: string
-  ogImage?: {asset?: {url?: string}}
-  noIndex?: boolean
-}
-
 export async function generateStaticParams() {
   const data = await client.withConfig({useCdn: false}).fetch(BLOG_SLUGS_QUERY)
-  return (data ?? []).map((post: {slug: string}) => ({slug: post.slug}))
+  return (data ?? []).map((post) => ({slug: post.slug}))
 }
 
 export async function generateMetadata({
@@ -29,11 +22,11 @@ export async function generateMetadata({
 
   if (!post) return {}
 
-  const seo = (post as Record<string, unknown>).seo as SeoData | undefined
+  const seo = post.seo
 
   return {
-    title: seo?.metaTitle || (post as Record<string, unknown>).title as string || undefined,
-    description: seo?.metaDescription || (post as Record<string, unknown>).excerpt as string || undefined,
+    title: seo?.metaTitle || post.title || undefined,
+    description: seo?.metaDescription || post.excerpt || undefined,
     robots: seo?.noIndex ? {index: false, follow: false} : undefined,
     openGraph: seo?.ogImage?.asset?.url
       ? {images: [{url: seo.ogImage.asset.url}]}
@@ -59,7 +52,7 @@ export default async function BlogPostPage({
     <>
       <Header settings={settings} />
       <main className="flex-1">
-        <BlogPost post={post as never} />
+        <BlogPost post={post} />
       </main>
       <Footer settings={settings} />
     </>

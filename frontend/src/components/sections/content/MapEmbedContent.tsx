@@ -1,23 +1,16 @@
 import {stegaClean} from 'next-sanity'
+import type {MapEmbedData} from '@/types/sanity'
 
-interface MapEmbedData {
-  embedUrl?: string
-  height?: string
-  caption?: string
-}
+export function MapEmbedContent({data}: {data: MapEmbedData}) {
+  if (!data.embedUrl) return null
 
-export function MapEmbedContent({data}: {data: Record<string, unknown>}) {
-  const {embedUrl, height, caption} = data as unknown as MapEmbedData
-
-  if (!embedUrl) return null
-
-  const resolvedHeight = stegaClean(height) || '400px'
+  const resolvedHeight = stegaClean(data.height) || '400px'
 
   return (
     <figure className="my-4">
       <div className="overflow-hidden rounded-xl border border-border">
         <iframe
-          src={embedUrl}
+          src={data.embedUrl}
           style={{height: resolvedHeight}}
           className="w-full border-0"
           loading="lazy"
@@ -26,9 +19,9 @@ export function MapEmbedContent({data}: {data: Record<string, unknown>}) {
           title="Map embed"
         />
       </div>
-      {caption && (
+      {data.caption && (
         <figcaption className="mt-2 text-center text-sm text-muted">
-          {caption}
+          {data.caption}
         </figcaption>
       )}
     </figure>

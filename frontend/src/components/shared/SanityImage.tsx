@@ -3,10 +3,10 @@ import {urlFor} from '@/sanity/lib/image'
 
 interface SanityImageProps {
   value: {
-    asset?: {_id?: string; url?: string; metadata?: {lqip?: string; dimensions?: {width: number; height: number}}}
-    alt?: string
-    hotspot?: {x: number; y: number}
-    crop?: {top: number; bottom: number; left: number; right: number}
+    asset?: {_id?: string; url?: string; metadata?: {lqip?: string | null; dimensions?: {width: number; height: number} | null} | null} | null
+    alt?: string | null
+    hotspot?: {x: number; y: number} | null
+    crop?: {top: number; bottom: number; left: number; right: number} | null
   }
   width?: number
   height?: number
@@ -32,7 +32,7 @@ export function SanityImage({value, width = 800, height, className, priority, fi
         fill
         priority={priority}
         placeholder={value.asset.metadata?.lqip ? 'blur' : 'empty'}
-        blurDataURL={value.asset.metadata?.lqip}
+        blurDataURL={value.asset.metadata?.lqip || undefined}
       />
     )
   }
@@ -46,7 +46,7 @@ export function SanityImage({value, width = 800, height, className, priority, fi
       height={computedHeight}
       priority={priority}
       placeholder={value.asset.metadata?.lqip ? 'blur' : 'empty'}
-      blurDataURL={value.asset.metadata?.lqip}
+      blurDataURL={value.asset.metadata?.lqip || undefined}
     />
   )
 }

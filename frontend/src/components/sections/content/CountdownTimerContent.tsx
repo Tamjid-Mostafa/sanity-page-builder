@@ -1,6 +1,7 @@
 'use client'
 
 import {useState, useEffect} from 'react'
+import type {CountdownTimerData} from '@/types/sanity'
 
 interface TimeRemaining {
   readonly days: number
@@ -39,59 +40,47 @@ function TimeUnit({value, label}: {value: number; label: string}) {
   )
 }
 
-export function CountdownTimerContent({data}: {data: Record<string, unknown>}) {
-  const title = data.title as string | undefined
-  const targetDate = data.targetDate as string | undefined
-  const expiredMessage = (data.expiredMessage as string) || 'This event has ended.'
-  const showDays = (data.showDays as boolean) ?? true
-  const showHours = (data.showHours as boolean) ?? true
-  const showMinutes = (data.showMinutes as boolean) ?? true
-  const showSeconds = (data.showSeconds as boolean) ?? true
+export function CountdownTimerContent({data}: {data: CountdownTimerData}) {
+  const expiredMessage = data.expiredMessage || 'This event has ended.'
 
   const [time, setTime] = useState<TimeRemaining>(() =>
-    targetDate ? computeTimeRemaining(targetDate) : {days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true},
+    data.targetDate ? computeTimeRemaining(data.targetDate) : {days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true},
   )
 
   useEffect(() => {
-    if (!targetDate) return
+    if (!data.targetDate) return
 
-    setTime(computeTimeRemaining(targetDate))
+    setTime(computeTimeRemaining(data.targetDate))
 
     const interval = setInterval(() => {
-      const next = computeTimeRemaining(targetDate)
+      const next = computeTimeRemaining(data.targetDate)
       setTime(next)
       if (next.isExpired) clearInterval(interval)
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [targetDate])
+  }, [data.targetDate])
 
-  if (!targetDate) return null
+  if (!data.targetDate) return null
 
   return (
     <div className="text-center">
-      {title && (
+      {data.title && (
         <h3 className="mb-6 text-xl font-semibold text-foreground">
-          {title}
+          {data.title}
         </h3>
       )}
       {time.isExpired ? (
         <p className="text-lg text-muted">{expiredMessage}</p>
       ) : (
         <div className="flex items-center justify-center gap-3 sm:gap-4">
-          {showDays && <TimeUnit value={time.days} label="Days" />}
-          {showDays && (showHours || showMinutes || showSeconds) && (
-            <span className="text-2xl font-bold text-muted">:</span>
-          )}
-          {showHours && <TimeUnit value={time.hours} label="Hours" />}
-          {showHours && (showMinutes || showSeconds) && (
-            <span className="text-2xl font-bold text-muted">:</span>
-          )}
-          {showMinutes && <TimeUnit value={time.minutes} label="Minutes" />}
-          {showMinutes && showSeconds && (
-            <span className="text-2xl font-bold text-muted">:</span>
-          )}
-          {showSeconds && <TimeUnit value={time.seconds} label="Seconds" />}
+          <TimeUnit value={time.days} label="Days" />
+          <span className="text-2xl font-bold text-muted">:</span>
+          <TimeUnit value={time.hours} label="Hours" />
+          <span className="text-2xl font-bold text-muted">:</span>
+          <TimeUnit value={time.minutes} label="Minutes" />
+          <span className="text-2xl font-bold text-muted">:</span>
+          <TimeUnit value={time.seconds} label="Seconds" />
         </div>
       )}
     </div>

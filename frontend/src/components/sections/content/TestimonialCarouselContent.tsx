@@ -3,23 +3,15 @@
 import {useState, useEffect, useCallback, useRef} from 'react'
 import Image from 'next/image'
 import {urlFor} from '@/sanity/lib/image'
+import type {TestimonialCarouselData} from '@/types/sanity'
 
-interface Testimonial {
-  _key: string
-  quote?: string
-  name?: string
-  title?: string
-  rating?: number
-  avatar?: {asset?: {_id: string}; alt?: string}
-}
+type Testimonial = TestimonialCarouselData['testimonials'][number]
 
 const MS_PER_SECOND = 1000
 
-export function TestimonialCarouselContent({data}: {data: Record<string, unknown>}) {
-  const title = data.title as string | undefined
-  const testimonials = (data.testimonials as Testimonial[] | undefined) || []
-  const autoPlay = data.autoPlay as boolean | undefined
-  const autoPlayInterval = (data.autoPlayInterval as number | undefined) || 5
+export function TestimonialCarouselContent({data}: {data: TestimonialCarouselData}) {
+  const testimonials = data.testimonials || []
+  const autoPlayInterval = data.autoPlayInterval || 5
   const showDots = data.showDots !== false
   const showArrows = data.showArrows !== false
 
@@ -40,20 +32,20 @@ export function TestimonialCarouselContent({data}: {data: Record<string, unknown
   )
 
   useEffect(() => {
-    if (!autoPlay || testimonials.length <= 1) return
+    if (!data.autoPlay || testimonials.length <= 1) return
     const timer = setInterval(() => {
       goTo(current + 1)
     }, autoPlayInterval * MS_PER_SECOND)
     return () => clearInterval(timer)
-  }, [autoPlay, autoPlayInterval, current, goTo, testimonials.length])
+  }, [data.autoPlay, autoPlayInterval, current, goTo, testimonials.length])
 
   if (testimonials.length === 0) return null
 
   return (
     <div>
-      {title && (
+      {data.title && (
         <h2 className="mb-8 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {title}
+          {data.title}
         </h2>
       )}
 
@@ -63,7 +55,7 @@ export function TestimonialCarouselContent({data}: {data: Record<string, unknown
           ref={scrollRef}
           className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {testimonials.map((t) => (
+          {testimonials.map((t: Testimonial) => (
             <div
               key={t._key}
               className="w-full flex-shrink-0 snap-start rounded-xl border border-border bg-card p-6 sm:p-8"
@@ -141,7 +133,7 @@ export function TestimonialCarouselContent({data}: {data: Record<string, unknown
       {/* Dots */}
       {showDots && testimonials.length > 1 && (
         <div className="mt-6 flex justify-center gap-2">
-          {testimonials.map((t, i) => (
+          {testimonials.map((t: Testimonial, i: number) => (
             <button
               key={t._key}
               type="button"

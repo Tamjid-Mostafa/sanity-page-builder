@@ -2,6 +2,7 @@ import {stegaClean} from 'next-sanity'
 import {BlockStylesWrapper} from '../shared/BlockStylesWrapper'
 import {ScrollReveal} from '../shared/ScrollReveal'
 import {ContentRenderer} from './ContentRenderer'
+import type {GridRowData} from '@/types/sanity'
 
 const GAP_MAP: Record<string, string> = {
   none: 'gap-0',
@@ -44,22 +45,7 @@ const VALIGN_MAP: Record<string, string> = {
   bottom: 'self-end',
 }
 
-interface GridRowData {
-  _key: string
-  layout?: string
-  columns?: Array<{
-    _key: string
-    content?: Array<{_key: string; _type: string; [k: string]: unknown}>
-    verticalAlign?: string
-    blockStyles?: Record<string, unknown>
-  }>
-  gap?: string
-  reverseOnMobile?: boolean
-  backgroundColor?: string
-  paddingY?: string
-  maxWidth?: string
-  blockStyles?: Record<string, unknown>
-}
+const STAGGER_MS = 100
 
 export function GridRowSection({data}: {data: GridRowData}) {
   const layout = stegaClean(data.layout) || 'full'
@@ -73,17 +59,16 @@ export function GridRowSection({data}: {data: GridRowData}) {
   const sectionStyle = bgColor ? {backgroundColor: bgColor} : undefined
 
   return (
-    <BlockStylesWrapper blockStyles={data.blockStyles as never}>
+    <BlockStylesWrapper blockStyles={data.blockStyles}>
       <section style={sectionStyle}>
         <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${maxWidthClass} ${paddingClass}`}>
           <div className={`grid ${gridClass} ${gapClass} ${reverseClass}`}>
             {data.columns?.map((column, colIdx) => {
               const valign = VALIGN_MAP[stegaClean(column.verticalAlign) || 'top'] || ''
-              const STAGGER_MS = 100
               return (
                 <ScrollReveal key={column._key} delay={colIdx * STAGGER_MS}>
                   <BlockStylesWrapper
-                    blockStyles={column.blockStyles as never}
+                    blockStyles={column.blockStyles}
                     className={valign}
                   >
                     {column.content?.map((block) => (

@@ -1,11 +1,5 @@
 import {stegaClean} from 'next-sanity'
-
-interface AlertNoticeData {
-  type?: 'info' | 'success' | 'warning' | 'error' | 'tip'
-  title?: string
-  message?: string
-  dismissible?: boolean
-}
+import type {AlertNoticeData} from '@/types/sanity'
 
 const ALERT_CONFIG: Record<
   string,
@@ -48,12 +42,10 @@ const ALERT_CONFIG: Record<
   },
 }
 
-export function AlertNoticeContent({data}: {data: Record<string, unknown>}) {
-  const {type, title, message} = data as unknown as AlertNoticeData
+export function AlertNoticeContent({data}: {data: AlertNoticeData}) {
+  if (!data.title && !data.message) return null
 
-  if (!title && !message) return null
-
-  const cleanType = stegaClean(type)
+  const cleanType = stegaClean(data.type)
   const alertType = cleanType && cleanType in ALERT_CONFIG ? cleanType : 'info'
   const config = ALERT_CONFIG[alertType]
 
@@ -68,14 +60,14 @@ export function AlertNoticeContent({data}: {data: Record<string, unknown>}) {
         </span>
 
         <div className="min-w-0 flex-1">
-          {title && (
+          {data.title && (
             <p className={`text-sm font-bold ${config.titleColor}`}>
-              {title}
+              {data.title}
             </p>
           )}
-          {message && (
+          {data.message && (
             <p className={`mt-1 text-sm ${config.messageColor}`}>
-              {message}
+              {data.message}
             </p>
           )}
         </div>

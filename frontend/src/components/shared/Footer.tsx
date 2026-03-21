@@ -3,33 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import {urlFor} from '@/sanity/lib/image'
-
-interface FooterLink {
-  _key: string
-  label: string
-  href: string
-}
-
-interface FooterColumn {
-  _key: string
-  title: string
-  links?: FooterLink[]
-}
-
-interface SocialLink {
-  _key: string
-  platform: string
-  url: string
-}
-
-interface Settings {
-  siteName?: string
-  logo?: {asset?: {_id: string}; alt?: string}
-  footerStyle?: string
-  footerDescription?: string
-  footerColumns?: FooterColumn[]
-  socialLinks?: SocialLink[]
-}
+import type {SiteSettings} from '@/types/sanity'
 
 const FOOTER_STYLES: Record<string, string> = {
   default: 'border-t border-border bg-card',
@@ -87,7 +61,7 @@ function SocialIcon({platform}: {platform: string}) {
   }
 }
 
-export function Footer({settings}: {settings: Settings | null}) {
+export function Footer({settings}: {settings: SiteSettings | null}) {
   const siteName = settings?.siteName || 'Page Builder'
   const columns = settings?.footerColumns ?? []
   const socialLinks = settings?.socialLinks ?? []

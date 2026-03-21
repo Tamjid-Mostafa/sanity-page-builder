@@ -3,42 +3,7 @@ import {stegaClean} from 'next-sanity'
 import {urlFor} from '@/sanity/lib/image'
 import {BlockStylesWrapper} from '../shared/BlockStylesWrapper'
 import {CallToActionContent} from './content/CallToActionContent'
-
-interface HeroButton {
-  _key: string
-  _type: string
-  label?: string
-  link?: Array<{_type: string; [k: string]: unknown}>
-  color?: string
-  textColor?: string
-  hoverColor?: string
-  blockStyles?: Record<string, unknown>
-}
-
-interface HeroData {
-  _key: string
-  layout?: string
-  badge?: string
-  badgeLink?: string
-  heading?: string
-  subtitle?: string
-  alignment?: string
-  buttons?: HeroButton[]
-  mediaImage?: {asset?: {_id: string; url?: string; metadata?: {lqip?: string; dimensions?: {width: number; height: number}}}; alt?: string; hotspot?: unknown; crop?: unknown}
-  mediaPosition?: string
-  backgroundType?: string
-  backgroundColor?: string
-  gradientFrom?: string
-  gradientTo?: string
-  gradientDirection?: string
-  backgroundImage?: {asset?: {_id: string; url?: string}}
-  backgroundVideo?: string
-  overlay?: number
-  minHeight?: string
-  textColor?: string
-  maxWidth?: string
-  blockStyles?: Record<string, unknown>
-}
+import type {HeroSectionData} from '@/types/sanity'
 
 const MAX_WIDTH_MAP: Record<string, string> = {
   narrow: 'max-w-3xl',
@@ -52,7 +17,7 @@ const ALIGN_MAP: Record<string, string> = {
   right: 'text-right items-end',
 }
 
-function buildBackground(data: HeroData): React.CSSProperties {
+function buildBackground(data: HeroSectionData): React.CSSProperties {
   const style: React.CSSProperties = {}
   const bgType = stegaClean(data.backgroundType)
 
@@ -81,19 +46,19 @@ function buildBackground(data: HeroData): React.CSSProperties {
   return style
 }
 
-function HeroButtons({buttons}: {buttons: HeroButton[]}) {
-  if (buttons.length === 0) return null
+function HeroButtons({buttons}: {buttons: HeroSectionData['buttons']}) {
+  if (!buttons || buttons.length === 0) return null
 
   return (
     <div className="mt-8 flex flex-wrap justify-center gap-4">
       {buttons.map((btn) => (
-        <CallToActionContent key={btn._key} data={btn as unknown as Record<string, unknown>} />
+        <CallToActionContent key={btn._key} data={btn} />
       ))}
     </div>
   )
 }
 
-function FullWidthHero({data}: {data: HeroData}) {
+function FullWidthHero({data}: {data: HeroSectionData}) {
   const alignClass = ALIGN_MAP[stegaClean(data.alignment) || 'center'] || ALIGN_MAP.center
   const maxWidthClass = MAX_WIDTH_MAP[stegaClean(data.maxWidth) || 'default']
   const bgType = stegaClean(data.backgroundType)
@@ -161,7 +126,7 @@ function FullWidthHero({data}: {data: HeroData}) {
   )
 }
 
-function SplitHero({data}: {data: HeroData}) {
+function SplitHero({data}: {data: HeroSectionData}) {
   const isMediaLeft = stegaClean(data.mediaPosition) === 'left'
   const maxWidthClass = MAX_WIDTH_MAP[stegaClean(data.maxWidth) || 'default']
 
@@ -190,7 +155,7 @@ function SplitHero({data}: {data: HeroData}) {
             {data.buttons && data.buttons.length > 0 && (
               <div className="mt-8 flex flex-wrap gap-4">
                 {data.buttons.map((btn) => (
-                  <CallToActionContent key={btn._key} data={btn as unknown as Record<string, unknown>} />
+                  <CallToActionContent key={btn._key} data={btn} />
                 ))}
               </div>
             )}
@@ -233,13 +198,13 @@ function BadgePill({badge, badgeLink}: {badge: string; badgeLink?: string}) {
   return <span className={classes}>{badge}</span>
 }
 
-export function HeroSection({data}: {data: HeroData}) {
+export function HeroSection({data}: {data: HeroSectionData}) {
   const content = stegaClean(data.layout) === 'split'
     ? <SplitHero data={data} />
     : <FullWidthHero data={data} />
 
   return (
-    <BlockStylesWrapper blockStyles={data.blockStyles as never}>
+    <BlockStylesWrapper blockStyles={data.blockStyles}>
       {content}
     </BlockStylesWrapper>
   )

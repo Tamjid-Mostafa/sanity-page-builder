@@ -4,13 +4,9 @@ import {stegaClean} from 'next-sanity'
 import {useState, useCallback} from 'react'
 import Image from 'next/image'
 import {urlFor} from '@/sanity/lib/image'
+import type {ImageGalleryData} from '@/types/sanity'
 
-interface GalleryImage {
-  _key: string
-  image?: {asset?: {_id: string; metadata?: {dimensions?: {width: number; height: number}; lqip?: string}}}
-  alt?: string
-  caption?: string
-}
+type GalleryImage = ImageGalleryData['images'][number]
 
 const COLS_MAP: Record<string, string> = {
   '2': 'sm:columns-2',
@@ -24,20 +20,18 @@ const GRID_COLS_MAP: Record<string, string> = {
   '4': 'sm:grid-cols-2 lg:grid-cols-4',
 }
 
-export function ImageGalleryContent({data}: {data: Record<string, unknown>}) {
-  const title = data.title as string | undefined
-  const images = (data.images as GalleryImage[] | undefined) || []
-  const layout = (data.layout as string) || 'grid'
-  const columns = (data.columns as string) || '3'
-  const enableLightbox = data.enableLightbox as boolean | undefined
+export function ImageGalleryContent({data}: {data: ImageGalleryData}) {
+  const images = data.images || []
+  const layout = data.layout || 'grid'
+  const columns = data.columns || '3'
 
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
 
   const openLightbox = useCallback(
     (idx: number) => {
-      if (enableLightbox) setLightboxIdx(idx)
+      if (data.enableLightbox) setLightboxIdx(idx)
     },
-    [enableLightbox],
+    [data.enableLightbox],
   )
 
   const closeLightbox = useCallback(() => setLightboxIdx(null), [])
@@ -50,9 +44,9 @@ export function ImageGalleryContent({data}: {data: Record<string, unknown>}) {
 
   return (
     <div>
-      {title && (
+      {data.title && (
         <h2 className="mb-8 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {title}
+          {data.title}
         </h2>
       )}
 
@@ -64,7 +58,7 @@ export function ImageGalleryContent({data}: {data: Record<string, unknown>}) {
               image={img}
               className="mb-4 break-inside-avoid"
               onClick={() => openLightbox(idx)}
-              clickable={Boolean(enableLightbox)}
+              clickable={Boolean(data.enableLightbox)}
             />
           ))}
         </div>
@@ -76,7 +70,7 @@ export function ImageGalleryContent({data}: {data: Record<string, unknown>}) {
               image={img}
               className="aspect-square"
               onClick={() => openLightbox(idx)}
-              clickable={Boolean(enableLightbox)}
+              clickable={Boolean(data.enableLightbox)}
             />
           ))}
         </div>
@@ -108,7 +102,9 @@ function GalleryItem({
 }) {
   if (!image.image?.asset) return null
 
-  const dims = image.image.asset.metadata?.dimensions
+  const asset = image.image.asset as Record<string, unknown> | undefined
+  const metadata = (asset?.metadata ?? null) as {lqip?: string | null; dimensions?: {width: number; height: number} | null} | null
+  const dims = metadata?.dimensions
 
   return (
     <figure className={className}>
@@ -124,8 +120,8 @@ function GalleryItem({
           width={dims?.width || 600}
           height={dims?.height || 400}
           className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-          placeholder={image.image.asset.metadata?.lqip ? 'blur' : undefined}
-          blurDataURL={image.image.asset.metadata?.lqip || undefined}
+          placeholder={metadata?.lqip ? 'blur' : undefined}
+          blurDataURL={metadata?.lqip || undefined}
         />
       </button>
       {image.caption && (

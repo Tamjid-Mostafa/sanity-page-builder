@@ -4,7 +4,16 @@ The most complete open-source page builder template for **Sanity + Next.js**.
 
 26 content blocks, 16 custom studio inputs, drag-and-drop grid layout, full visual editing.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fogi988%2Fsanity-page-builder&env=NEXT_PUBLIC_SANITY_PROJECT_ID,NEXT_PUBLIC_SANITY_DATASET,SANITY_API_READ_TOKEN&envDescription=Sanity%20project%20credentials&envLink=https%3A%2F%2Fgithub.com%2Fogi988%2Fsanity-page-builder%2Fblob%2Fmain%2Ffrontend%2F.env.example&root-directory=frontend)
+
 ![Sanity Page Builder](sanity-page-builder.png)
+
+### Custom Studio Inputs
+
+Visual layout picker, spacing controls, color pickers, and live previews — all built as custom Sanity inputs.
+
+![Studio Layout Picker](docs/studio-layout-picker.png)
+![Studio Block Styles](docs/studio-block-styles.png)
 
 ## Structure
 
@@ -50,6 +59,16 @@ npm run dev
 
 Hero Section, Grid Row, Call to Action, Rich Text, Image, Image Gallery, FAQ, Form, Feature Card Grid, Testimonial Carousel, Testimonial Quote, Accordion, Tabbed Content, Button Group, Icon Text, Stat Metric, Pricing Card, Alert Notice, Code Block, Data Table, Social Embed, Logo Row, Map Embed, Countdown Timer, Lottie Animation, Spacer/Divider, Table of Contents.
 
+## Type Safety
+
+GROQ query results are fully typed via [Sanity TypeGen](https://www.sanity.io/docs/sanity-typegen). Regenerate after schema changes:
+
+```bash
+npm run typegen
+```
+
+Types are generated to `frontend/src/sanity/types.ts` with aliases in `frontend/src/types/sanity.ts`.
+
 ## Deployment
 
 ### Studio
@@ -63,6 +82,8 @@ npm run deploy:studio
 Deploy the `frontend/` directory to Vercel, Netlify, or any Node.js host.
 
 Set the **Root Directory** to `frontend` in your hosting provider.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fogi988%2Fsanity-page-builder&env=NEXT_PUBLIC_SANITY_PROJECT_ID,NEXT_PUBLIC_SANITY_DATASET,SANITY_API_READ_TOKEN&envDescription=Sanity%20project%20credentials&envLink=https%3A%2F%2Fgithub.com%2Fogi988%2Fsanity-page-builder%2Fblob%2Fmain%2Ffrontend%2F.env.example&root-directory=frontend)
 
 ### Validate Template
 

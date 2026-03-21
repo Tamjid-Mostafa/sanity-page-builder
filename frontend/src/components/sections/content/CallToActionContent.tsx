@@ -1,4 +1,5 @@
 import {stegaClean} from 'next-sanity'
+import type {CallToActionData} from '@/types/sanity'
 
 interface LinkInternal {
   _type: 'linkInternal'
@@ -11,12 +12,12 @@ interface LinkExternal {
   newWindow?: boolean
 }
 
-interface PageSlug {
+interface PageSlugLink {
   _type: 'pageSlug'
   slug?: string
 }
 
-type LinkItem = LinkInternal | LinkExternal | PageSlug
+type LinkItem = LinkInternal | LinkExternal | PageSlugLink
 
 const VARIANT_CLASSES: Record<string, string> = {
   primary: 'bg-foreground text-background hover:bg-foreground/90',
@@ -39,7 +40,7 @@ function resolveHref(linkItems: LinkItem[]): {href: string; isExternal: boolean}
       return {href: `/${int.reference?.slug?.current || ''}`, isExternal: false}
     }
     case 'pageSlug': {
-      const slug = item as PageSlug
+      const slug = item as PageSlugLink
       return {href: `/${slug.slug || ''}`, isExternal: false}
     }
     default:
@@ -47,24 +48,17 @@ function resolveHref(linkItems: LinkItem[]): {href: string; isExternal: boolean}
   }
 }
 
-export function CallToActionContent({data}: {data: Record<string, unknown>}) {
-  const label = data.label as string | undefined
-  const link = data.link as LinkItem[] | undefined
-  const color = data.color as string | undefined
-  const textColor = data.textColor as string | undefined
-  const hoverColor = data.hoverColor as string | undefined
-  const variant = (data.variant as string) || 'primary'
+export function CallToActionContent({data}: {data: CallToActionData}) {
+  if (!data.label) return null
 
-  if (!label) return null
+  const {href, isExternal} = resolveHref((data.link || []) as unknown as LinkItem[])
 
-  const {href, isExternal} = resolveHref(link || [])
+  const hasCustomColors = Boolean(data.color || data.textColor)
 
-  const hasCustomColors = Boolean(color || textColor)
-
-  const cleanColor = stegaClean(color)
-  const cleanTextColor = stegaClean(textColor)
-  const cleanHoverColor = stegaClean(hoverColor)
-  const cleanVariant = stegaClean(variant)
+  const cleanColor = stegaClean(data.color)
+  const cleanTextColor = stegaClean(data.textColor)
+  const cleanHoverColor = stegaClean(data.hoverColor)
+  const cleanVariant = stegaClean(data.variant) || 'primary'
 
   const inlineStyle: React.CSSProperties = hasCustomColors
     ? {
@@ -87,7 +81,7 @@ export function CallToActionContent({data}: {data: Record<string, unknown>}) {
       className={`${baseClasses} ${colorClasses}`}
       style={inlineStyle}
     >
-      {label}
+      {data.label}
     </a>
   )
 }

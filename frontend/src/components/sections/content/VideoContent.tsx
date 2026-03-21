@@ -1,4 +1,5 @@
 import {stegaClean} from 'next-sanity'
+import type {ExternalVideoData, YoutubeVideoData} from '@/types/sanity'
 
 function extractYouTubeId(url: string): string | null {
   const patterns = [
@@ -16,38 +17,18 @@ function extractYouTubeId(url: string): string | null {
   return null
 }
 
-interface YouTubeVideoData {
-  _type: 'youtubeVideo'
-  url?: string
-  caption?: string
-}
-
-interface ExternalVideoData {
-  _type: 'externalVideo'
-  url?: string
-  autoplay?: boolean
-  loop?: boolean
-  muted?: boolean
-  caption?: string
-}
-
-type VideoData = YouTubeVideoData | ExternalVideoData
-
-export function VideoContent({data}: {data: Record<string, unknown>}) {
-  const videoData = data as unknown as VideoData
-
-  if (stegaClean(videoData._type) === 'youtubeVideo') {
-    return <YouTubePlayer data={videoData as YouTubeVideoData} />
+export function VideoContent({data}: {data: ExternalVideoData | YoutubeVideoData}) {
+  if (stegaClean(data._type) === 'youtubeVideo') {
+    return <YouTubePlayer data={data as YoutubeVideoData} />
   }
 
-  return <ExternalPlayer data={videoData as ExternalVideoData} />
+  return <ExternalPlayer data={data as ExternalVideoData} />
 }
 
-function YouTubePlayer({data}: {data: YouTubeVideoData}) {
-  const url = data.url
-  if (!url) return null
+function YouTubePlayer({data}: {data: YoutubeVideoData}) {
+  if (!data.url) return null
 
-  const videoId = extractYouTubeId(url)
+  const videoId = extractYouTubeId(data.url)
   if (!videoId) return null
 
   return (
@@ -71,8 +52,7 @@ function YouTubePlayer({data}: {data: YouTubeVideoData}) {
 }
 
 function ExternalPlayer({data}: {data: ExternalVideoData}) {
-  const url = data.url
-  if (!url) return null
+  if (!data.url) return null
 
   return (
     <figure>
@@ -84,7 +64,7 @@ function ExternalPlayer({data}: {data: ExternalVideoData}) {
         muted={data.muted ?? false}
         playsInline
       >
-        <source src={url} />
+        <source src={data.url} />
         Your browser does not support the video tag.
       </video>
       {data.caption && (

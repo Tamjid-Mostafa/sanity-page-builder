@@ -1,14 +1,9 @@
 import {stegaClean} from 'next-sanity'
 import {GridRowSection} from './sections/GridRowSection'
 import {HeroSection} from './sections/HeroSection'
+import type {PageBuilderBlock} from '@/types/sanity'
 
-interface Section {
-  _key: string
-  _type: string
-  [key: string]: unknown
-}
-
-export function SectionRenderer({sections}: {sections?: Section[] | null}) {
+export function SectionRenderer({sections}: {sections?: PageBuilderBlock[] | null}) {
   if (!sections || sections.length === 0) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center text-muted">
@@ -20,11 +15,12 @@ export function SectionRenderer({sections}: {sections?: Section[] | null}) {
   return (
     <>
       {sections.map((section) => {
-        switch (stegaClean(section._type)) {
+        const type = stegaClean(section._type) as PageBuilderBlock['_type']
+        switch (type) {
           case 'heroSection':
-            return <HeroSection key={section._key} data={section as never} />
+            return <HeroSection key={section._key} data={section as Extract<PageBuilderBlock, {_type: 'heroSection'}>} />
           case 'gridRow':
-            return <GridRowSection key={section._key} data={section} />
+            return <GridRowSection key={section._key} data={section as Extract<PageBuilderBlock, {_type: 'gridRow'}>} />
           default:
             return (
               <div

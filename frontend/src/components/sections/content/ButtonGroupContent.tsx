@@ -1,4 +1,5 @@
 import {stegaClean} from 'next-sanity'
+import type {ButtonGroupData} from '@/types/sanity'
 
 interface LinkInternal {
   _type: 'linkInternal'
@@ -11,20 +12,12 @@ interface LinkExternal {
   newWindow?: boolean
 }
 
-interface PageSlug {
+interface PageSlugLink {
   _type: 'pageSlug'
   slug?: string
 }
 
-type LinkItem = LinkInternal | LinkExternal | PageSlug
-
-interface ButtonData {
-  _key: string
-  label?: string
-  link?: LinkItem[]
-  color?: string
-  textColor?: string
-}
+type LinkItem = LinkInternal | LinkExternal | PageSlugLink
 
 function resolveHref(linkItems: LinkItem[]): {href: string; isExternal: boolean} {
   const item = linkItems[0]
@@ -40,7 +33,7 @@ function resolveHref(linkItems: LinkItem[]): {href: string; isExternal: boolean}
       return {href: `/${int.reference?.slug?.current || ''}`, isExternal: false}
     }
     case 'pageSlug': {
-      const slug = item as PageSlug
+      const slug = item as PageSlugLink
       return {href: `/${slug.slug || ''}`, isExternal: false}
     }
     default:
@@ -54,10 +47,10 @@ const ALIGN_MAP: Record<string, string> = {
   right: 'justify-end',
 }
 
-export function ButtonGroupContent({data}: {data: Record<string, unknown>}) {
-  const buttons = (data.buttons as ButtonData[] | undefined) || []
-  const direction = (data.direction as string) || 'horizontal'
-  const alignment = (data.alignment as string) || 'left'
+export function ButtonGroupContent({data}: {data: ButtonGroupData}) {
+  const buttons = data.buttons || []
+  const direction = data.direction || 'horizontal'
+  const alignment = data.alignment || 'left'
 
   if (buttons.length === 0) return null
 
@@ -71,7 +64,7 @@ export function ButtonGroupContent({data}: {data: Record<string, unknown>}) {
       {buttons.map((button) => {
         if (!button.label) return null
 
-        const {href, isExternal} = resolveHref(button.link || [])
+        const {href, isExternal} = resolveHref((button.link || []) as unknown as LinkItem[])
         const hasCustomColors = Boolean(button.color || button.textColor)
 
         const inlineStyle: React.CSSProperties = hasCustomColors

@@ -1,10 +1,4 @@
-interface CodeBlockData {
-  code?: string
-  language?: string
-  filename?: string
-  showLineNumbers?: boolean
-  caption?: string
-}
+import type {CodeBlockData} from '@/types/sanity'
 
 function TrafficLights() {
   return (
@@ -16,13 +10,10 @@ function TrafficLights() {
   )
 }
 
-export function CodeBlockContent({data}: {data: Record<string, unknown>}) {
-  const {code, language, filename, showLineNumbers, caption} =
-    data as unknown as CodeBlockData
+export function CodeBlockContent({data}: {data: CodeBlockData}) {
+  if (!data.code) return null
 
-  if (!code) return null
-
-  const lines = code.split('\n')
+  const lines = data.code.split('\n')
   const lineNumberWidth = String(lines.length).length
 
   return (
@@ -32,15 +23,15 @@ export function CodeBlockContent({data}: {data: Record<string, unknown>}) {
         <div className="flex items-center justify-between bg-gray-800 px-4 py-2.5">
           <div className="flex items-center gap-4">
             <TrafficLights />
-            {filename && (
+            {data.filename && (
               <span className="text-xs font-medium text-gray-400">
-                {filename}
+                {data.filename}
               </span>
             )}
           </div>
-          {language && (
+          {data.language && (
             <span className="rounded bg-gray-700 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-gray-400">
-              {language}
+              {data.language}
             </span>
           )}
         </div>
@@ -51,7 +42,7 @@ export function CodeBlockContent({data}: {data: Record<string, unknown>}) {
             <code className="font-mono text-gray-100">
               {lines.map((line, index) => (
                 <span key={index} className="block">
-                  {showLineNumbers && (
+                  {data.showLineNumbers && (
                     <span
                       className="mr-6 inline-block text-right text-gray-500 select-none"
                       style={{minWidth: `${lineNumberWidth}ch`}}
@@ -67,9 +58,9 @@ export function CodeBlockContent({data}: {data: Record<string, unknown>}) {
         </div>
       </div>
 
-      {caption && (
+      {data.caption && (
         <figcaption className="mt-2 text-center text-sm text-muted">
-          {caption}
+          {data.caption}
         </figcaption>
       )}
     </figure>

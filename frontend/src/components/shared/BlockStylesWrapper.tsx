@@ -2,13 +2,21 @@ import type {CSSProperties, ReactNode} from 'react'
 import {stegaClean} from 'next-sanity'
 
 interface BlockStyles {
-  padding?: Record<string, string>
-  margin?: Record<string, string>
-  border?: {width?: string; style?: string; color?: string}
-  borderRadius?: {topLeft?: string; topRight?: string; bottomRight?: string; bottomLeft?: string}
-  background?: {color?: string; image?: {asset?: {url?: string}}; size?: string; overlay?: string}
-  typography?: {textAlign?: string; fontSize?: string; textColor?: string}
-  effects?: {shadow?: string; opacity?: number; overflow?: string}
+  padding?: {
+    top?: string | null; right?: string | null; bottom?: string | null; left?: string | null
+    topMd?: string | null; rightMd?: string | null; bottomMd?: string | null; leftMd?: string | null
+    topLg?: string | null; rightLg?: string | null; bottomLg?: string | null; leftLg?: string | null
+  } | null
+  margin?: {
+    top?: string | null; right?: string | null; bottom?: string | null; left?: string | null
+    topMd?: string | null; rightMd?: string | null; bottomMd?: string | null; leftMd?: string | null
+    topLg?: string | null; rightLg?: string | null; bottomLg?: string | null; leftLg?: string | null
+  } | null
+  border?: {width?: string | null; style?: string | null; color?: string | null} | null
+  borderRadius?: {topLeft?: string | null; topRight?: string | null; bottomRight?: string | null; bottomLeft?: string | null} | null
+  background?: {color?: string | null; image?: {asset?: {url?: string | null} | null} | null; size?: string | null; overlay?: string | null} | null
+  typography?: {textAlign?: string | null; fontSize?: string | null; textColor?: string | null} | null
+  effects?: {shadow?: string | null; opacity?: number | null; overflow?: string | null} | null
 }
 
 const SHADOW_MAP: Record<string, string> = {
@@ -24,7 +32,7 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
 
   const styles: CSSProperties = {}
 
-  // Padding (mobile only for inline — responsive handled by className)
+  // Padding (mobile only for inline -- responsive handled by className)
   if (bs.padding) {
     if (bs.padding.top) styles.paddingTop = bs.padding.top
     if (bs.padding.right) styles.paddingRight = bs.padding.right
@@ -50,7 +58,7 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
   // Border radius
   if (bs.borderRadius) {
     const {topLeft = '0', topRight = '0', bottomRight = '0', bottomLeft = '0'} = bs.borderRadius
-    styles.borderRadius = `${topLeft} ${topRight} ${bottomRight} ${bottomLeft}`
+    styles.borderRadius = `${topLeft || '0'} ${topRight || '0'} ${bottomRight || '0'} ${bottomLeft || '0'}`
   }
 
   // Background
@@ -132,7 +140,7 @@ export function BlockStylesWrapper({
       {hasOverlay && (
         <div
           className="pointer-events-none absolute inset-0"
-          style={{backgroundColor: blockStyles!.background!.overlay}}
+          style={{backgroundColor: blockStyles!.background!.overlay!}}
         />
       )}
       {hasOverlay ? <div className="relative">{children}</div> : children}

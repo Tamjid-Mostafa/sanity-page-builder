@@ -1,5 +1,7 @@
 import {PortableText, type PortableTextComponents} from 'next-sanity'
 import type {PortableTextBlock} from '@portabletext/types'
+
+type PortableTextInput = PortableTextBlock[] | Array<Record<string, unknown>>
 import Image from 'next/image'
 import {urlFor} from '@/sanity/lib/image'
 
@@ -82,7 +84,7 @@ const components: PortableTextComponents = {
   },
 }
 
-export function PortableTextRenderer({value}: {value: PortableTextBlock[]}) {
+export function PortableTextRenderer({value}: {value: PortableTextInput}) {
   if (!value || value.length === 0) return null
-  return <PortableText value={value} components={components} />
+  return <PortableText value={value as PortableTextBlock[]} components={components} />
 }
