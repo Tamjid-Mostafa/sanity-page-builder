@@ -626,6 +626,183 @@ export const pageType = defineType({
       },
     ], {paddingY: 'xl'}),
 
+    // Icon + Text — 3 columns
+    gridRow('33-33-33', [
+      {
+        content: [{
+          _key: k(),
+          _type: 'iconText',
+          title: 'Flexible Layouts',
+          description: '9 grid presets from full-width to 4-column. Nest any content type in any column.',
+          iconSize: 'medium',
+          alignment: 'center',
+        }],
+        blockStyles: blockStyles({pt: '16px', pb: '16px', textAlign: 'center'}),
+      },
+      {
+        content: [{
+          _key: k(),
+          _type: 'iconText',
+          title: 'Type Safe',
+          description: 'Auto-generated TypeScript types from Sanity schemas. Full type inference for GROQ queries.',
+          iconSize: 'medium',
+          alignment: 'center',
+        }],
+        blockStyles: blockStyles({pt: '16px', pb: '16px', textAlign: 'center'}),
+      },
+      {
+        content: [{
+          _key: k(),
+          _type: 'iconText',
+          title: 'Visual Editing',
+          description: 'Real-time preview and visual editing with the Sanity Presentation tool.',
+          iconSize: 'medium',
+          alignment: 'center',
+        }],
+        blockStyles: blockStyles({pt: '16px', pb: '16px', textAlign: 'center'}),
+      },
+    ], {paddingY: 'lg'}),
+
+    // Feature Card Grid
+    gridRow('full', [
+      {
+        content: [{
+          _key: k(),
+          _type: 'featureCardGrid',
+          title: 'Built for developers and editors',
+          subtitle: 'A complete toolkit that lets content editors build pages without developer intervention.',
+          columns: '3',
+          style: 'bordered',
+          cards: [
+            {_key: k(), title: 'Grid System', description: '9 layout presets from full-width to 4-column. Control gap, padding, and alignment per row.'},
+            {_key: k(), title: 'Visual Controls', description: 'Spacing, borders, backgrounds, typography, and effects at three levels — row, column, and block.'},
+            {_key: k(), title: 'Blog System', description: 'Full blog with listing page, individual posts, SEO fields, and rich text content.'},
+            {_key: k(), title: 'Forms & FAQ', description: 'Contact forms with webhook integration and FAQ blocks with JSON-LD structured data.'},
+            {_key: k(), title: 'SEO Built-in', description: 'Meta titles, descriptions, OG images, and noindex on every page. FAQ blocks output JSON-LD.'},
+            {_key: k(), title: '16 Custom Inputs', description: 'Visual Studio inputs for spacing, borders, backgrounds, typography, layouts, and more.'},
+          ],
+          blockStyles: blockStyles({pt: '16px', pb: '16px'}),
+        }],
+      },
+    ], {paddingY: 'xl'}),
+
+    // Video — YouTube + External
+    gridRow('50-50', [
+      {
+        content: [{
+          _key: k(),
+          _type: 'youtubeVideo',
+          url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+          caption: 'YouTube embed with automatic aspect ratio',
+        }],
+        blockStyles: blockStyles({pt: '8px', pb: '8px'}),
+      },
+      {
+        content: [{
+          _key: k(),
+          _type: 'externalVideo',
+          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+          caption: 'Self-hosted MP4 with autoplay and loop controls',
+          autoplay: false,
+          loop: false,
+          muted: true,
+        }],
+        blockStyles: blockStyles({pt: '8px', pb: '8px'}),
+      },
+    ], {gap: 'lg', paddingY: 'lg'}),
+
+    // FAQ Block
+    gridRow('full', [
+      {
+        content: [{
+          _key: k(),
+          _type: 'faqBlock',
+          title: 'Frequently Asked Questions',
+          subtitle: 'Everything you need to know about PageCraft.',
+          enableSchema: true,
+          allowMultipleOpen: true,
+          firstOpenByDefault: true,
+          items: [
+            {_key: k(), question: 'What is PageCraft?', answer: [textBlock('An open-source Sanity + Next.js page builder with 28 content types, 9 layouts, and visual style controls. Everything you need to build production websites.')]},
+            {_key: k(), question: 'Is it free to use?', answer: [textBlock('Yes — MIT licensed. Use it for personal or commercial projects without any restrictions.')]},
+            {_key: k(), question: 'How do I customize the design?', answer: [textBlock('Every section has blockStyles for padding, margin, backgrounds, borders, typography and effects. You can also modify the Tailwind theme in globals.css.')]},
+            {_key: k(), question: 'Can I add my own content types?', answer: [textBlock('Absolutely. Follow the pattern in schemaTypes/blocks/ for the schema and components/sections/content/ for the renderer. Register in blocks/index.ts and ContentRenderer.tsx.')]},
+            {_key: k(), question: 'Does it support SEO?', answer: [textBlock('Yes. Every page and blog post has SEO fields (meta title, description, OG image, noindex). FAQ blocks output JSON-LD structured data for Google.')]},
+          ],
+          blockStyles: blockStyles({pt: '8px', pb: '8px'}),
+        }],
+      },
+    ], {paddingY: 'xl', maxWidth: 'narrow'}),
+
+    // Social Embed + Map Embed
+    gridRow('50-50', [
+      {
+        content: [{
+          _key: k(),
+          _type: 'socialEmbed',
+          platform: 'twitter',
+          embedUrl: 'https://twitter.com/sanaborz/status/1234567890',
+          caption: 'Embed posts from Twitter/X, Instagram, TikTok, and Facebook',
+          aspectRatio: 'auto',
+        }],
+        blockStyles: blockStyles({pt: '8px', pb: '8px'}),
+      },
+      {
+        content: [{
+          _key: k(),
+          _type: 'mapEmbed',
+          embedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.991625819824!2d2.292292615674!3d48.858370079287!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sEiffel%20Tower!5e0!3m2!1sen!2sfr!4v1234567890',
+          height: 'large',
+          caption: 'Google Maps with configurable height and rounded corners',
+          style: 'rounded',
+        }],
+        blockStyles: blockStyles({pt: '8px', pb: '8px'}),
+      },
+    ], {gap: 'lg', paddingY: 'lg'}),
+
+    // Lottie Animation
+    gridRow('50-50', [
+      {
+        verticalAlign: 'center',
+        content: [{
+          _key: k(),
+          _type: 'lottieAnimation',
+          source: 'url',
+          url: 'https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/IGmMCqhzpt.lottie',
+          autoplay: true,
+          loop: true,
+          speed: 1,
+          trigger: 'auto',
+          alt: 'Animated illustration',
+        }],
+        blockStyles: blockStyles({pt: '16px', pb: '16px'}),
+      },
+      {
+        verticalAlign: 'center',
+        content: [{
+          _key: k(),
+          _type: 'richTextBlock',
+          content: [
+            textBlock('Lottie Animations', 'h3'),
+            textBlock('Embed lightweight vector animations from LottieFiles or upload your own JSON files. Support for autoplay, loop, speed control, and scroll-triggered playback.'),
+          ],
+          blockStyles: blockStyles({pt: '16px', pb: '16px'}),
+        }],
+      },
+    ], {gap: 'lg', paddingY: 'lg'}),
+
+    // Table of Contents
+    gridRow('full', [
+      {
+        content: [{
+          _key: k(),
+          _type: 'tocBlock',
+          title: 'Table of Contents',
+        }],
+        blockStyles: blockStyles({pt: '16px', pb: '16px'}),
+      },
+    ], {paddingY: 'md', maxWidth: 'narrow'}),
+
     // Final CTA
     gridRow('full', [
       {
