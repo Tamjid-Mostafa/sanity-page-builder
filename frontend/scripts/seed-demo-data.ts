@@ -118,6 +118,11 @@ function gridRow(
   columns: Array<Record<string, unknown>>,
   opts?: {gap?: string; paddingY?: string; maxWidth?: string; backgroundColor?: string; blockStyles?: Record<string, unknown>},
 ) {
+  const bg = opts?.backgroundColor
+  const mergedBlockStyles = bg
+    ? {...(opts?.blockStyles || {}), background: {color: bg}}
+    : opts?.blockStyles
+
   return {
     _key: k(),
     _type: 'gridRow',
@@ -125,8 +130,7 @@ function gridRow(
     gap: opts?.gap || 'md',
     paddingY: opts?.paddingY || 'md',
     maxWidth: opts?.maxWidth || 'default',
-    backgroundColor: opts?.backgroundColor,
-    blockStyles: opts?.blockStyles,
+    blockStyles: mergedBlockStyles,
     columns: columns.map((col) => ({_key: k(), _type: 'gridColumn', verticalAlign: 'top', ...col})),
   }
 }

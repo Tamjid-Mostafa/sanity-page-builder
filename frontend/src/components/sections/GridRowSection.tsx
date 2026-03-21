@@ -55,12 +55,9 @@ export function GridRowSection({data}: {data: GridRowData}) {
   const maxWidthClass = MAX_WIDTH_MAP[stegaClean(data.maxWidth) || 'default'] || 'max-w-7xl'
   const reverseClass = data.reverseOnMobile ? 'flex-col-reverse md:grid' : ''
 
-  const bgColor = stegaClean(data.backgroundColor)
-  const sectionStyle = bgColor ? {backgroundColor: bgColor} : undefined
-
   return (
     <BlockStylesWrapper blockStyles={data.blockStyles}>
-      <section style={sectionStyle}>
+      <section>
         <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${maxWidthClass} ${paddingClass}`}>
           <div className={`grid ${gridClass} ${gapClass} ${reverseClass}`}>
             {data.columns?.map((column, colIdx) => {

@@ -2,7 +2,7 @@ import {defineType, defineField, defineArrayMember} from 'sanity'
 import {DashboardIcon, ImageIcon} from '@sanity/icons'
 import {LayoutPickerInput} from '../../components/LayoutPickerInput'
 import {ColumnsInput} from '../../components/ColumnsInput'
-import {ColorStringInput} from '../../components/ColorStringInput'
+
 
 const LAYOUT_OPTIONS = [
   {title: 'Full Width', value: 'full'},
@@ -161,14 +161,6 @@ export const gridRowType = defineType({
       description:
         'Reverses the column stacking order on small screens. Useful when you want text above image on mobile.',
       initialValue: false,
-    }),
-    defineField({
-      name: 'backgroundColor',
-      title: 'Background Color',
-      type: 'string',
-      group: 'style',
-      description: 'Hex color (e.g., #f5f5f5)',
-      components: {input: ColorStringInput},
     }),
     defineField({
       name: 'paddingY',

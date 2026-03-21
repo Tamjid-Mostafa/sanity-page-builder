@@ -560,7 +560,6 @@ export type GridRow = {
   }>;
   gap?: "none" | "sm" | "md" | "lg" | "xl";
   reverseOnMobile?: boolean;
-  backgroundColor?: string;
   paddingY?: "none" | "sm" | "md" | "lg" | "xl";
   maxWidth?: "narrow" | "default" | "wide" | "full";
   blockStyles?: BlockStyles;
@@ -2808,7 +2807,6 @@ export type HOME_PAGE_QUERY_RESULT =
             }>;
             gap?: "lg" | "md" | "none" | "sm" | "xl";
             reverseOnMobile?: boolean;
-            backgroundColor?: string;
             paddingY?: "lg" | "md" | "none" | "sm" | "xl";
             maxWidth?: "default" | "full" | "narrow" | "wide";
             blockStyles: {
@@ -4217,7 +4215,6 @@ export type PAGE_QUERY_RESULT = {
         }>;
         gap?: "lg" | "md" | "none" | "sm" | "xl";
         reverseOnMobile?: boolean;
-        backgroundColor?: string;
         paddingY?: "lg" | "md" | "none" | "sm" | "xl";
         maxWidth?: "default" | "full" | "narrow" | "wide";
         blockStyles: {
