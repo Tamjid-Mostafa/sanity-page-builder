@@ -50,7 +50,7 @@ export const dataTableType = defineType({
       of: [
         defineArrayMember({
           type: 'object',
-          name: 'tableRow',
+          name: 'dataTableRow',
           title: 'Row',
           fields: [
             defineField({

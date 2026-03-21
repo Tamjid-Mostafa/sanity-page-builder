@@ -751,7 +751,7 @@ export type DataTable = {
       _type: "tableCell";
       _key: string;
     }>;
-    _type: "tableRow";
+    _type: "dataTableRow";
     _key: string;
   }>;
   striped?: boolean;
@@ -1831,7 +1831,7 @@ export type HOME_PAGE_QUERY_RESULT =
                         _type: "tableCell";
                         _key: string;
                       }>;
-                      _type: "tableRow";
+                      _type: "dataTableRow";
                       _key: string;
                     }>;
                     striped?: boolean;
@@ -3239,7 +3239,7 @@ export type PAGE_QUERY_RESULT = {
                     _type: "tableCell";
                     _key: string;
                   }>;
-                  _type: "tableRow";
+                  _type: "dataTableRow";
                   _key: string;
                 }>;
                 striped?: boolean;
