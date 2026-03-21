@@ -77,6 +77,18 @@ export function SpacingInput(props: ObjectInputProps) {
   const hasLgValues = vals.topLg || vals.rightLg || vals.bottomLg || vals.leftLg
   const dots = [hasBaseValues, hasMdValues, hasLgValues]
 
+  const ALL_FIELDS = [
+    'top', 'right', 'bottom', 'left',
+    'topMd', 'rightMd', 'bottomMd', 'leftMd',
+    'topLg', 'rightLg', 'bottomLg', 'leftLg',
+  ] as const
+
+  const hasValues = ALL_FIELDS.some((f) => vals[f])
+
+  const handleClear = useCallback(() => {
+    onChange(ALL_FIELDS.map((f) => unset([f])))
+  }, [onChange])
+
   const outerColor = isPadding
     ? 'rgba(124, 179, 66, 0.12)'
     : 'rgba(255, 167, 38, 0.12)'
@@ -165,21 +177,36 @@ export function SpacingInput(props: ObjectInputProps) {
         }}
       >
         {/* Title label */}
-        <Text
-          size={0}
-          style={{
-            position: 'absolute',
-            top: 4,
-            left: 8,
-            color: labelColor,
-            fontWeight: 600,
-            fontSize: 10,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-          }}
-        >
-          {title}
-        </Text>
+        <Flex align="center" justify="space-between" style={{position: 'absolute', top: 4, left: 8, right: 8}}>
+          <Text
+            size={0}
+            style={{
+              color: labelColor,
+              fontWeight: 600,
+              fontSize: 10,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            {title}
+          </Text>
+          {hasValues && (
+            <button
+              type="button"
+              onClick={handleClear}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--card-muted-fg-color)',
+                fontSize: 10,
+                cursor: 'pointer',
+                padding: '2px 4px',
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </Flex>
 
         {/* Top */}
         <Flex justify="center" style={{paddingTop: 18, paddingBottom: 4}}>

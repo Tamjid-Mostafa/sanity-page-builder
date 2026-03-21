@@ -61,6 +61,12 @@ export function BorderRadiusInput(props: ObjectInputProps) {
     return values.length === 0 || new Set(values).size <= 1
   })
 
+  const hasValues = CORNERS.some((c) => vals[c])
+
+  const handleClear = useCallback(() => {
+    onChange(CORNERS.map((c) => unset([c])))
+  }, [onChange])
+
   const handleChange = useCallback(
     (corner: string, newValue: string) => {
       if (linked) {
@@ -89,6 +95,23 @@ export function BorderRadiusInput(props: ObjectInputProps) {
           <Text size={0} weight="bold" muted style={{textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: 10}}>
             Border Radius
           </Text>
+          <Flex align="center" gap={1}>
+            {hasValues && (
+              <button
+                type="button"
+                onClick={handleClear}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--card-muted-fg-color)',
+                  fontSize: 10,
+                  cursor: 'pointer',
+                  padding: '2px 4px',
+                }}
+              >
+                Clear
+              </button>
+            )}
           <Button
             icon={LinkIcon}
             mode="ghost"
@@ -99,6 +122,7 @@ export function BorderRadiusInput(props: ObjectInputProps) {
             title={linked ? 'Unlink corners (set individually)' : 'Link all corners'}
             style={{opacity: linked ? 1 : 0.5}}
           />
+          </Flex>
         </Flex>
 
         {/* Visual preview with corner inputs */}

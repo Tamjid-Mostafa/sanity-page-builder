@@ -28,17 +28,41 @@ export function EffectsInput(props: ObjectInputProps) {
     [onChange],
   )
 
+  const hasValues = !!(vals.shadow || vals.opacity !== undefined || vals.overflow)
+
+  const handleClear = useCallback(() => {
+    onChange([unset(['shadow']), unset(['opacity']), unset(['overflow'])])
+  }, [onChange])
+
   return (
     <Card padding={3} radius={2} border tone="transparent">
       <Stack space={3}>
-        <Text
-          size={0}
-          weight="bold"
-          muted
-          style={{textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: 10}}
-        >
-          Effects
-        </Text>
+        <Flex align="center" justify="space-between">
+          <Text
+            size={0}
+            weight="bold"
+            muted
+            style={{textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: 10}}
+          >
+            Effects
+          </Text>
+          {hasValues && (
+            <button
+              type="button"
+              onClick={handleClear}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--card-muted-fg-color)',
+                fontSize: 10,
+                cursor: 'pointer',
+                padding: '2px 4px',
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </Flex>
 
         <Flex gap={2} align="center">
           <CompactSelect

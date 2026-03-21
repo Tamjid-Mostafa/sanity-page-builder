@@ -14,17 +14,41 @@ export function BackgroundInput(props: ObjectInputProps) {
     [onChange],
   )
 
+  const hasValues = !!vals.color
+
+  const handleClear = useCallback(() => {
+    onChange([unset(['color'])])
+  }, [onChange])
+
   return (
     <Card padding={3} radius={2} border tone="transparent">
       <Stack space={3}>
-        <Text
-          size={0}
-          weight="bold"
-          muted
-          style={{textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: 10}}
-        >
-          Background
-        </Text>
+        <Flex align="center" justify="space-between">
+          <Text
+            size={0}
+            weight="bold"
+            muted
+            style={{textTransform: 'uppercase', letterSpacing: '0.05em', fontSize: 10}}
+          >
+            Background
+          </Text>
+          {hasValues && (
+            <button
+              type="button"
+              onClick={handleClear}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--card-muted-fg-color)',
+                fontSize: 10,
+                cursor: 'pointer',
+                padding: '2px 4px',
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </Flex>
 
         <Flex gap={2} align="center">
           <Text size={0} muted style={{flexShrink: 0, fontSize: 11, width: 40}}>
