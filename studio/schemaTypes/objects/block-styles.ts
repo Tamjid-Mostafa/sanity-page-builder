@@ -104,7 +104,7 @@ export const blockStylesType = defineType({
           name: 'color',
           title: 'Color',
           type: 'string',
-          description: 'Hex color (e.g., #f5f5f5)',
+          hidden: true,
         }),
         defineField({
           name: 'image',
