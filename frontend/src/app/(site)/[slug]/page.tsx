@@ -7,6 +7,8 @@ import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {SectionRenderer} from '@/components/SectionRenderer'
 
+export const revalidate = 86400
+
 export async function generateStaticParams() {
   const data = await client.withConfig({useCdn: false}).fetch(PAGE_SLUGS_QUERY)
   return (data ?? []).map((page) => ({slug: page.slug}))

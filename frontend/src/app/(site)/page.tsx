@@ -5,6 +5,8 @@ import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {SectionRenderer} from '@/components/SectionRenderer'
 
+export const revalidate = 86400
+
 export async function generateMetadata(): Promise<Metadata> {
   const [{data: page}, {data: settings}] = await Promise.all([
     sanityFetch({query: HOME_PAGE_QUERY}),

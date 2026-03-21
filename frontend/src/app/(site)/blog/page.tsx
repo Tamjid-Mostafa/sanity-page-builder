@@ -5,6 +5,8 @@ import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {BlogCard} from '@/components/blog/BlogCard'
 
+export const revalidate = 86400
+
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Latest articles and updates',

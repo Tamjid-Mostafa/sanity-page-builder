@@ -7,6 +7,8 @@ import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {BlogPost} from '@/components/blog/BlogPost'
 
+export const revalidate = 86400
+
 export async function generateStaticParams() {
   const data = await client.withConfig({useCdn: false}).fetch(BLOG_SLUGS_QUERY)
   return (data ?? []).map((post) => ({slug: post.slug}))

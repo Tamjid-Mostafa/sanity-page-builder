@@ -93,6 +93,20 @@ npm run validate
 
 Ensures the Sanity CLI can properly read your template configuration.
 
+## Content Revalidation
+
+Pages use ISR with a 24-hour revalidation window. For instant updates when editors publish in Sanity, set up the on-demand webhook:
+
+1. Generate a secret: `openssl rand -hex 32`
+2. Add `SANITY_REVALIDATE_SECRET` to your hosting env vars with the generated secret
+3. In [Sanity Manage](https://sanity.io/manage) → API → Webhooks, create a webhook:
+   - **URL:** `https://your-domain.com/api/revalidate`
+   - **Secret:** same secret from step 1
+   - **Filter:** `_type in ["homePage", "page", "blogPost", "siteSettings"]`
+   - **Projection:** `{_type, slug}`
+
+Published changes will reflect on the site within seconds.
+
 ## More Info
 
 - [Create your own Sanity template](https://www.sanity.io/docs/create-your-own-sanity-template)
