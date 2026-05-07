@@ -35,7 +35,7 @@ export function IconTextContent({data}: {data: IconTextData}) {
       )}
       <div className={layout.text}>
         {data.title && (
-          <h4 className="text-lg font-semibold text-foreground">
+          <h4 className="text-lg font-heading font-semibold text-foreground">
             {data.title}
           </h4>
         )}

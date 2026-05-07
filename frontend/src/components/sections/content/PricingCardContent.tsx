@@ -43,7 +43,7 @@ export function PricingCardContent({data}: {data: PricingCardData}) {
       )}
 
       {data.title && (
-        <h3 className="text-lg font-semibold text-card-foreground">{data.title}</h3>
+        <h3 className="text-lg font-heading font-semibold text-card-foreground">{data.title}</h3>
       )}
 
       {data.price && (

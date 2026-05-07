@@ -65,7 +65,7 @@ export function FormBlockContent({data}: {data: FormBlockData}) {
   return (
     <div>
       {data.formTitle && (
-        <h3 className="text-xl font-semibold text-foreground">{data.formTitle}</h3>
+        <h3 className="text-xl font-heading font-semibold text-foreground">{data.formTitle}</h3>
       )}
       {data.formDescription && (
         <p className="mt-1 text-sm text-muted">{data.formDescription}</p>

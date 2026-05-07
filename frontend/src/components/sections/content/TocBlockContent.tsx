@@ -49,7 +49,7 @@ export function TocBlockContent({data}: {data: TocBlockData}) {
 
   return (
     <nav className="rounded-xl border border-border bg-surface/50 p-5">
-      <h3 className="mb-3 text-sm font-semibold text-foreground">{title}</h3>
+      <h3 className="mb-3 text-sm font-heading font-semibold text-foreground">{title}</h3>
       <ul className="space-y-1">
         {headings.map((h) => (
           <li key={h.id} className={h.level === 3 ? 'ml-4' : ''}>

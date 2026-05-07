@@ -44,7 +44,7 @@ export function TestimonialCarouselContent({data}: {data: TestimonialCarouselDat
   return (
     <div>
       {data.title && (
-        <h2 className="mb-8 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="mb-8 text-2xl font-heading font-bold tracking-tight text-foreground sm:text-3xl">
           {data.title}
         </h2>
       )}

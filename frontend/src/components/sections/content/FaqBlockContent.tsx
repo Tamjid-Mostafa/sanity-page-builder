@@ -64,7 +64,7 @@ export function FaqBlockContent({data}: {data: FaqBlockData}) {
       )}
 
       {data.title && (
-        <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="text-2xl font-heading font-bold tracking-tight text-foreground sm:text-3xl">
           {data.title}
         </h2>
       )}

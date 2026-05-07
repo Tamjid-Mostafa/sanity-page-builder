@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import { poppins, rubik, sfProText, sharpGrotesk } from "./fonts";
+import { inter, poppins, rubik, sfProText, sharpGrotesk } from "./fonts";
 import { siteUrl } from "@/utils/url";
 
 export const metadata: Metadata = {
@@ -38,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sharpGrotesk.variable} ${rubik.variable} ${poppins.variable} ${sfProText.variable} h-full antialiased`}
+      className={`${sharpGrotesk.variable} ${inter.variable} ${rubik.variable} ${poppins.variable} ${sfProText.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">

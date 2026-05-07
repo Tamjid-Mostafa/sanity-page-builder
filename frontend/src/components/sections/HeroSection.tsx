@@ -158,7 +158,7 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
           )}
 
           {data.heading && (
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="text-4xl font-heading font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
               {data.heading}
             </h1>
           )}
@@ -195,7 +195,7 @@ function SplitHero({ data }: { data: HeroSectionData }) {
             )}
 
             {data.heading && (
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl lg:text-6xl">
+              <h1 className="text-4xl font-heading font-bold tracking-tighter sm:text-5xl lg:text-6xl">
                 {data.heading}
               </h1>
             )}
@@ -255,6 +255,11 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
     href: "/apply",
   };
 
+  // Cycle count is driven by whichever is larger — slides or videos.
+  // Each uses modulo independently so 1 slide + 4 videos = text stays,
+  // videos cycle; 4 slides + 1 video = slides cycle, video stays; etc.
+  const totalSteps = Math.max(slides.length, videos.length, 1);
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
@@ -265,17 +270,17 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
   }, []);
 
   const next = useCallback(() => {
-    if (slides.length <= 1) return;
-    goTo((activeIndex + 1) % slides.length);
-  }, [activeIndex, goTo, slides.length]);
+    if (totalSteps <= 1) return;
+    goTo((activeIndex + 1) % totalSteps);
+  }, [activeIndex, goTo, totalSteps]);
 
   useEffect(() => {
-    if (slides.length <= 1) return;
+    if (totalSteps <= 1) return;
     timerRef.current = setInterval(next, slideDuration);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [next, slideDuration, slides.length]);
+  }, [next, slideDuration, totalSteps]);
 
   if (!slides.length) {
     return null;
@@ -284,12 +289,12 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
   const resetTimer = (idx: number) => {
     if (timerRef.current) clearInterval(timerRef.current);
     goTo(idx);
-    if (slides.length > 1) {
+    if (totalSteps > 1) {
       timerRef.current = setInterval(next, slideDuration);
     }
   };
 
-  const activeSlide = slides[activeIndex] || slides[0];
+  const activeSlide = slides[activeIndex % slides.length];
   const activeVideo =
     videos.length > 0 ? videos[activeIndex % videos.length] : undefined;
   const videoUrl = activeVideo?.videoUrl;
@@ -347,7 +352,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
           <div className="flex flex-col gap-5 max-w-lg">
             <AnimatePresence mode="wait">
               <motion.span
-                key={`tag-${activeIndex}`}
+                key={`tag-${activeIndex % slides.length}`}
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 8 }}
@@ -360,7 +365,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
 
             <AnimatePresence mode="wait">
               <motion.h1
-                key={`headline-${activeIndex}`}
+                key={`headline-${activeIndex % slides.length}`}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -373,7 +378,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
 
             <AnimatePresence mode="wait">
               <motion.p
-                key={`sub-${activeIndex}`}
+                key={`sub-${activeIndex % slides.length}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -460,13 +465,13 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
           </div>
         </div>
 
-        {slides.length > 1 && (
+        {totalSteps > 1 && (
           <div className="absolute bottom-14 md:bottom-16 lg:bottom-20 right-6 sm:right-8 lg:right-12 flex flex-col gap-3 items-end">
-            {slides.map((slide, i) => (
+            {Array.from({length: totalSteps}, (_, i) => (
               <button
-                key={slide._key || i}
+                key={i}
                 onClick={() => resetTimer(i)}
-                aria-label={`Go to slide ${i + 1}`}
+                aria-label={`Go to step ${i + 1}`}
                 className="group flex items-center gap-2 focus:outline-none"
               >
                 <span

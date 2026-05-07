@@ -38,7 +38,7 @@ export const heroSectionType = defineType({
       title: 'Slides',
       type: 'array',
       group: 'slides',
-      description: 'Each slide has its own tag, headline and subtitle. Paired with a background video by position.',
+      description: 'Text content for the hero. Can be fewer than the number of videos — slides cycle independently (e.g. 1 slide + 4 videos = same text, 4 different videos).',
       hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
       validation: (rule) => rule.min(1).max(6),
       of: [
@@ -66,7 +66,7 @@ export const heroSectionType = defineType({
       title: 'Background Videos',
       type: 'array',
       group: 'videos',
-      description: 'Videos are paired with slides by position (first video → first slide, etc.). Use .mp4 for best compatibility.',
+      description: 'Background videos cycle independently of slides. Add as many as you like regardless of slide count. Use .mp4 for best compatibility.',
       hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
       of: [
         defineArrayMember({

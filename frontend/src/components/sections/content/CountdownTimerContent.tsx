@@ -66,7 +66,7 @@ export function CountdownTimerContent({data}: {data: CountdownTimerData}) {
   return (
     <div className="text-center">
       {data.title && (
-        <h3 className="mb-6 text-xl font-semibold text-foreground">
+        <h3 className="mb-6 text-xl font-heading font-semibold text-foreground">
           {data.title}
         </h3>
       )}

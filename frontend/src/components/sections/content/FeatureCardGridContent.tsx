@@ -29,7 +29,7 @@ export function FeatureCardGridContent({data}: {data: FeatureCardGridData}) {
   return (
     <div>
       {data.title && (
-        <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="text-2xl font-heading font-bold tracking-tight text-foreground sm:text-3xl">
           {data.title}
         </h2>
       )}
@@ -55,7 +55,7 @@ export function FeatureCardGridContent({data}: {data: FeatureCardGridData}) {
               </div>
             )}
             {card.title && (
-              <h3 className="text-lg font-semibold text-foreground">{card.title}</h3>
+              <h3 className="text-lg font-heading font-semibold text-foreground">{card.title}</h3>
             )}
             {card.description && (
               <p className="mt-2 text-sm leading-relaxed text-muted">{card.description}</p>
