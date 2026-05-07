@@ -1,5 +1,29 @@
-import {defineType, defineField, defineArrayMember} from 'sanity'
+﻿import {defineType, defineField, defineArrayMember} from 'sanity'
 import {HelpCircleIcon} from '@sanity/icons'
+
+const faqItemMember = defineArrayMember({
+  type: 'object',
+  name: 'faqItem',
+  fields: [
+    defineField({
+      name: 'question',
+      title: 'Question',
+      type: 'string',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'answer',
+      title: 'Answer',
+      type: 'blockContent',
+    }),
+  ],
+  preview: {
+    select: {title: 'question'},
+    prepare({title}: {title?: string}) {
+      return {title: title || 'FAQ Item'}
+    },
+  },
+})
 
 export const faqBlockType = defineType({
   name: 'faqBlock',
@@ -7,6 +31,25 @@ export const faqBlockType = defineType({
   type: 'object',
   icon: HelpCircleIcon,
   fields: [
+    defineField({
+      name: 'variation',
+      title: 'Variation',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Default (accordion per item)', value: 'default'},
+          {title: 'Grouped (single outer accordion)', value: 'grouped'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'default',
+    }),
+    defineField({
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      description: 'Small label above the title (shown in grouped variation)',
+    }),
     defineField({
       name: 'title',
       title: 'Title',
@@ -19,31 +62,77 @@ export const faqBlockType = defineType({
       rows: 2,
     }),
     defineField({
+      name: 'showCta',
+      title: 'Show CTA Button',
+      type: 'boolean',
+      description: 'Display a "Book a Conversation" button next to the title',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'ctaLabel',
+      title: 'CTA Label',
+      type: 'string',
+      initialValue: 'Book a Conversation',
+      hidden: ({parent}) => !parent?.showCta,
+    }),
+    defineField({
       name: 'items',
       title: 'FAQ Items',
       type: 'array',
-      validation: (rule) => rule.required().min(1),
+      description: 'Used in Default variation',
+      hidden: ({parent}) => parent?.variation === 'grouped',
+      validation: (rule) =>
+        rule.custom((items, context) => {
+          const parent = context.parent as {variation?: string}
+          if (parent?.variation !== 'grouped' && (!items || (items as unknown[]).length === 0)) {
+            return 'At least one item is required'
+          }
+          return true
+        }),
+      of: [faqItemMember],
+    }),
+    defineField({
+      name: 'groups',
+      title: 'FAQ Groups',
+      type: 'array',
+      description: 'Used in Grouped variation — organise items by category',
+      hidden: ({parent}) => parent?.variation !== 'grouped',
       of: [
         defineArrayMember({
           type: 'object',
-          name: 'faqItem',
+          name: 'faqGroup',
           fields: [
             defineField({
-              name: 'question',
-              title: 'Question',
+              name: 'label',
+              title: 'Group Label',
               type: 'string',
               validation: (rule) => rule.required(),
             }),
             defineField({
-              name: 'answer',
-              title: 'Answer',
-              type: 'blockContent',
+              name: 'accent',
+              title: 'Label Accent',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Primary', value: 'primary'},
+                  {title: 'Secondary', value: 'secondary'},
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'primary',
+            }),
+            defineField({
+              name: 'items',
+              title: 'Items',
+              type: 'array',
+              of: [faqItemMember],
+              validation: (rule) => rule.required().min(1),
             }),
           ],
           preview: {
-            select: {title: 'question'},
-            prepare({title}: {title?: string}) {
-              return {title: title || 'FAQ Item'}
+            select: {title: 'label', items: 'items'},
+            prepare({title, items}: {title?: string; items?: unknown[]}) {
+              return {title: title || 'Group', subtitle: `${items?.length ?? 0} items`}
             },
           },
         }),
@@ -61,12 +150,14 @@ export const faqBlockType = defineType({
       title: 'Allow Multiple Open',
       type: 'boolean',
       initialValue: true,
+      hidden: ({parent}) => parent?.variation === 'grouped',
     }),
     defineField({
       name: 'firstOpenByDefault',
       title: 'First Item Open by Default',
       type: 'boolean',
       initialValue: false,
+      hidden: ({parent}) => parent?.variation === 'grouped',
     }),
     defineField({
       name: 'blockStyles',

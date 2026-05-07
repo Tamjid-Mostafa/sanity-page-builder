@@ -137,7 +137,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     const prev = scrollYProgress.getPrevious() ?? current;
     const dir = current - prev;
 
-    setAtTop(current < 0.05);
+    // setAtTop(current < 0.05);
 
     const DEADZONE = 0.002; // prevents jitter on tiny deltas
     if (current < 0.05) {

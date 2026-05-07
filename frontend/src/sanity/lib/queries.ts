@@ -140,6 +140,19 @@ const contentFragment = /* groq */ `
       },
       ${blockStylesFragment}
     },
+    _type == "faqBlock" => {
+      ...,
+      variation,
+      eyebrow,
+      showCta,
+      ctaLabel,
+      items[] { _key, _type, question, answer[] { ... } },
+      groups[] {
+        _key, _type, label, accent,
+        items[] { _key, _type, question, answer[] { ... } }
+      },
+      ${blockStylesFragment}
+    },
     ${blockStylesFragment}
   }
 `
