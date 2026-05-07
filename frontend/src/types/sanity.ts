@@ -57,6 +57,7 @@ export type LottieAnimationData = Extract<ContentBlock, {_type: 'lottieAnimation
 export type FormBlockData = Extract<ContentBlock, {_type: 'formBlock'}>
 export type FaqBlockData = Extract<ContentBlock, {_type: 'faqBlock'}>
 export type FeatureCardGridData = Extract<ContentBlock, {_type: 'featureCardGrid'}>
+export type ExperienceCardGridData = Extract<ContentBlock, {_type: 'experienceCardGrid'}>
 export type TestimonialCarouselData = Extract<ContentBlock, {_type: 'testimonialCarousel'}>
 export type ImageGalleryData = Extract<ContentBlock, {_type: 'imageGallery'}>
 export type TocBlockData = Extract<ContentBlock, {_type: 'tocBlock'}>

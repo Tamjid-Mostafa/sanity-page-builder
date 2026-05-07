@@ -100,6 +100,17 @@ const contentFragment = /* groq */ `
       },
       ${blockStylesFragment}
     },
+    _type == "experienceCardGrid" => {
+      ...,
+      cards[] {
+        _key, _type,
+        title,
+        alt,
+        description,
+        image { ${imageFragment} }
+      },
+      ${blockStylesFragment}
+    },
     _type == "approachCarousel" => {
       ...,
       cards[] {

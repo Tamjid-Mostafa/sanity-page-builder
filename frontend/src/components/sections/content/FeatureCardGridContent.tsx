@@ -141,15 +141,15 @@ function LightCard({
           )}
           <div className="flex-1 space-y-2.5 text-left">
             {card.title && (
-              <h3 className="text-sm font-semibold text-foreground leading-snug">
+              <h3 className="text-sm font-semibold leading-snug">
                 {card.title}
               </h3>
             )}
             {card.subtitle && (
-              <p className="text-sm font-medium text-foreground">{card.subtitle}</p>
+              <p className="text-sm font-medium">{card.subtitle}</p>
             )}
             {card.description && (
-              <p className="text-sm font-light leading-relaxed text-foreground">
+              <p className="text-sm font-light leading-relaxed">
                 {card.description}
               </p>
             )}
@@ -202,13 +202,13 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
             </p>
           )}
           {d.title && (
-            <h2 className="text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08] text-foreground">
+            <h2 className="text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]">
               {d.title}
             </h2>
           )}
           {d.subtitle && (
             <p className={cn(
-              "mt-4 text-sm sm:text-base font-light text-foreground leading-relaxed max-w-3xl",
+              "mt-4 text-sm sm:text-base font-light leading-relaxed max-w-3xl",
               titleAlign === "center" && "mx-auto"
             )}>
               {d.subtitle}
