@@ -1,7 +1,7 @@
-import {defineType, defineField} from 'sanity'
+import {defineType, defineField, defineArrayMember} from 'sanity'
 import {LaunchIcon} from '@sanity/icons'
-import {linkField} from '../shared/fields'
 import {ColorStringInput} from '../../components/ColorStringInput'
+import {stringField} from '../shared/fields'
 
 export const callToActionType = defineType({
   name: 'callToAction',
@@ -9,11 +9,37 @@ export const callToActionType = defineType({
   type: 'object',
   icon: LaunchIcon,
   fields: [
+    stringField('label', 'Label', {required: true}),
     defineField({
-      name: 'label',
-      title: 'Label',
+      name: 'action',
+      title: 'Action',
       type: 'string',
-      validation: (rule) => rule.required(),
+      initialValue: 'link',
+      options: {
+        list: [
+          {title: 'Navigate to URL / Page', value: 'link'},
+          {title: 'Open Calendly', value: 'calendly'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'link',
+      title: 'Link',
+      type: 'array',
+      hidden: ({parent}) => parent?.action === 'calendly',
+      of: [
+        defineArrayMember({type: 'linkInternal'}),
+        defineArrayMember({type: 'linkExternal'}),
+        defineArrayMember({type: 'pageSlug'}),
+      ],
+      validation: (rule) =>
+        rule.custom((value, context) => {
+          const parent = context.parent as {action?: string}
+          if (parent?.action === 'calendly') return true
+          if (!value || (value as unknown[]).length === 0) return 'Link is required'
+          return true
+        }),
     }),
     defineField({
       name: 'color',
@@ -50,10 +76,6 @@ export const callToActionType = defineType({
         ],
         layout: 'radio',
       },
-    }),
-    linkField('link', 'Link', {
-      required: true,
-      types: ['linkInternal', 'linkExternal', 'pageSlug'],
     }),
   ],
   preview: {

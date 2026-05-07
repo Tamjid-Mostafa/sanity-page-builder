@@ -61,6 +61,30 @@ export type ExperienceCardGridData = Extract<ContentBlock, {_type: 'experienceCa
 export type TestimonialCarouselData = Extract<ContentBlock, {_type: 'testimonialCarousel'}>
 export type ImageGalleryData = Extract<ContentBlock, {_type: 'imageGallery'}>
 export type TocBlockData = Extract<ContentBlock, {_type: 'tocBlock'}>
+export type CtaSectionData = {
+  _type: 'ctaSection'
+  _key?: string
+  eyebrow?: string
+  heading?: string
+  subtitle?: string
+  buttons?: Array<{
+    _key?: string
+    _type: 'callToAction'
+    label?: string
+    action?: string
+    link?: Array<{_type: string; [key: string]: unknown}>
+    color?: string
+    textColor?: string
+    hoverColor?: string
+    variant?: string
+  }>
+  trustItems?: string[]
+  prospectusLink?: {
+    label?: string
+    link?: Array<{_type: string; [key: string]: unknown}>
+  }
+  blockStyles?: Record<string, unknown>
+}
 
 // ---------- SEO ----------
 export type SeoData = NonNullable<PageData['seo']>

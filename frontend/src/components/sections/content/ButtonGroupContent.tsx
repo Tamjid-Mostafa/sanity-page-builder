@@ -1,4 +1,7 @@
+'use client'
+
 import {stegaClean} from 'next-sanity'
+import {openCalendly} from '@/lib/site-cta'
 import type {ButtonGroupData} from '@/types/sanity'
 
 interface LinkInternal {
@@ -64,6 +67,7 @@ export function ButtonGroupContent({data}: {data: ButtonGroupData}) {
       {buttons.map((button) => {
         if (!button.label) return null
 
+        const cleanAction = stegaClean((button as {action?: string}).action) || 'link'
         const {href, isExternal} = resolveHref((button.link || []) as unknown as LinkItem[])
         const hasCustomColors = Boolean(button.color || button.textColor)
 
@@ -78,13 +82,29 @@ export function ButtonGroupContent({data}: {data: ButtonGroupData}) {
           ? 'hover:opacity-90'
           : 'bg-primary text-primary-foreground hover:bg-primary/90'
 
+        const baseClasses = `inline-block rounded-lg px-6 py-3 text-center font-medium transition-colors duration-200 ${colorClasses}`
+
+        if (cleanAction === 'calendly') {
+          return (
+            <button
+              key={button._key}
+              type="button"
+              onClick={() => openCalendly()}
+              className={`${baseClasses} cursor-pointer`}
+              style={inlineStyle}
+            >
+              {button.label}
+            </button>
+          )
+        }
+
         return (
           <a
             key={button._key}
             href={href}
             target={isExternal ? '_blank' : undefined}
             rel={isExternal ? 'noopener noreferrer' : undefined}
-            className={`inline-block rounded-lg px-6 py-3 text-center font-medium transition-colors duration-200 ${colorClasses}`}
+            className={baseClasses}
             style={inlineStyle}
           >
             {button.label}

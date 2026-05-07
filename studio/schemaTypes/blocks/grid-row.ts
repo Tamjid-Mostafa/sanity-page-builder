@@ -94,6 +94,7 @@ export const gridRowType = defineType({
                 defineArrayMember({type: 'testimonialCarousel'}),
                 defineArrayMember({type: 'imageGallery'}),
                 defineArrayMember({type: 'tocBlock'}),
+                defineArrayMember({type: 'ctaSection'}),
               ],
               options: {
                 insertMenu: {

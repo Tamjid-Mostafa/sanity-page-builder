@@ -153,6 +153,19 @@ const contentFragment = /* groq */ `
       },
       ${blockStylesFragment}
     },
+    _type == "ctaSection" => {
+      eyebrow, heading, subtitle,
+      buttons[] {
+        _key, _type, label, action, color, textColor, hoverColor, variant,
+        link[] { ... }
+      },
+      trustItems,
+      prospectusLink {
+        label,
+        link[] { ... }
+      },
+      ${blockStylesFragment}
+    },
     ${blockStylesFragment}
   }
 `

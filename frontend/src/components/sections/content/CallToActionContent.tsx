@@ -1,4 +1,7 @@
+'use client'
+
 import {stegaClean} from 'next-sanity'
+import {openCalendly} from '@/lib/site-cta'
 import type {CallToActionData} from '@/types/sanity'
 
 interface LinkInternal {
@@ -51,27 +54,36 @@ function resolveHref(linkItems: LinkItem[]): {href: string; isExternal: boolean}
 export function CallToActionContent({data}: {data: CallToActionData}) {
   if (!data.label) return null
 
-  const {href, isExternal} = resolveHref((data.link || []) as unknown as LinkItem[])
-
+  const cleanAction = stegaClean((data as {action?: string}).action) || 'link'
   const hasCustomColors = Boolean(data.color || data.textColor)
-
   const cleanColor = stegaClean(data.color)
   const cleanTextColor = stegaClean(data.textColor)
-  const cleanHoverColor = stegaClean(data.hoverColor)
   const cleanVariant = stegaClean(data.variant) || 'primary'
 
   const inlineStyle: React.CSSProperties = hasCustomColors
-    ? {
-        backgroundColor: cleanColor || undefined,
-        color: cleanTextColor || undefined,
-        ...(cleanHoverColor ? {'--cta-hover-bg': cleanHoverColor} as React.CSSProperties : {}),
-      }
+    ? {backgroundColor: cleanColor || undefined, color: cleanTextColor || undefined}
     : {}
 
-  const baseClasses = 'inline-block rounded-full px-6 py-3 font-medium transition-colors duration-200 text-center text-sm'
+  const baseClasses =
+    'inline-block rounded-full px-6 py-3 font-medium transition-colors duration-200 text-center text-sm'
   const colorClasses = hasCustomColors
     ? 'hover:opacity-90'
     : VARIANT_CLASSES[cleanVariant] || VARIANT_CLASSES.primary
+
+  if (cleanAction === 'calendly') {
+    return (
+      <button
+        type="button"
+        onClick={() => openCalendly()}
+        className={`${baseClasses} ${colorClasses} cursor-pointer`}
+        style={inlineStyle}
+      >
+        {data.label}
+      </button>
+    )
+  }
+
+  const {href, isExternal} = resolveHref((data.link || []) as unknown as LinkItem[])
 
   return (
     <a
@@ -85,3 +97,4 @@ export function CallToActionContent({data}: {data: CallToActionData}) {
     </a>
   )
 }
+

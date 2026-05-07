@@ -28,6 +28,7 @@ import {ApproachCarouselContent} from './content/ApproachCarouselContent'
 import {TestimonialCarouselContent} from './content/TestimonialCarouselContent'
 import {ImageGalleryContent} from './content/ImageGalleryContent'
 import {TocBlockContent} from './content/TocBlockContent'
+import {CtaSectionContent} from './content/CtaSectionContent'
 import type {ContentBlock} from '@/types/sanity'
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- component map requires flexible typing */
@@ -61,6 +62,7 @@ const CONTENT_MAP: Record<string, React.ComponentType<{data: any}>> = {
   testimonialCarousel: TestimonialCarouselContent,
   imageGallery: ImageGalleryContent,
   tocBlock: TocBlockContent,
+  ctaSection: CtaSectionContent,
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 

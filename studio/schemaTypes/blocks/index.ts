@@ -29,6 +29,7 @@ import {approachCarouselType} from './approach-carousel'
 import {tocBlockType} from './toc-block'
 import {testimonialCarouselType} from './testimonial-carousel'
 import {imageGalleryType} from './image-gallery'
+import {ctaSectionType} from './cta-section'
 
 // Grid Row (the page builder section)
 import {gridRowType} from './grid-row'
@@ -61,6 +62,7 @@ export {
   approachCarouselType,
   testimonialCarouselType,
   imageGalleryType,
+  ctaSectionType,
   tocBlockType,
   gridRowType,
 }
@@ -108,6 +110,7 @@ export const blockTypes = [
   approachCarouselType,
   testimonialCarouselType,
   imageGalleryType,
+  ctaSectionType,
   tocBlockType,
   gridRowType,
   pageBuilderType,
