@@ -42,16 +42,42 @@ export const featureCardGridType = defineType({
           name: 'featureCard',
           fields: [
             defineField({
-              name: 'icon',
-              title: 'Icon',
+              name: 'coverImage',
+              title: 'Cover Image',
               type: 'image',
               options: {hotspot: true},
+            }),
+            defineField({
+              name: 'icon',
+              title: 'Icon (small badge)',
+              type: 'image',
+              options: {hotspot: true},
+            }),
+            defineField({
+              name: 'accentColor',
+              title: 'Accent Color',
+              type: 'string',
+              initialValue: 'primary',
+              options: {
+                list: [
+                  {title: 'Primary', value: 'primary'},
+                  {title: 'Secondary', value: 'secondary'},
+                  {title: 'None', value: 'none'},
+                ],
+                layout: 'radio',
+              },
             }),
             defineField({
               name: 'title',
               title: 'Title',
               type: 'string',
               validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'subtitle',
+              title: 'Subtitle (bold)',
+              type: 'string',
+              description: 'Bold text shown below the title',
             }),
             defineField({
               name: 'description',
@@ -77,6 +103,19 @@ export const featureCardGridType = defineType({
           },
         }),
       ],
+    }),
+    defineField({
+      name: 'titleAlign',
+      title: 'Title Alignment',
+      type: 'string',
+      initialValue: 'left',
+      options: {
+        list: [
+          {title: 'Left', value: 'left'},
+          {title: 'Center', value: 'center'},
+        ],
+        layout: 'radio',
+      },
     }),
     defineField({
       name: 'columns',

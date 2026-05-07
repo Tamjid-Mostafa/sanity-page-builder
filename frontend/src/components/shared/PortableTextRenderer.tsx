@@ -63,7 +63,11 @@ const components: PortableTextComponents = {
   block: {
     h2: ({children}) => {
       const id = slugify(extractText(children))
-      return <h2 id={id} className="mt-8 mb-4 text-3xl font-bold scroll-mt-20">{children}</h2>
+      return (
+        <h2 id={id} className="mt-8 mb-6 text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08] text-foreground scroll-mt-20">
+          {children}
+        </h2>
+      )
     },
     h3: ({children}) => {
       const id = slugify(extractText(children))
@@ -73,7 +77,7 @@ const components: PortableTextComponents = {
       const id = slugify(extractText(children))
       return <h4 id={id} className="mt-4 mb-2 text-xl font-semibold scroll-mt-20">{children}</h4>
     },
-    normal: ({children}) => <p className="mb-4 leading-relaxed">{children}</p>,
+    normal: ({children}) => <p className="mb-4 font-light leading-relaxed">{children}</p>,
     blockquote: ({children}) => (
       <blockquote className="my-6 border-l-4 border-primary/30 pl-4 italic text-muted">
         {children}

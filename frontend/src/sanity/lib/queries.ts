@@ -13,7 +13,7 @@ const imageFragment = /* groq */ `
 
 const blockStylesFragment = /* groq */ `
   blockStyles {
-    padding, margin, border, borderRadius,
+    padding, margin, border, borderTop, borderRadius,
     background { color, image { ${imageFragment} }, size, overlay },
     typography, effects
   }
@@ -78,6 +78,15 @@ const contentFragment = /* groq */ `
     _type == "iconText" => {
       ...,
       icon { ${imageFragment} },
+      ${blockStylesFragment}
+    },
+    _type == "featureCardGrid" => {
+      ...,
+      cards[] {
+        ...,
+        coverImage { ${imageFragment} },
+        icon { ${imageFragment} }
+      },
       ${blockStylesFragment}
     },
     ${blockStylesFragment}

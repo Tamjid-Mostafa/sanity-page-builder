@@ -83,6 +83,17 @@ export const blockStylesType = defineType({
       ],
     }),
     defineField({
+      name: 'borderTop',
+      title: 'Border Top',
+      type: 'object',
+      components: {input: BorderStyleInput},
+      fields: [
+        defineField({name: 'width', title: 'Width', type: 'string'}),
+        defineField({name: 'style', title: 'Style', type: 'string'}),
+        defineField({name: 'color', title: 'Color', type: 'string'}),
+      ],
+    }),
+    defineField({
       name: 'borderRadius',
       title: 'Border Radius',
       type: 'object',

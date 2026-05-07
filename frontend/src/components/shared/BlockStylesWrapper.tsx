@@ -13,7 +13,8 @@ interface BlockStyles {
     topLg?: string | null; rightLg?: string | null; bottomLg?: string | null; leftLg?: string | null
   } | null
   border?: {width?: string | null; style?: string | null; color?: string | null} | null
-  borderRadius?: {topLeft?: string | null; topRight?: string | null; bottomRight?: string | null; bottomLeft?: string | null} | null
+  borderTop?: {width?: string | null; style?: string | null; color?: string | null} | null
+  borderRadius?:{topLeft?: string | null; topRight?: string | null; bottomRight?: string | null; bottomLeft?: string | null} | null
   background?: {color?: string | null; image?: {asset?: {url?: string | null} | null} | null; size?: string | null; overlay?: string | null} | null
   typography?: {textAlign?: string | null; fontSize?: string | null; textColor?: string | null} | null
   effects?: {shadow?: string | null; opacity?: number | null; overflow?: string | null} | null
@@ -64,11 +65,18 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
     if (bs.margin.leftLg) styles['--ml-lg'] = bs.margin.leftLg
   }
 
-  // Border
+  // Border (all sides)
   if (bs.border) {
     if (bs.border.width) styles.borderWidth = bs.border.width
     if (bs.border.style) styles.borderStyle = bs.border.style
     if (bs.border.color) styles.borderColor = bs.border.color
+  }
+
+  // Border top only
+  if (bs.borderTop) {
+    if (bs.borderTop.width) styles.borderTopWidth = bs.borderTop.width
+    if (bs.borderTop.style) styles.borderTopStyle = bs.borderTop.style
+    if (bs.borderTop.color) styles.borderTopColor = bs.borderTop.color
   }
 
   // Border radius

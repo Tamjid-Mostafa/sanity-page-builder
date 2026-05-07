@@ -606,9 +606,13 @@ export type FeatureCardGrid = {
   _type: "featureCardGrid";
   title?: string;
   subtitle?: string;
+  titleAlign?: "left" | "center";
   cards: Array<{
+    coverImage?: {asset?: SanityImageAssetReference | null; hotspot?: SanityImageHotspot; crop?: SanityImageCrop} | null;
     icon?: FeatureCardIcon;
+    accentColor?: "primary" | "secondary" | "none";
     title: string;
+    subtitle?: string;
     description?: string;
     cta?: Cta;
     _type: "featureCard";
@@ -1149,6 +1153,7 @@ export type BlockStyles = {
   padding?: Padding;
   margin?: Margin;
   border?: Border;
+  borderTop?: Border;
   borderRadius?: BorderRadius;
   background?: Background;
   typography?: Typography;
