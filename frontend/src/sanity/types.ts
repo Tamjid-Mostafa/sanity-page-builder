@@ -363,6 +363,12 @@ export type Border = {
   color?: string;
 };
 
+export type BorderTop = {
+  width?: string;
+  style?: string;
+  color?: string;
+};
+
 export type BorderRadius = {
   topLeft?: string;
   topRight?: string;
@@ -389,11 +395,43 @@ export type Effects = {
   overflow?: string;
 };
 
+export type PrimaryButton = {
+  label?: string;
+  action?: "calendly" | "link";
+  href?: string;
+};
+
+export type SecondaryButton = {
+  label?: string;
+  href?: string;
+};
+
+export type SanityFileAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+};
+
+export type Video = {
+  asset?: SanityFileAssetReference;
+  media?: unknown; // Unable to locate the referenced type "media" in schema
+  _type: "file";
+};
+
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
   _weak?: boolean;
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
+export type Poster = {
+  asset?: SanityImageAssetReference;
+  media?: unknown; // Unable to locate the referenced type "poster.media" in schema
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  _type: "image";
 };
 
 export type BackgroundImage = {
@@ -431,6 +469,14 @@ export type LogoItemImage = {
 export type AccordionPanelIcon = {
   asset?: SanityImageAssetReference;
   media?: unknown; // Unable to locate the referenced type "accordionPanel.icon.media" in schema
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  _type: "image";
+};
+
+export type CoverImage = {
+  asset?: SanityImageAssetReference;
+  media?: unknown; // Unable to locate the referenced type "coverImage.media" in schema
   hotspot?: SanityImageHotspot;
   crop?: SanityImageCrop;
   _type: "image";
@@ -606,9 +652,9 @@ export type FeatureCardGrid = {
   _type: "featureCardGrid";
   title?: string;
   subtitle?: string;
-  titleAlign?: "left" | "center";
   cards: Array<{
-    coverImage?: {asset?: SanityImageAssetReference | null; hotspot?: SanityImageHotspot; crop?: SanityImageCrop} | null;
+    coverImage?: CoverImage;
+    iconLucide?: LucideIcon;
     icon?: FeatureCardIcon;
     accentColor?: "primary" | "secondary" | "none";
     title: string;
@@ -618,6 +664,7 @@ export type FeatureCardGrid = {
     _type: "featureCard";
     _key: string;
   }>;
+  titleAlign?: "left" | "center";
   columns?: "2" | "3" | "4";
   style?: "simple" | "bordered" | "shadow" | "highlighted";
   blockStyles?: BlockStyles;
@@ -673,10 +720,29 @@ export type FormBlock = {
 
 export type HeroSection = {
   _type: "heroSection";
-  layout?: "fullWidth" | "split";
+  layout?: "videoSlideshow" | "fullWidth" | "split";
+  slides?: Array<{
+    tag?: string;
+    headline: string;
+    subtitle?: string;
+    _type: "heroSlide";
+    _key: string;
+  }>;
+  backgroundVideos?: Array<{
+    title: string;
+    video?: Video;
+    poster?: Poster;
+    _type: "heroVideo";
+    _key: string;
+  }>;
+  slideDurationMs?: number;
+  primaryButton?: PrimaryButton;
+  secondaryButton?: SecondaryButton;
+  pills?: Array<string>;
+  prospectusLink?: string;
   badge?: string;
   badgeLink?: string;
-  heading: string;
+  heading?: string;
   subtitle?: string;
   alignment?: "left" | "center" | "right";
   buttons?: Array<
@@ -709,19 +775,16 @@ export type HeroSection = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  backgroundVideo?: string;
+  backgroundVideo?: {
+    asset?: SanityFileAssetReference;
+    media?: unknown;
+    _type: "file";
+  };
   overlay?: number;
   minHeight?: "auto" | "50vh" | "75vh" | "100vh";
   textColor?: string;
   maxWidth?: "narrow" | "default" | "wide";
   blockStyles?: BlockStyles;
-};
-
-export type SanityFileAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
 };
 
 export type LottieAnimation = {
@@ -1153,7 +1216,7 @@ export type BlockStyles = {
   padding?: Padding;
   margin?: Margin;
   border?: Border;
-  borderTop?: Border;
+  borderTop?: BorderTop;
   borderRadius?: BorderRadius;
   background?: Background;
   typography?: Typography;
@@ -1300,6 +1363,8 @@ export type Page = {
   pageBuilder?: PageBuilder;
   seo?: Seo;
 };
+
+export type LucideIcon = string;
 
 export type Table = {
   _type: "table";
@@ -1458,16 +1523,23 @@ export type AllSanitySchemaTypes =
   | Padding
   | Margin
   | Border
+  | BorderTop
   | BorderRadius
   | Background
   | Typography
   | Effects
+  | PrimaryButton
+  | SecondaryButton
+  | SanityFileAssetReference
+  | Video
   | SanityImageAssetReference
+  | Poster
   | BackgroundImage
   | Icon
   | TabImageImage
   | LogoItemImage
   | AccordionPanelIcon
+  | CoverImage
   | FeatureCardIcon
   | Cta
   | GalleryImageImage
@@ -1480,7 +1552,6 @@ export type AllSanitySchemaTypes =
   | FaqBlock
   | FormBlock
   | HeroSection
-  | SanityFileAssetReference
   | LottieAnimation
   | DataTable
   | CodeBlock
@@ -1516,6 +1587,7 @@ export type AllSanitySchemaTypes =
   | SiteSettings
   | HomePage
   | Page
+  | LucideIcon
   | Table
   | TableRow
   | Color
@@ -1534,7 +1606,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../frontend/src/sanity/lib/queries.ts
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "homePage"][0] {      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    buttons[] { _key, _type, ...,   blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  } },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      content[] { ... },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
+// Query: *[_id == "homePage"][0] {      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    // Slideshow layout    slides[] { _key, tag, headline, subtitle },    backgroundVideos[] {      _key, title,      "videoUrl": video.asset->url,      poster {        asset->{ url, metadata { lqip, dimensions { width, height } } }      }    },    // Primary / secondary buttons for slideshow    primaryButton,    secondaryButton,    pills,    prospectusLink,    slideDurationMs,    // Non-slideshow layout    buttons[] { _key, _type, ... },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    "backgroundVideoUrl": backgroundVideo.asset->url,      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      content[] { ... },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "featureCardGrid" => {      ...,      cards[] {        _key, _type,        iconLucide,        accentColor,        title,        subtitle,        description,        cta,        coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
 export type HOME_PAGE_QUERY_RESULT =
   | {
       seo: null;
@@ -1592,6 +1664,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -1636,6 +1709,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -1677,6 +1751,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -1745,6 +1820,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -1795,6 +1871,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -1845,6 +1922,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -1899,6 +1977,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -1931,19 +2010,55 @@ export type HOME_PAGE_QUERY_RESULT =
                     title?: string;
                     subtitle?: string;
                     cards: Array<{
-                      icon?: FeatureCardIcon;
-                      title: string;
-                      description?: string;
-                      cta?: Cta;
-                      _type: "featureCard";
                       _key: string;
+                      _type: "featureCard";
+                      iconLucide: LucideIcon | null;
+                      accentColor: "none" | "primary" | "secondary" | null;
+                      title: string;
+                      subtitle: string | null;
+                      description: string | null;
+                      cta: Cta | null;
+                      coverImage: {
+                        asset: {
+                          _id: string;
+                          url: string;
+                          metadata: {
+                            lqip: string | null;
+                            dimensions: {
+                              width: number;
+                              height: number;
+                            } | null;
+                          } | null;
+                        } | null;
+                        alt: null;
+                        hotspot: SanityImageHotspot | null;
+                        crop: SanityImageCrop | null;
+                      } | null;
+                      icon: {
+                        asset: {
+                          _id: string;
+                          url: string;
+                          metadata: {
+                            lqip: string | null;
+                            dimensions: {
+                              width: number;
+                              height: number;
+                            } | null;
+                          } | null;
+                        } | null;
+                        alt: null;
+                        hotspot: SanityImageHotspot | null;
+                        crop: SanityImageCrop | null;
+                      } | null;
                     }>;
+                    titleAlign?: "center" | "left";
                     columns?: "2" | "3" | "4";
                     style?: "bordered" | "highlighted" | "shadow" | "simple";
                     blockStyles: {
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2004,6 +2119,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2058,6 +2174,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2108,6 +2225,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2152,6 +2270,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2207,6 +2326,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2252,6 +2372,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2289,6 +2410,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2334,6 +2456,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2397,6 +2520,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2439,6 +2563,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2477,6 +2602,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2515,6 +2641,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2613,6 +2740,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2656,6 +2784,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2710,6 +2839,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2744,6 +2874,7 @@ export type HOME_PAGE_QUERY_RESULT =
                       padding: Padding | null;
                       margin: Margin | null;
                       border: Border | null;
+                      borderTop: BorderTop | null;
                       borderRadius: BorderRadius | null;
                       background: {
                         color: string | null;
@@ -2783,6 +2914,7 @@ export type HOME_PAGE_QUERY_RESULT =
                 padding: Padding | null;
                 margin: Margin | null;
                 border: Border | null;
+                borderTop: BorderTop | null;
                 borderRadius: BorderRadius | null;
                 background: {
                   color: string | null;
@@ -2818,6 +2950,7 @@ export type HOME_PAGE_QUERY_RESULT =
               padding: Padding | null;
               margin: Margin | null;
               border: Border | null;
+              borderTop: BorderTop | null;
               borderRadius: BorderRadius | null;
               background: {
                 color: string | null;
@@ -2847,10 +2980,38 @@ export type HOME_PAGE_QUERY_RESULT =
         | {
             _key: string;
             _type: "heroSection";
-            layout?: "fullWidth" | "split";
+            layout?: "fullWidth" | "split" | "videoSlideshow";
+            slides: Array<{
+              _key: string;
+              tag: string | null;
+              headline: string;
+              subtitle: string | null;
+            }> | null;
+            backgroundVideos: Array<{
+              _key: string;
+              title: string;
+              videoUrl: string | null;
+              poster: {
+                asset: {
+                  url: string;
+                  metadata: {
+                    lqip: string | null;
+                    dimensions: {
+                      width: number;
+                      height: number;
+                    } | null;
+                  } | null;
+                } | null;
+              } | null;
+            }> | null;
+            slideDurationMs: number | null;
+            primaryButton: PrimaryButton | null;
+            secondaryButton: SecondaryButton | null;
+            pills: Array<string> | null;
+            prospectusLink: string | null;
             badge?: string;
             badgeLink?: string;
-            heading: string;
+            heading?: string;
             subtitle?: string;
             alignment?: "center" | "left" | "right";
             buttons: Array<{
@@ -2872,7 +3033,6 @@ export type HOME_PAGE_QUERY_RESULT =
                     _key: string;
                   } & PageSlug)
               >;
-              blockStyles: null;
             }> | null;
             mediaImage: {
               asset: {
@@ -2916,7 +3076,11 @@ export type HOME_PAGE_QUERY_RESULT =
               hotspot: SanityImageHotspot | null;
               crop: SanityImageCrop | null;
             } | null;
-            backgroundVideo?: string;
+            backgroundVideo?: {
+              asset?: SanityFileAssetReference;
+              media?: unknown;
+              _type: "file";
+            };
             overlay?: number;
             minHeight?: "100vh" | "50vh" | "75vh" | "auto";
             textColor?: string;
@@ -2925,6 +3089,7 @@ export type HOME_PAGE_QUERY_RESULT =
               padding: Padding | null;
               margin: Margin | null;
               border: Border | null;
+              borderTop: BorderTop | null;
               borderRadius: BorderRadius | null;
               background: {
                 color: string | null;
@@ -2950,6 +3115,7 @@ export type HOME_PAGE_QUERY_RESULT =
               typography: Typography | null;
               effects: Effects | null;
             } | null;
+            backgroundVideoUrl: string | null;
             columns: null;
           }
       > | null;
@@ -2958,7 +3124,7 @@ export type HOME_PAGE_QUERY_RESULT =
 
 // Source: ../frontend/src/sanity/lib/queries.ts
 // Variable: PAGE_QUERY
-// Query: *[_type == "page" && slug.current == $slug][0] {    _id, title, slug,      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    buttons[] { _key, _type, ...,   blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  } },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      content[] { ... },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
+// Query: *[_type == "page" && slug.current == $slug][0] {    _id, title, slug,      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    // Slideshow layout    slides[] { _key, tag, headline, subtitle },    backgroundVideos[] {      _key, title,      "videoUrl": video.asset->url,      poster {        asset->{ url, metadata { lqip, dimensions { width, height } } }      }    },    // Primary / secondary buttons for slideshow    primaryButton,    secondaryButton,    pills,    prospectusLink,    slideDurationMs,    // Non-slideshow layout    buttons[] { _key, _type, ... },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    "backgroundVideoUrl": backgroundVideo.asset->url,      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      content[] { ... },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "featureCardGrid" => {      ...,      cards[] {        _key, _type,        iconLucide,        accentColor,        title,        subtitle,        description,        cta,        coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
 export type PAGE_QUERY_RESULT = {
   _id: string;
   title: string;
@@ -3000,6 +3166,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3044,6 +3211,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3085,6 +3253,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3153,6 +3322,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3203,6 +3373,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3253,6 +3424,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3307,6 +3479,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3339,19 +3512,55 @@ export type PAGE_QUERY_RESULT = {
                 title?: string;
                 subtitle?: string;
                 cards: Array<{
-                  icon?: FeatureCardIcon;
-                  title: string;
-                  description?: string;
-                  cta?: Cta;
-                  _type: "featureCard";
                   _key: string;
+                  _type: "featureCard";
+                  iconLucide: LucideIcon | null;
+                  accentColor: "none" | "primary" | "secondary" | null;
+                  title: string;
+                  subtitle: string | null;
+                  description: string | null;
+                  cta: Cta | null;
+                  coverImage: {
+                    asset: {
+                      _id: string;
+                      url: string;
+                      metadata: {
+                        lqip: string | null;
+                        dimensions: {
+                          width: number;
+                          height: number;
+                        } | null;
+                      } | null;
+                    } | null;
+                    alt: null;
+                    hotspot: SanityImageHotspot | null;
+                    crop: SanityImageCrop | null;
+                  } | null;
+                  icon: {
+                    asset: {
+                      _id: string;
+                      url: string;
+                      metadata: {
+                        lqip: string | null;
+                        dimensions: {
+                          width: number;
+                          height: number;
+                        } | null;
+                      } | null;
+                    } | null;
+                    alt: null;
+                    hotspot: SanityImageHotspot | null;
+                    crop: SanityImageCrop | null;
+                  } | null;
                 }>;
+                titleAlign?: "center" | "left";
                 columns?: "2" | "3" | "4";
                 style?: "bordered" | "highlighted" | "shadow" | "simple";
                 blockStyles: {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3412,6 +3621,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3466,6 +3676,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3516,6 +3727,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3560,6 +3772,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3615,6 +3828,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3660,6 +3874,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3697,6 +3912,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3742,6 +3958,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3805,6 +4022,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3847,6 +4065,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3885,6 +4104,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -3923,6 +4143,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -4021,6 +4242,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -4064,6 +4286,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -4118,6 +4341,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -4152,6 +4376,7 @@ export type PAGE_QUERY_RESULT = {
                   padding: Padding | null;
                   margin: Margin | null;
                   border: Border | null;
+                  borderTop: BorderTop | null;
                   borderRadius: BorderRadius | null;
                   background: {
                     color: string | null;
@@ -4191,6 +4416,7 @@ export type PAGE_QUERY_RESULT = {
             padding: Padding | null;
             margin: Margin | null;
             border: Border | null;
+            borderTop: BorderTop | null;
             borderRadius: BorderRadius | null;
             background: {
               color: string | null;
@@ -4226,6 +4452,7 @@ export type PAGE_QUERY_RESULT = {
           padding: Padding | null;
           margin: Margin | null;
           border: Border | null;
+          borderTop: BorderTop | null;
           borderRadius: BorderRadius | null;
           background: {
             color: string | null;
@@ -4255,10 +4482,38 @@ export type PAGE_QUERY_RESULT = {
     | {
         _key: string;
         _type: "heroSection";
-        layout?: "fullWidth" | "split";
+        layout?: "fullWidth" | "split" | "videoSlideshow";
+        slides: Array<{
+          _key: string;
+          tag: string | null;
+          headline: string;
+          subtitle: string | null;
+        }> | null;
+        backgroundVideos: Array<{
+          _key: string;
+          title: string;
+          videoUrl: string | null;
+          poster: {
+            asset: {
+              url: string;
+              metadata: {
+                lqip: string | null;
+                dimensions: {
+                  width: number;
+                  height: number;
+                } | null;
+              } | null;
+            } | null;
+          } | null;
+        }> | null;
+        slideDurationMs: number | null;
+        primaryButton: PrimaryButton | null;
+        secondaryButton: SecondaryButton | null;
+        pills: Array<string> | null;
+        prospectusLink: string | null;
         badge?: string;
         badgeLink?: string;
-        heading: string;
+        heading?: string;
         subtitle?: string;
         alignment?: "center" | "left" | "right";
         buttons: Array<{
@@ -4280,7 +4535,6 @@ export type PAGE_QUERY_RESULT = {
                 _key: string;
               } & PageSlug)
           >;
-          blockStyles: null;
         }> | null;
         mediaImage: {
           asset: {
@@ -4324,7 +4578,11 @@ export type PAGE_QUERY_RESULT = {
           hotspot: SanityImageHotspot | null;
           crop: SanityImageCrop | null;
         } | null;
-        backgroundVideo?: string;
+        backgroundVideo?: {
+          asset?: SanityFileAssetReference;
+          media?: unknown;
+          _type: "file";
+        };
         overlay?: number;
         minHeight?: "100vh" | "50vh" | "75vh" | "auto";
         textColor?: string;
@@ -4333,6 +4591,7 @@ export type PAGE_QUERY_RESULT = {
           padding: Padding | null;
           margin: Margin | null;
           border: Border | null;
+          borderTop: BorderTop | null;
           borderRadius: BorderRadius | null;
           background: {
             color: string | null;
@@ -4358,6 +4617,7 @@ export type PAGE_QUERY_RESULT = {
           typography: Typography | null;
           effects: Effects | null;
         } | null;
+        backgroundVideoUrl: string | null;
         columns: null;
       }
   > | null;
@@ -4590,8 +4850,8 @@ export type SITE_SETTINGS_QUERY_RESULT =
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_id == "homePage"][0] {\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    buttons[] { _key, _type, ..., \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': HOME_PAGE_QUERY_RESULT;
-    '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id, title, slug,\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    buttons[] { _key, _type, ..., \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': PAGE_QUERY_RESULT;
+    '\n  *[_id == "homePage"][0] {\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    // Slideshow layout\n    slides[] { _key, tag, headline, subtitle },\n    backgroundVideos[] {\n      _key, title,\n      "videoUrl": video.asset->url,\n      poster {\n        asset->{ url, metadata { lqip, dimensions { width, height } } }\n      }\n    },\n    // Primary / secondary buttons for slideshow\n    primaryButton,\n    secondaryButton,\n    pills,\n    prospectusLink,\n    slideDurationMs,\n    // Non-slideshow layout\n    buttons[] { _key, _type, ... },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    "backgroundVideoUrl": backgroundVideo.asset->url,\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "featureCardGrid" => {\n      ...,\n      cards[] {\n        _key, _type,\n        iconLucide,\n        accentColor,\n        title,\n        subtitle,\n        description,\n        cta,\n        coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': HOME_PAGE_QUERY_RESULT;
+    '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id, title, slug,\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    // Slideshow layout\n    slides[] { _key, tag, headline, subtitle },\n    backgroundVideos[] {\n      _key, title,\n      "videoUrl": video.asset->url,\n      poster {\n        asset->{ url, metadata { lqip, dimensions { width, height } } }\n      }\n    },\n    // Primary / secondary buttons for slideshow\n    primaryButton,\n    secondaryButton,\n    pills,\n    prospectusLink,\n    slideDurationMs,\n    // Non-slideshow layout\n    buttons[] { _key, _type, ... },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    "backgroundVideoUrl": backgroundVideo.asset->url,\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "featureCardGrid" => {\n      ...,\n      cards[] {\n        _key, _type,\n        iconLucide,\n        accentColor,\n        title,\n        subtitle,\n        description,\n        cta,\n        coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': PAGE_QUERY_RESULT;
     '\n  *[_type == "page" && defined(slug.current)] {\n    "slug": slug.current\n  }\n': PAGE_SLUGS_QUERY_RESULT;
     '\n  *[_type == "blogPost"] | order(publishedAt desc) {\n    _id, title, slug, excerpt, publishedAt, author,\n    coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n\n  }\n': BLOG_POSTS_QUERY_RESULT;
     '\n  *[_type == "blogPost" && slug.current == $slug][0] {\n    _id, title, slug, excerpt, publishedAt, author,\n    coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    body[] { ... },\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n\n  }\n': BLOG_POST_QUERY_RESULT;

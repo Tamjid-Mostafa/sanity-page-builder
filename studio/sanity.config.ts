@@ -5,6 +5,7 @@ import {visionTool} from '@sanity/vision'
 import {colorInput} from '@sanity/color-input'
 import {table} from '@sanity/table'
 import {media} from 'sanity-plugin-media'
+import {lucideIconPicker} from 'sanity-plugin-lucide-icon-picker'
 
 import {schemaTypes} from './schemaTypes'
 import {structure} from './structure'
@@ -34,6 +35,7 @@ export default defineConfig({
     media(),
     colorInput(),
     table(),
+    lucideIconPicker(),
   ],
 
   schema: {

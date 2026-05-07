@@ -49,9 +49,48 @@ export const featureCardGridType = defineType({
             }),
             defineField({
               name: 'icon',
-              title: 'Icon (small badge)',
-              type: 'image',
-              options: {hotspot: true},
+              title: 'Icon',
+              type: 'object',
+              fields: [
+                defineField({
+                  name: 'source',
+                  title: 'Source',
+                  type: 'string',
+                  initialValue: 'lucide',
+                  options: {
+                    list: [
+                      {title: 'Lucide', value: 'lucide'},
+                      {title: 'Image', value: 'image'},
+                    ],
+                    layout: 'radio',
+                  },
+                }),
+                defineField({
+                  name: 'lucide',
+                  title: 'Lucide Icon',
+                  type: 'lucide-icon',
+                  hidden: ({parent}) => parent?.source !== 'lucide',
+                  options: {
+                    allowedIcons: [
+                      'graduation-cap', 'globe', 'book-open', 'users', 'user',
+                      'target', 'award', 'star', 'trophy', 'medal',
+                      'briefcase', 'trending-up', 'rocket', 'bar-chart-2',
+                      'heart', 'lightbulb', 'shield', 'check-circle', 'handshake',
+                      'map-pin', 'compass', 'arrow-right', 'external-link',
+                      'message-circle', 'mail', 'phone',
+                      'monitor', 'smartphone', 'code-2',
+                      'zap', 'layers', 'leaf', 'building-2', 'clock',
+                    ],
+                  },
+                }),
+                defineField({
+                  name: 'image',
+                  title: 'Image',
+                  type: 'image',
+                  options: {hotspot: true},
+                  hidden: ({parent}) => parent?.source !== 'image',
+                }),
+              ],
             }),
             defineField({
               name: 'accentColor',

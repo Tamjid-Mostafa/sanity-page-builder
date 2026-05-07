@@ -1,0 +1,51 @@
+import {
+  GraduationCap, Globe, BookOpen, Users, User,
+  Target, Award, Star, Trophy, Medal,
+  Briefcase, TrendingUp, Rocket, BarChart2,
+  Heart, Lightbulb, Shield, CheckCircle, Handshake,
+  MapPin, Compass, ArrowRight, ExternalLink,
+  MessageCircle, Mail, Phone,
+  Monitor, Smartphone, Code2,
+  Zap, Layers, Leaf, Building2, Clock,
+} from 'lucide-react'
+import type {LucideIcon} from 'lucide-react'
+
+// Keys are kebab-case — the format sanity-plugin-lucide-icon-picker stores
+export const ICON_REGISTRY: Record<string, LucideIcon> = {
+  'graduation-cap': GraduationCap,
+  'globe': Globe,
+  'book-open': BookOpen,
+  'users': Users,
+  'user': User,
+  'target': Target,
+  'award': Award,
+  'star': Star,
+  'trophy': Trophy,
+  'medal': Medal,
+  'briefcase': Briefcase,
+  'trending-up': TrendingUp,
+  'rocket': Rocket,
+  'bar-chart-2': BarChart2,
+  'heart': Heart,
+  'lightbulb': Lightbulb,
+  'shield': Shield,
+  'check-circle': CheckCircle,
+  'handshake': Handshake,
+  'map-pin': MapPin,
+  'compass': Compass,
+  'arrow-right': ArrowRight,
+  'external-link': ExternalLink,
+  'message-circle': MessageCircle,
+  'mail': Mail,
+  'phone': Phone,
+  'monitor': Monitor,
+  'smartphone': Smartphone,
+  'code-2': Code2,
+  'zap': Zap,
+  'layers': Layers,
+  'leaf': Leaf,
+  'building-2': Building2,
+  'clock': Clock,
+}
+
+export const ALLOWED_ICONS = Object.keys(ICON_REGISTRY)

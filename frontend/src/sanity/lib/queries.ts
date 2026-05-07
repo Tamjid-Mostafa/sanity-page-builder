@@ -83,9 +83,18 @@ const contentFragment = /* groq */ `
     _type == "featureCardGrid" => {
       ...,
       cards[] {
-        ...,
+        _key, _type,
+        accentColor,
+        title,
+        subtitle,
+        description,
+        cta,
         coverImage { ${imageFragment} },
-        icon { ${imageFragment} }
+        icon {
+          source,
+          lucide,
+          image { ${imageFragment} }
+        }
       },
       ${blockStylesFragment}
     },
