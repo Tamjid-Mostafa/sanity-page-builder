@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ReactLenis, useLenis } from "lenis/react";
+import { ReactLenis } from "lenis/react";
 
 type ProvidersProps = {
   children: React.ReactNode;
@@ -23,7 +23,18 @@ export function Providers({ children, enableLenis = true }: ProvidersProps) {
   return (
     <>
       {enableLenis ? (
-        <ReactLenis root options={{ duration: 1.1 }}>
+        <ReactLenis
+          root
+          options={{
+            lerp: 0.08,
+            duration: 1.1,
+            smoothWheel: true,
+            wheelMultiplier: 0.9,
+            touchMultiplier: 1.2,
+            syncTouch: true,
+            syncTouchLerp: 0.08,
+          }}
+        >
           {content}
         </ReactLenis>
       ) : (

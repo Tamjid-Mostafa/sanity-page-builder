@@ -13,7 +13,7 @@ export default async function SiteLayout({
 
   return (
     <>
-      <Providers enableLenis>{children}</Providers>
+      <Providers enableLenis={false}>{children}</Providers>
       <SanityLive />
       {isDraft && <VisualEditing />}
       {isDraft && (
