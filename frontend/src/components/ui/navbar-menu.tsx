@@ -28,86 +28,11 @@ interface StaggeredTextSlideProps {
 
 export function StaggeredTextSlide({
   text,
-  isActive,
-  duration = 0.5,
-  staggerDelay = 0.02,
   className = "",
   topClassName = "",
-  bottomClassName = "",
 }: StaggeredTextSlideProps) {
-  const chars = Array.from(text);
-
-  // stagger left→right on hover, reverse on hover-out
-  const rowVariants = {
-    rest: {
-      transition: { staggerChildren: staggerDelay, staggerDirection: -1 },
-    },
-    hover: {
-      transition: { staggerChildren: staggerDelay, staggerDirection: 1 },
-    },
-  };
-
-  const charUp = {
-    rest: { y: "0%" },
-    hover: { y: "-100%" },
-  };
-
-  const charIn = {
-    rest: { y: "100%" },
-    hover: { y: "0%" },
-  };
-
-  const charTransition = {
-    type: "tween" as const,
-    duration,
-    ease: [0.22, 1, 0.36, 1] as const,
-  };
 
   return (
-    // <span
-    //   className={cn(
-    //     "relative inline-block font-heading overflow-hidden pl-2 align-middle whitespace-nowrap",
-    //     className
-    //   )}
-    // >
-    //   {/* Top copy (slides up) */}
-    //   <motion.span
-    //     className={cn("block", topClassName)}
-    //     initial={false}
-    //     animate={isActive ? "hover" : "rest"}
-    //     variants={rowVariants}
-    //   >
-    //     {chars.map((c, i) => (
-    //       <motion.span
-    //         key={"top-" + i}
-    //         className="inline-block font-heading will-change-transform tracking-wider"
-    //         variants={charUp}
-    //         transition={charTransition}
-    //       >
-    //         {c === " " ? "\u00A0" : c}
-    //       </motion.span>
-    //     ))}
-    //   </motion.span>
-
-    //   {/* Bottom copy (slides in from below) */}
-    //   <motion.span
-    //     className={cn("absolute inset-0 block", bottomClassName)}
-    //     initial={false}
-    //     animate={isActive ? "hover" : "rest"}
-    //     variants={rowVariants}
-    //   >
-    //     {chars.map((c, i) => (
-    //       <motion.span
-    //         key={"bottom-" + i}
-    //         className="inline-block italic uppercase tracking-tight will-change-transform"
-    //         variants={charIn}
-    //         transition={charTransition}
-    //       >
-    //         {c === " " ? "\u00A0" : c}
-    //       </motion.span>
-    //     ))}
-    //   </motion.span>
-    // </span>
     <span
       className={cn(
         "relative inline-block font-heading align-middle whitespace-nowrap",
@@ -188,7 +113,7 @@ export const Menu = ({
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="relative border border-transparent dark:border-white/20  shadow-input flex justify-center space-x-4 px-8 py-6"
+      className="relative shadow-input flex justify-center space-x-4 px-8 py-6"
     >
       {children}
     </nav>

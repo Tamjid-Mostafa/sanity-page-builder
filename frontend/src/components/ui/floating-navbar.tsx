@@ -23,7 +23,7 @@ export const FloatingNav = ({
       const previous = scrollYProgress.getPrevious();
       
       if (typeof previous === "number") {
-        let direction = current - previous;
+        const direction = current - previous;
 
         // At the top of the page - always show
         if (current < 0.05) {

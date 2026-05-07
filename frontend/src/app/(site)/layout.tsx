@@ -1,18 +1,19 @@
-import {draftMode} from 'next/headers'
-import {VisualEditing} from 'next-sanity/visual-editing'
-import {SanityLive} from '@/sanity/lib/live'
-import Link from 'next/link'
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
+import { SanityLive } from "@/sanity/lib/live";
+import Link from "next/link";
+import { Providers } from "../providers";
 
 export default async function SiteLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const isDraft = (await draftMode()).isEnabled
+  const isDraft = (await draftMode()).isEnabled;
 
   return (
     <>
-      {children}
+      <Providers enableLenis>{children}</Providers>
       <SanityLive />
       {isDraft && <VisualEditing />}
       {isDraft && (
@@ -24,5 +25,5 @@ export default async function SiteLayout({
         </Link>
       )}
     </>
-  )
+  );
 }

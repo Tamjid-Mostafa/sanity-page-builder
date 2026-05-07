@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Image as SanityImage } from "next-sanity/image";
 import { Button } from "@/components/ui/button";
+import { LogoWithText } from "@/components/LogoWithText";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import {
   Menu as NavbarMenu,
@@ -18,7 +18,6 @@ import type {
   NavLink,
   NavDropdown,
 } from "@/types/sanity";
-import { cn } from "@/lib/utils";
 
 const hasText = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
@@ -128,28 +127,11 @@ export function Header({ settings }: { settings: SiteSettings | null }) {
         <FloatingNav className="px-0">
           <nav className="container mx-auto px-6 sm:px-8 lg:px-12">
             <div className="flex items-center justify-between h-16 lg:h-20">
-            
-              <Link
+              <LogoWithText
                 href="/"
-                className={cn(
-                  "shrink-0 transition-opacity duration-200 hover:opacity-80",
-                )}
-              >
-                {logoImage ? (
-                  <SanityImage
-                    src={logoImage.src}
-                    alt={settings?.logo?.alt || siteName}
-                    width={logoImage.width}
-                    height={logoImage.height}
-                    className="h-7 lg:h-9 w-auto object-contain object-left"
-                    placeholder={logoImage.placeholder}
-                    blurDataURL={logoImage.blurDataURL}
-                    preload
-                  />
-                ) : (
-                  <span className="text-lg font-semibold">{siteName}</span>
-                )}
-              </Link>
+                logoImage={logoImage}
+                siteName={siteName}
+              />
 
               <div className="flex items-center gap-4">
                 <NavbarMenu setActive={setActive}>
