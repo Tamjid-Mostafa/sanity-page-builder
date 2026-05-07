@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { easing, duration, stagger } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import Link from "next/link";
 import { sanitizeColor } from "@/utils/sanitize";
 

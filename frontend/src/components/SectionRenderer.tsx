@@ -11,7 +11,6 @@ export function SectionRenderer({sections}: {sections?: PageBuilderBlock[] | nul
       </div>
     )
   }
-
   return (
     <>
       {sections.map((section) => {

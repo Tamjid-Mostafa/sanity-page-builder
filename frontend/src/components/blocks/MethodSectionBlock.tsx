@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { BookOpen, Compass, Rocket, Target, Lightbulb, Sparkles } from "lucide-react";
 import { easing, duration } from "@/lib/animations";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import { stripZW, sanitizeColor } from "@/utils/sanitize";
 
 type MethodSectionProps = Extract<PageBlocks, { _type: "methodSection" }>;

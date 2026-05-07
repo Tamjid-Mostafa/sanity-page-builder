@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Monitor, Globe, Users } from "lucide-react";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import { easing, duration, stagger } from "@/lib/animations";
 
 type LearningExperienceProps = Extract<PageBlocks, { _type: "learningExperience" }>;

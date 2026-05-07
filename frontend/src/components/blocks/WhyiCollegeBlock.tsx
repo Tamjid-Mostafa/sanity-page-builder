@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Heart, Sparkles, Globe, Workflow, Users, Target, BookOpen, Lightbulb, Rocket } from "lucide-react";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import { sanitizeColor } from "@/utils/sanitize";
 
 type WhyiCollegeProps = Extract<PageBlocks, { _type: "whyiCollege" }>;

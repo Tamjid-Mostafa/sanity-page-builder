@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { Quote, Target, Users, Globe2, Award, Briefcase, Heart } from "lucide-react";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import { urlFor } from "@/sanity/lib/image";
 
 type StudentStoriesProps = Extract<PageBlocks, { _type: "studentStories" }>;

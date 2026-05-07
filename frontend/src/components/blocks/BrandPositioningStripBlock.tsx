@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import { sanitizeColor } from "@/utils/sanitize";
 
 type BrandPositioningStripProps = Extract<PageBlocks, { _type: "brandPositioningStrip" }>;

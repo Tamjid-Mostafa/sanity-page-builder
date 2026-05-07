@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { MapPin } from "lucide-react";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import { urlFor } from "@/sanity/lib/image";
 import { easing, duration } from "@/lib/animations";
 import { sanitizeColor } from "@/utils/sanitize";

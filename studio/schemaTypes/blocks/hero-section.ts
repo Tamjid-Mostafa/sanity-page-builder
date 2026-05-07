@@ -9,6 +9,8 @@ export const heroSectionType = defineType({
   icon: RocketIcon,
   groups: [
     {name: 'content', title: 'Content', default: true},
+    {name: 'slides', title: 'Slides'},
+    {name: 'videos', title: 'Videos'},
     {name: 'media', title: 'Media'},
     {name: 'background', title: 'Background'},
     {name: 'style', title: 'Style'},
@@ -19,21 +21,153 @@ export const heroSectionType = defineType({
       title: 'Layout',
       type: 'string',
       group: 'content',
-      initialValue: 'fullWidth',
+      initialValue: 'videoSlideshow',
       options: {
         list: [
+          {title: 'Cinematic Slideshow (full-screen video + slides)', value: 'videoSlideshow'},
           {title: 'Full Width (overlay)', value: 'fullWidth'},
           {title: 'Split (text + media)', value: 'split'},
         ],
         layout: 'radio',
       },
     }),
+
+    // ── CINEMATIC SLIDESHOW fields (videoSlideshow layout) ────────────────
+    defineField({
+      name: 'slides',
+      title: 'Slides',
+      type: 'array',
+      group: 'slides',
+      description: 'Each slide has its own tag, headline and subtitle. Paired with a background video by position.',
+      hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
+      validation: (rule) => rule.min(1).max(6),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'heroSlide',
+          title: 'Slide',
+          fields: [
+            defineField({name: 'tag', title: 'Tag / Label', type: 'string', description: 'Small uppercase label above headline'}),
+            defineField({name: 'headline', title: 'Headline', type: 'string', validation: (r) => r.required()}),
+            defineField({name: 'subtitle', title: 'Subtitle', type: 'text', rows: 3}),
+          ],
+          preview: {
+            select: {tag: 'tag', headline: 'headline'},
+            prepare({tag, headline}: {tag?: string; headline?: string}) {
+              return {title: headline || 'Slide', subtitle: tag}
+            },
+          },
+        }),
+      ],
+    }),
+
+    defineField({
+      name: 'backgroundVideos',
+      title: 'Background Videos',
+      type: 'array',
+      group: 'videos',
+      description: 'Videos are paired with slides by position (first video → first slide, etc.). Use .mp4 for best compatibility.',
+      hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'heroVideo',
+          title: 'Video',
+          fields: [
+            defineField({name: 'title', title: 'Internal Title', type: 'string', validation: (r) => r.required()}),
+            defineField({
+              name: 'video',
+              title: 'Video File',
+              type: 'file',
+              options: {accept: 'video/*'},
+            }),
+            defineField({
+              name: 'poster',
+              title: 'Poster / Thumbnail',
+              type: 'image',
+              options: {hotspot: true},
+              description: 'Shown while video loads',
+            }),
+          ],
+          preview: {
+            select: {title: 'title'},
+            prepare({title}: {title?: string}) {
+              return {title: title || 'Video'}
+            },
+          },
+        }),
+      ],
+    }),
+
+    defineField({
+      name: 'slideDurationMs',
+      title: 'Slide Duration (ms)',
+      type: 'number',
+      group: 'slides',
+      initialValue: 6000,
+      description: 'How long each slide plays before advancing (milliseconds)',
+      hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
+      validation: (rule) => rule.min(1000).max(30000),
+    }),
+
+    defineField({
+      name: 'primaryButton',
+      title: 'Primary Button',
+      type: 'object',
+      group: 'content',
+      hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
+      fields: [
+        defineField({name: 'label', type: 'string', title: 'Label', initialValue: 'Book a Conversation'}),
+        defineField({
+          name: 'action',
+          type: 'string',
+          title: 'Action',
+          initialValue: 'calendly',
+          options: {list: [{title: 'Open Calendly', value: 'calendly'}, {title: 'Navigate to URL', value: 'link'}], layout: 'radio'},
+        }),
+        defineField({name: 'href', type: 'string', title: 'URL', hidden: ({parent}: {parent?: {action?: string}}) => parent?.action !== 'link'}),
+      ],
+    }),
+
+    defineField({
+      name: 'secondaryButton',
+      title: 'Secondary Button',
+      type: 'object',
+      group: 'content',
+      hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
+      fields: [
+        defineField({name: 'label', type: 'string', title: 'Label', initialValue: 'Check Your Fit'}),
+        defineField({name: 'href', type: 'string', title: 'URL', initialValue: '/apply'}),
+      ],
+    }),
+
+    defineField({
+      name: 'pills',
+      title: 'Credential Pills',
+      type: 'array',
+      group: 'content',
+      description: 'Small badges shown below the CTAs',
+      hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
+      of: [defineArrayMember({type: 'string'})],
+    }),
+
+    defineField({
+      name: 'prospectusLink',
+      title: 'Prospectus Download URL',
+      type: 'url',
+      group: 'content',
+      description: 'Link shown below pills (e.g. /prospectus)',
+      hidden: ({parent}) => parent?.layout !== 'videoSlideshow',
+    }),
+
+    // ── Non-slideshow fields ──────────────────────────────────────────────
     defineField({
       name: 'badge',
       title: 'Badge Text',
       type: 'string',
       group: 'content',
       description: 'Small pill badge above the heading',
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
     }),
     defineField({
       name: 'badgeLink',
@@ -41,13 +175,14 @@ export const heroSectionType = defineType({
       type: 'string',
       group: 'content',
       description: 'Optional URL for the badge',
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
     }),
     defineField({
       name: 'heading',
       title: 'Heading (H1)',
       type: 'string',
       group: 'content',
-      validation: (rule) => rule.required(),
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
     }),
     defineField({
       name: 'subtitle',
@@ -55,6 +190,7 @@ export const heroSectionType = defineType({
       type: 'text',
       group: 'content',
       rows: 3,
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
     }),
     defineField({
       name: 'alignment',
@@ -62,6 +198,7 @@ export const heroSectionType = defineType({
       type: 'string',
       group: 'content',
       initialValue: 'center',
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
       options: {
         list: [
           {title: 'Left', value: 'left'},
@@ -76,6 +213,7 @@ export const heroSectionType = defineType({
       title: 'Buttons',
       type: 'array',
       group: 'content',
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
       of: [defineArrayMember({type: 'callToAction'})],
       validation: (rule) => rule.max(3),
     }),
@@ -176,11 +314,12 @@ export const heroSectionType = defineType({
     }),
     defineField({
       name: 'backgroundVideo',
-      title: 'Background Video URL',
-      type: 'url',
+      title: 'Background Video',
+      type: 'file',
       group: 'background',
-      description: 'Direct video file URL (mp4)',
-      hidden: ({parent}) => parent?.backgroundType !== 'video',
+      description: 'Video file asset (mp4 recommended). Used for fullWidth/split layouts.',
+      options: {accept: 'video/*'},
+      hidden: ({parent}) => parent?.backgroundType !== 'video' || parent?.layout === 'videoSlideshow',
     }),
     defineField({
       name: 'overlay',
@@ -241,11 +380,17 @@ export const heroSectionType = defineType({
     }),
   ],
   preview: {
-    select: {heading: 'heading', layout: 'layout'},
-    prepare({heading, layout}: {heading?: string; layout?: string}) {
+    select: {heading: 'heading', layout: 'layout', firstSlide: 'slides.0.headline'},
+    prepare({heading, layout, firstSlide}: {heading?: string; layout?: string; firstSlide?: string}) {
+      const layoutLabels: Record<string, string> = {
+        videoSlideshow: 'Cinematic Slideshow',
+        split: 'Split',
+        fullWidth: 'Full Width',
+      }
+      const title = layout === 'videoSlideshow' ? (firstSlide || 'Cinematic Hero') : (heading || 'Hero Section')
       return {
-        title: heading || 'Hero Section',
-        subtitle: `Hero — ${layout === 'split' ? 'Split' : 'Full Width'}`,
+        title,
+        subtitle: `Hero — ${layoutLabels[layout ?? ''] ?? layout ?? 'Full Width'}`,
         media: RocketIcon,
       }
     },

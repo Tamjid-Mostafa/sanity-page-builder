@@ -29,9 +29,26 @@ const seoFragment = /* groq */ `
 const heroFragment = /* groq */ `
   _type == "heroSection" => {
     ...,
-    buttons[] { _key, _type, ..., ${blockStylesFragment} },
+    // Slideshow layout
+    slides[] { _key, tag, headline, subtitle },
+    backgroundVideos[] {
+      _key, title,
+      "videoUrl": video.asset->url,
+      poster {
+        asset->{ url, metadata { lqip, dimensions { width, height } } }
+      }
+    },
+    // Primary / secondary buttons for slideshow
+    primaryButton,
+    secondaryButton,
+    pills,
+    prospectusLink,
+    slideDurationMs,
+    // Non-slideshow layout
+    buttons[] { _key, _type, ... },
     mediaImage { ${imageFragment} },
     backgroundImage { ${imageFragment} },
+    "backgroundVideoUrl": backgroundVideo.asset->url,
     ${blockStylesFragment}
   }
 `

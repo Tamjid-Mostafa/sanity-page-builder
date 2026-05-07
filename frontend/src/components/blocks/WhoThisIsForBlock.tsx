@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { GraduationCap, Compass, Briefcase, Users, Target, BookOpen } from "lucide-react";
 import { easing, duration } from "@/lib/animations";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 
 type WhoThisIsForProps = Extract<PageBlocks, { _type: "whoThisIsFor" }>;
 

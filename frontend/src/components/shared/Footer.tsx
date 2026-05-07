@@ -11,9 +11,10 @@ const FOOTER_STYLES: Record<string, string> = {
   dark: 'bg-foreground text-background',
 }
 
-function SocialIcon({platform}: {platform: string}) {
+function SocialIcon({platform}: {platform?: string | null}) {
   const cls = "h-4 w-4"
-  switch (platform) {
+  const normalized = (platform || '').toLowerCase()
+  switch (normalized) {
     case 'twitter':
       return (
         <svg className={cls} fill="currentColor" viewBox="0 0 24 24">
@@ -57,7 +58,7 @@ function SocialIcon({platform}: {platform: string}) {
         </svg>
       )
     default:
-      return <span className="text-xs font-bold">{platform.slice(0, 2).toUpperCase()}</span>
+      return <span className="text-xs font-bold">{(normalized || 'so').slice(0, 2).toUpperCase()}</span>
   }
 }
 

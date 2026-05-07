@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { easing, duration, scale } from "@/lib/animations";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 import { urlForImage } from "@/sanity/lib/image";
 import { openCalendly } from "@/lib/site-cta";
 

@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
 import { urlForImage } from "@/sanity/lib/image";
-import { PageBlocks } from "../BlocksRenderer";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 
 type HeroQuoteBlockProps = Extract<PageBlocks, { _type: "heroQuote" }>;
 

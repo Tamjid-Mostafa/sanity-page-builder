@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
-import { PageBlocks } from "../BlocksRenderer";
-import { sanitizeColor } from "@/utils/sanitize";
+import type { PageBuilderBlock as PageBlocks } from "@/types/sanity";
 
 type WorldChangingProps = Extract<PageBlocks, { _type: "worldChanging" }>;
 
