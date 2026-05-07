@@ -7,6 +7,9 @@ import {
   MessageCircle, Mail, Phone,
   Monitor, Smartphone, Code2,
   Zap, Layers, Leaf, Building2, Clock,
+  Workflow, Sparkles, Flame, Brain, Microscope,
+  PenTool, Palette, Music, Camera, Video,
+  Database, Server, Cpu, Wifi, Lock,
 } from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 
@@ -46,6 +49,21 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   'leaf': Leaf,
   'building-2': Building2,
   'clock': Clock,
+  'workflow': Workflow,
+  'sparkles': Sparkles,
+  'flame': Flame,
+  'brain': Brain,
+  'microscope': Microscope,
+  'pen-tool': PenTool,
+  'palette': Palette,
+  'music': Music,
+  'camera': Camera,
+  'video': Video,
+  'database': Database,
+  'server': Server,
+  'cpu': Cpu,
+  'wifi': Wifi,
+  'lock': Lock,
 }
 
 export const ALLOWED_ICONS = Object.keys(ICON_REGISTRY)

@@ -89,6 +89,7 @@ export const gridRowType = defineType({
                 defineArrayMember({type: 'faqBlock'}),
                 // Grids & galleries
                 defineArrayMember({type: 'featureCardGrid'}),
+                defineArrayMember({type: 'approachCarousel'}),
                 defineArrayMember({type: 'testimonialCarousel'}),
                 defineArrayMember({type: 'imageGallery'}),
                 defineArrayMember({type: 'tocBlock'}),

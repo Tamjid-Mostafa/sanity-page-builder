@@ -24,6 +24,7 @@ import {heroSectionType} from './hero-section'
 import {formBlockType} from './form-block'
 import {faqBlockType} from './faq-block'
 import {featureCardGridType} from './feature-card-grid'
+import {approachCarouselType} from './approach-carousel'
 import {tocBlockType} from './toc-block'
 import {testimonialCarouselType} from './testimonial-carousel'
 import {imageGalleryType} from './image-gallery'
@@ -55,6 +56,7 @@ export {
   formBlockType,
   faqBlockType,
   featureCardGridType,
+  approachCarouselType,
   testimonialCarouselType,
   imageGalleryType,
   tocBlockType,
@@ -100,6 +102,7 @@ export const blockTypes = [
   formBlockType,
   faqBlockType,
   featureCardGridType,
+  approachCarouselType,
   testimonialCarouselType,
   imageGalleryType,
   tocBlockType,

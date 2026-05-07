@@ -98,6 +98,22 @@ const contentFragment = /* groq */ `
       },
       ${blockStylesFragment}
     },
+    _type == "approachCarousel" => {
+      ...,
+      cards[] {
+        _key, _type,
+        label,
+        title,
+        description,
+        accentColor,
+        icon {
+          source,
+          lucide,
+          image { ${imageFragment} }
+        }
+      },
+      ${blockStylesFragment}
+    },
     ${blockStylesFragment}
   }
 `

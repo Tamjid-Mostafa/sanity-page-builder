@@ -23,6 +23,7 @@ import {LottieAnimationContent} from './content/LottieAnimationContent'
 import {FormBlockContent} from './content/FormBlockContent'
 import {FaqBlockContent} from './content/FaqBlockContent'
 import {FeatureCardGridContent} from './content/FeatureCardGridContent'
+import {ApproachCarouselContent} from './content/ApproachCarouselContent'
 import {TestimonialCarouselContent} from './content/TestimonialCarouselContent'
 import {ImageGalleryContent} from './content/ImageGalleryContent'
 import {TocBlockContent} from './content/TocBlockContent'
@@ -54,6 +55,7 @@ const CONTENT_MAP: Record<string, React.ComponentType<{data: any}>> = {
   formBlock: FormBlockContent,
   faqBlock: FaqBlockContent,
   featureCardGrid: FeatureCardGridContent,
+  approachCarousel: ApproachCarouselContent,
   testimonialCarousel: TestimonialCarouselContent,
   imageGallery: ImageGalleryContent,
   tocBlock: TocBlockContent,
