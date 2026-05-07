@@ -24,7 +24,10 @@ type ExtendedFeatureCard = FeatureCardGridData["cards"][number] & {
 };
 
 type ExtendedFeatureCardGridData = FeatureCardGridData & {
+  eyebrow?: string | null;
   titleAlign?: string | null;
+  showStepNumbers?: boolean | null;
+  style?: string | null;
 };
 
 function RegistryIcon({ name, ...props }: { name: string } & LucideProps) {
@@ -51,18 +54,42 @@ const GRADIENT_FALLBACK: Record<string, string> = {
   none: "bg-muted",
 };
 
-function LightCard({ card }: { card: ExtendedFeatureCard }) {
+const CARD_STYLE_CLASSES: Record<string, string> = {
+  simple: "bg-card shadow-sm hover:shadow-md",
+  bordered: "bg-card border border-border shadow-none hover:shadow-sm",
+  shadow: "bg-card shadow-md hover:shadow-lg",
+  highlighted: "bg-card border border-primary/20 shadow-sm hover:shadow-md",
+};
+
+function LightCard({
+  card,
+  index,
+  showStepNumbers,
+  cardStyle,
+}: {
+  card: ExtendedFeatureCard;
+  index: number;
+  showStepNumbers: boolean;
+  cardStyle: string;
+}) {
   const accent = stegaClean(card.accentColor) || "none";
   const accentBarClass = ACCENT_BAR[accent] ?? "hidden";
   const gradientClass = GRADIENT_FALLBACK[accent] ?? "bg-muted";
+  const cardStyleClass = CARD_STYLE_CLASSES[cardStyle] ?? CARD_STYLE_CLASSES.simple;
+  const showAccentBar = cardStyle === "bordered" || cardStyle === "highlighted";
 
   return (
     <div className="group relative hover:-translate-y-1 transition-transform duration-300">
-      <div className="relative h-full rounded-2xl bg-card border border-border shadow-sm group-hover:shadow-md transition-shadow duration-300 flex flex-col overflow-hidden">
-        <div
-          className={`absolute top-0 left-0 right-0 h-0.5 z-10 ${accentBarClass}`}
-          aria-hidden
-        />
+      <div className={cn(
+        "relative h-full rounded-2xl transition-shadow duration-300 flex flex-col overflow-hidden",
+        cardStyleClass,
+      )}>
+        {showAccentBar && (
+          <div
+            className={`absolute top-0 left-0 right-0 h-0.5 z-10 ${accentBarClass}`}
+            aria-hidden
+          />
+        )}
         <div className="relative w-full h-44 overflow-hidden shrink-0">
           {card.coverImage?.asset ? (
             <Image
@@ -76,36 +103,45 @@ function LightCard({ card }: { card: ExtendedFeatureCard }) {
             <div className={`absolute inset-0 ${gradientClass}`} aria-hidden />
           )}
         </div>
-        <div className="flex flex-col p-5 flex-1">
-          {card.icon && (
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-muted mb-4 shrink-0">
-              {stegaClean(card.icon.source) === "image" && card.icon.image?.asset ? (
-                <Image
-                  src={urlFor(card.icon.image).width(40).height(40).fit("max").url()}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="transition-transform duration-300 group-hover:scale-110"
-                />
-              ) : card.icon.lucide ? (
-                <RegistryIcon
-                  name={stegaClean(card.icon.lucide)!}
-                  className={cn(
-                    "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
-                    accent === "primary"
-                      ? "text-primary"
-                      : accent === "secondary"
-                        ? "text-secondary"
-                        : "text-foreground"
-                  )}
-                  strokeWidth={1.5}
-                />
-              ) : null}
+        <div className="flex flex-col gap-3 p-5 flex-1">
+          {(card.icon || showStepNumbers) && (
+            <div className={cn("flex shrink-0", showStepNumbers ? "items-center justify-between" : "") }>
+              {card.icon && (
+                <div className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-muted">
+                  {stegaClean(card.icon.source) === "image" && card.icon.image?.asset ? (
+                    <Image
+                      src={urlFor(card.icon.image).width(40).height(40).fit("max").url()}
+                      alt=""
+                      width={20}
+                      height={20}
+                      className="transition-transform duration-300 group-hover:scale-110"
+                    />
+                  ) : card.icon.lucide ? (
+                    <RegistryIcon
+                      name={stegaClean(card.icon.lucide)!}
+                      className={cn(
+                        "w-4 h-4 transition-transform duration-300 group-hover:scale-110",
+                        accent === "primary"
+                          ? "text-primary"
+                          : accent === "secondary"
+                            ? "text-secondary"
+                            : "text-foreground"
+                      )}
+                      strokeWidth={1.5}
+                    />
+                  ) : null}
+                </div>
+              )}
+              {showStepNumbers && (
+                <span className="text-2xl font-bold text-charcoal select-none tabular-nums">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              )}
             </div>
           )}
-          <div className="flex-1 space-y-2.5">
+          <div className="flex-1 space-y-2.5 text-left">
             {card.title && (
-              <h3 className="text-2xl sm:text-3xl font-heading font-bold text-foreground leading-tight">
+              <h3 className="text-sm font-semibold text-foreground leading-snug">
                 {card.title}
               </h3>
             )}
@@ -152,13 +188,19 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
   const columns = stegaClean(data.columns) || "3";
   const colClass = COLS_MAP[columns] || COLS_MAP["3"];
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
-
+  const showStepNumbers = d.showStepNumbers ?? false;
+  const cardStyle = stegaClean(d.style) || "simple";
   if (cards.length === 0) return null;
 
   return (
     <div>
-      {(d.title || d.subtitle) && (
-        <div className={cn("mb-8", titleAlign === "center" && "text-center")}>
+      {(d.eyebrow || d.title || d.subtitle) && (
+        <div className={cn("mb-8", titleAlign === "center" ? "text-center" : "text-left") }>
+          {d.eyebrow && (
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] mb-2 text-primary">
+              {d.eyebrow}
+            </p>
+          )}
           {d.title && (
             <h2 className="text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08] text-foreground">
               {d.title}
@@ -175,8 +217,14 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
         </div>
       )}
       <div className={`grid grid-cols-1 gap-4 ${colClass}`}>
-        {cards.map((card) => (
-          <LightCard key={card._key} card={card} />
+        {cards.map((card, index) => (
+          <LightCard
+            key={card._key}
+            card={card}
+            index={index}
+            showStepNumbers={showStepNumbers}
+            cardStyle={cardStyle}
+          />
         ))}
       </div>
     </div>

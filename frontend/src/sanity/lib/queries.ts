@@ -81,6 +81,8 @@ const contentFragment = /* groq */ `
       ${blockStylesFragment}
     },
     _type == "featureCardGrid" => {
+      eyebrow,
+      showStepNumbers,
       ...,
       cards[] {
         _key, _type,

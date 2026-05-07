@@ -21,6 +21,12 @@ export const featureCardGridType = defineType({
   icon: ThLargeIcon,
   fields: [
     defineField({
+      name: 'eyebrow',
+      title: 'Eyebrow Text',
+      type: 'string',
+      description: 'Small label above the title',
+    }),
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -30,6 +36,13 @@ export const featureCardGridType = defineType({
       title: 'Subtitle',
       type: 'text',
       rows: 2,
+    }),
+    defineField({
+      name: 'showStepNumbers',
+      title: 'Show Step Numbers',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Display 01, 02, 03… on each card.',
     }),
     defineField({
       name: 'cards',
