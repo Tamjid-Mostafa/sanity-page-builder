@@ -113,10 +113,12 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
 }
 
 export function BlockStylesWrapper({
+  as: Tag = 'div',
   blockStyles,
   children,
   className,
 }: {
+  as?: 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer'
   blockStyles?: BlockStyles | null
   children: ReactNode
   className?: string
@@ -126,7 +128,7 @@ export function BlockStylesWrapper({
   const hasOverlay = clean?.background?.overlay && clean?.background?.image?.asset?.url
 
   return (
-    <div className={className || undefined} style={inlineStyles}>
+    <Tag className={className || undefined} style={inlineStyles}>
       {hasOverlay && (
         <div
           className="pointer-events-none absolute inset-0"
@@ -134,6 +136,6 @@ export function BlockStylesWrapper({
         />
       )}
       {hasOverlay ? <div className="relative">{children}</div> : children}
-    </div>
+    </Tag>
   )
 }

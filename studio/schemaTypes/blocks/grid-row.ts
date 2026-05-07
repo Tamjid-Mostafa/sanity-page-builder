@@ -167,11 +167,12 @@ export const gridRowType = defineType({
       title: 'Vertical Padding',
       type: 'string',
       group: 'style',
-      initialValue: 'md',
+      initialValue: 'compact',
       options: {
         list: [
           {title: 'None', value: 'none'},
           {title: 'Small', value: 'sm'},
+          {title: 'Compact', value: 'compact'},
           {title: 'Medium', value: 'md'},
           {title: 'Large', value: 'lg'},
           {title: 'Extra Large', value: 'xl'},
@@ -184,7 +185,7 @@ export const gridRowType = defineType({
       title: 'Max Width',
       type: 'string',
       group: 'style',
-      initialValue: 'default',
+      initialValue: 'full',
       options: {
         list: [
           {title: 'Narrow (768px)', value: 'narrow'},
@@ -192,6 +193,22 @@ export const gridRowType = defineType({
           {title: 'Wide (1400px)', value: 'wide'},
           {title: 'Full Width', value: 'full'},
         ],
+      },
+    }),
+    defineField({
+      name: 'containerAlign',
+      title: 'Container Alignment',
+      type: 'string',
+      group: 'style',
+      description: 'Only visible when Max Width is not Full Width.',
+      initialValue: 'center',
+      options: {
+        list: [
+          {title: 'Left', value: 'left'},
+          {title: 'Center', value: 'center'},
+          {title: 'Right', value: 'right'},
+        ],
+        layout: 'radio',
       },
     }),
     defineField({

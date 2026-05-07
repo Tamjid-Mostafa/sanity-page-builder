@@ -125,7 +125,7 @@ export function Header({ settings }: { settings: SiteSettings | null }) {
     <>
       <div className="hidden lg:block">
         <FloatingNav className="px-0">
-          <nav className="container mx-auto px-6 sm:px-8 lg:px-12">
+          <nav className="container mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
             <div className="flex items-center justify-between h-16 lg:h-20">
               <LogoWithText
                 href="/"

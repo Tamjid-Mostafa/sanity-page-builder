@@ -348,7 +348,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
       </AnimatePresence>
 
       <div className="relative z-10 w-full">
-        <div className="container mx-auto px-6 sm:px-8 lg:px-12 pb-14 md:pb-16 lg:pb-20">
+        <div className="container mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 pb-14 md:pb-16 lg:pb-20">
           <div className="flex flex-col gap-5 max-w-lg">
             <AnimatePresence mode="wait">
               <motion.span
