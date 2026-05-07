@@ -8,9 +8,29 @@ export const testimonialCarouselType = defineType({
   icon: UsersIcon,
   fields: [
     defineField({
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      initialValue: 'Student voices',
+      description: 'Small uppercase label above the title.',
+    }),
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
+    }),
+    defineField({
+      name: 'titleAlign',
+      title: 'Title Alignment',
+      type: 'string',
+      initialValue: 'left',
+      options: {
+        list: [
+          {title: 'Left', value: 'left'},
+          {title: 'Center', value: 'center'},
+        ],
+        layout: 'radio',
+      },
     }),
     defineField({
       name: 'testimonials',

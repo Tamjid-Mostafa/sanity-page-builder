@@ -39,6 +39,12 @@ export const testimonialQuoteType = defineType({
       description: 'Position or context (e.g., "Pediatrician", "Parent of twins").',
     }),
     defineField({
+      name: 'tag',
+      title: 'Tag',
+      type: 'string',
+      description: 'Small uppercase badge in the top-right of the testimonial card.',
+    }),
+    defineField({
       name: 'rating',
       title: 'Star Rating',
       type: 'number',

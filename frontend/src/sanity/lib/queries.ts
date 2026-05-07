@@ -127,6 +127,18 @@ const contentFragment = /* groq */ `
       },
       ${blockStylesFragment}
     },
+    _type == "testimonialCarousel" => {
+      ...,
+      eyebrow,
+      titleAlign,
+      testimonials[] {
+        ...,
+        tag,
+        avatar { ${imageFragment} },
+        ${blockStylesFragment}
+      },
+      ${blockStylesFragment}
+    },
     ${blockStylesFragment}
   }
 `
