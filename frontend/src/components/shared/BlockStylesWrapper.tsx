@@ -16,7 +16,7 @@ interface BlockStyles {
   borderTop?: {width?: string | null; style?: string | null; color?: string | null} | null
   borderRadius?:{topLeft?: string | null; topRight?: string | null; bottomRight?: string | null; bottomLeft?: string | null} | null
   background?: {color?: string | null; image?: {asset?: {url?: string | null} | null} | null; size?: string | null; overlay?: string | null} | null
-  typography?: {textAlign?: string | null; fontSize?: string | null; textColor?: string | null} | null
+  typography?: {textAlign?: string | null; fontSize?: string | null; fontWeight?: string | null; textColor?: string | null} | null
   effects?: {shadow?: string | null; opacity?: number | null; overflow?: string | null} | null
 }
 
@@ -99,6 +99,7 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
   if (bs.typography) {
     if (bs.typography.textAlign) styles.textAlign = bs.typography.textAlign
     if (bs.typography.fontSize) styles.fontSize = `${bs.typography.fontSize}px`
+    if (bs.typography.fontWeight) styles.fontWeight = Number(bs.typography.fontWeight)
     if (bs.typography.textColor) styles.color = bs.typography.textColor
   }
 

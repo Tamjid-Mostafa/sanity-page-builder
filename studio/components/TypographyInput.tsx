@@ -17,6 +17,14 @@ const FONT_SIZES = [
   {title: '72px', value: '72'},
 ]
 
+const FONT_WEIGHTS = [
+  {title: '400', value: '400'},
+  {title: '500', value: '500'},
+  {title: '600', value: '600'},
+  {title: '700', value: '700'},
+  {title: '800', value: '800'},
+]
+
 const ALIGN_OPTIONS = [
   {value: 'left', label: '≡ Left'},
   {value: 'center', label: '≡ Center'},
@@ -34,10 +42,10 @@ export function TypographyInput(props: ObjectInputProps) {
     [onChange],
   )
 
-  const hasValues = !!(vals.textAlign || vals.fontSize || vals.textColor)
+  const hasValues = !!(vals.textAlign || vals.fontSize || vals.fontWeight || vals.textColor)
 
   const handleClear = useCallback(() => {
-    onChange([unset(['textAlign']), unset(['fontSize']), unset(['textColor'])])
+    onChange([unset(['textAlign']), unset(['fontSize']), unset(['fontWeight']), unset(['textColor'])])
   }, [onChange])
 
   return (
@@ -116,6 +124,14 @@ export function TypographyInput(props: ObjectInputProps) {
             width={80}
             options={FONT_SIZES}
             onChange={(v) => handleChange('fontSize', v)}
+          />
+
+          <CompactSelect
+            value={vals.fontWeight}
+            placeholder="Weight"
+            width={90}
+            options={FONT_WEIGHTS}
+            onChange={(v) => handleChange('fontWeight', v)}
           />
 
           <ColorInput

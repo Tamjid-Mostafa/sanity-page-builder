@@ -1,5 +1,6 @@
 import {defineType, defineField, defineArrayMember} from 'sanity'
 import {ThLargeIcon} from '@sanity/icons'
+import {TypographyInput} from '../../components/TypographyInput'
 
 const COLUMN_OPTIONS = [
   {title: '2 Columns', value: '2'},
@@ -12,6 +13,21 @@ const STYLE_OPTIONS = [
   {title: 'Bordered', value: 'bordered'},
   {title: 'Shadow', value: 'shadow'},
   {title: 'Highlighted', value: 'highlighted'},
+] as const
+
+const CARD_ICON_SIZE_OPTIONS = [
+  {title: 'Small', value: 'small'},
+  {title: 'Medium', value: 'medium'},
+  {title: 'Large', value: 'large'},
+  {title: 'XL', value: 'xl'},
+] as const
+
+const ACCENT_TARGET_OPTIONS = [
+  {title: 'Icon', value: 'icon'},
+  {title: 'Icon BG', value: 'iconBg'},
+  {title: 'Title', value: 'title'},
+  {title: 'Subtitle', value: 'subtitle'},
+  {title: 'Description', value: 'description'},
 ] as const
 
 export const featureCardGridType = defineType({
@@ -120,6 +136,16 @@ export const featureCardGridType = defineType({
               },
             }),
             defineField({
+              name: 'accentApplyTo',
+              title: 'Accent Apply To',
+              type: 'array',
+              of: [defineArrayMember({type: 'string'})],
+              initialValue: ['icon'],
+              options: {list: [...ACCENT_TARGET_OPTIONS], layout: 'list'},
+              description: 'Choose which parts in this card should use Accent Color.',
+              validation: (rule) => rule.unique(),
+            }),
+            defineField({
               name: 'title',
               title: 'Title',
               type: 'string',
@@ -182,6 +208,26 @@ export const featureCardGridType = defineType({
       type: 'string',
       initialValue: 'simple',
       options: {list: [...STYLE_OPTIONS], layout: 'radio'},
+    }),
+    defineField({
+      name: 'cardIconSize',
+      title: 'Card Icon Size',
+      type: 'string',
+      initialValue: 'medium',
+      options: {list: [...CARD_ICON_SIZE_OPTIONS], layout: 'radio'},
+    }),
+    defineField({
+      name: 'cardTitleTypography',
+      title: 'Card Title Typography',
+      type: 'object',
+      components: {input: TypographyInput},
+      fields: [
+        defineField({name: 'textAlign', title: 'Align', type: 'string'}),
+        defineField({name: 'fontSize', title: 'Size', type: 'string'}),
+        defineField({name: 'fontWeight', title: 'Weight', type: 'string'}),
+        defineField({name: 'textColor', title: 'Color', type: 'string'}),
+      ],
+      description: 'Typography controls for the card title number/text.',
     }),
     defineField({
       name: 'blockStyles',

@@ -87,6 +87,7 @@ const contentFragment = /* groq */ `
       cards[] {
         _key, _type,
         accentColor,
+        accentApplyTo,
         title,
         subtitle,
         description,

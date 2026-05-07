@@ -16,6 +16,7 @@ type ExtendedFeatureCard = FeatureCardGridData["cards"][number] & {
   } | null;
   subtitle?: string | null;
   accentColor?: string | null;
+  accentApplyTo?: string[] | null;
   icon?: {
     source?: "lucide" | "image" | null;
     lucide?: string | null;
@@ -28,6 +29,15 @@ type ExtendedFeatureCardGridData = FeatureCardGridData & {
   titleAlign?: string | null;
   showStepNumbers?: boolean | null;
   style?: string | null;
+  cardIconSize?: string | null;
+  cardTitleTypography?: {
+    textAlign?: string | null;
+    fontSize?: string | null;
+    fontWeight?: string | null;
+    textColor?: string | null;
+  } | null;
+  // Backward compatibility for already-created content.
+  cardTitleFontSize?: number | null;
 };
 
 function RegistryIcon({ name, ...props }: { name: string } & LucideProps) {
@@ -48,10 +58,23 @@ const ACCENT_BAR: Record<string, string> = {
   none: "hidden",
 };
 
-const GRADIENT_FALLBACK: Record<string, string> = {
-  primary: "bg-linear-to-br from-primary/20 to-secondary/20",
-  secondary: "bg-linear-to-br from-secondary/20 to-primary/20",
+const ACCENT_TEXT: Record<string, string> = {
+  primary: "text-primary",
+  secondary: "text-secondary",
+  none: "",
+};
+
+const ACCENT_ICON_BG: Record<string, string> = {
+  primary: "bg-primary/10",
+  secondary: "bg-secondary/15",
   none: "bg-muted",
+};
+
+const ICON_SIZE_MAP: Record<string, { box: string; icon: string; image: string }> = {
+  small: { box: "w-8 h-8 rounded-md", icon: "w-4 h-4", image: "w-4 h-4" },
+  medium: { box: "w-10 h-10 rounded-lg", icon: "w-5 h-5", image: "w-5 h-5" },
+  large: { box: "w-12 h-12 rounded-xl", icon: "w-6 h-6", image: "w-6 h-6" },
+  xl: { box: "w-14 h-14 rounded-2xl", icon: "w-7 h-7", image: "w-7 h-7" },
 };
 
 const CARD_STYLE_CLASSES: Record<string, string> = {
@@ -66,15 +89,23 @@ function LightCard({
   index,
   showStepNumbers,
   cardStyle,
+  iconSize,
+  cardTitleStyle,
+  cardTitleAlign,
 }: {
   card: ExtendedFeatureCard;
   index: number;
   showStepNumbers: boolean;
   cardStyle: string;
+  iconSize: { box: string; icon: string; image: string };
+  cardTitleStyle?: React.CSSProperties;
+  cardTitleAlign: "left" | "center" | "right";
 }) {
   const accent = stegaClean(card.accentColor) || "none";
+  const accentTargets = new Set((card.accentApplyTo || ["icon"]).map((item) => stegaClean(item)));
   const accentBarClass = ACCENT_BAR[accent] ?? "hidden";
-  const gradientClass = GRADIENT_FALLBACK[accent] ?? "bg-muted";
+  const accentTextClass = ACCENT_TEXT[accent] ?? "";
+  const iconBgClass = ACCENT_ICON_BG[accent] ?? "bg-muted";
   const cardStyleClass = CARD_STYLE_CLASSES[cardStyle] ?? CARD_STYLE_CLASSES.simple;
   const showAccentBar = cardStyle === "bordered" || cardStyle === "highlighted";
 
@@ -90,8 +121,8 @@ function LightCard({
             aria-hidden
           />
         )}
-        <div className="relative w-full h-44 overflow-hidden shrink-0">
-          {card.coverImage?.asset ? (
+        {card.coverImage?.asset && (
+          <div className="relative w-full h-44 overflow-hidden shrink-0">
             <Image
               src={urlFor(card.coverImage).width(600).height(176).fit("crop").url()}
               alt={card.title || ""}
@@ -99,33 +130,36 @@ function LightCard({
               className="object-cover"
               sizes="(max-width: 768px) 90vw, 50vw"
             />
-          ) : (
-            <div className={`absolute inset-0 ${gradientClass}`} aria-hidden />
-          )}
-        </div>
+          </div>
+        )}
         <div className="flex flex-col gap-3 p-5 flex-1">
           {(card.icon || showStepNumbers) && (
             <div className={cn("flex shrink-0", showStepNumbers ? "items-center justify-between" : "") }>
               {card.icon && (
-                <div className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-muted">
+                <div
+                  className={cn(
+                    "inline-flex items-center justify-center",
+                    iconSize.box,
+                    accentTargets.has("iconBg") ? iconBgClass : "bg-muted"
+                  )}
+                >
                   {stegaClean(card.icon.source) === "image" && card.icon.image?.asset ? (
                     <Image
                       src={urlFor(card.icon.image).width(40).height(40).fit("max").url()}
                       alt=""
                       width={20}
                       height={20}
-                      className="transition-transform duration-300 group-hover:scale-110"
+                      className={cn("transition-transform duration-300 group-hover:scale-110", iconSize.image)}
                     />
                   ) : card.icon.lucide ? (
                     <RegistryIcon
                       name={stegaClean(card.icon.lucide)!}
                       className={cn(
-                        "w-4 h-4 transition-transform duration-300 group-hover:scale-110",
-                        accent === "primary"
-                          ? "text-primary"
-                          : accent === "secondary"
-                            ? "text-secondary"
-                            : "text-foreground"
+                        "transition-transform duration-300 group-hover:scale-110",
+                        iconSize.icon,
+                        accentTargets.has("icon")
+                          ? accentTextClass || "text-foreground"
+                          : "text-foreground"
                       )}
                       strokeWidth={1.5}
                     />
@@ -141,15 +175,22 @@ function LightCard({
           )}
           <div className="flex-1 space-y-2.5 text-left">
             {card.title && (
-              <h3 className="text-sm font-semibold leading-snug">
+              <h3
+                className={cn(
+                  "text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]",
+                  cardTitleAlign === "center" ? "text-center" : cardTitleAlign === "right" ? "text-right" : "text-left",
+                  accentTargets.has("title") && accentTextClass
+                )}
+                style={cardTitleStyle}
+              >
                 {card.title}
               </h3>
             )}
             {card.subtitle && (
-              <p className="text-sm font-medium">{card.subtitle}</p>
+              <p className={cn("text-sm font-medium", accentTargets.has("subtitle") && accentTextClass)}>{card.subtitle}</p>
             )}
             {card.description && (
-              <p className="text-sm font-light leading-relaxed">
+              <p className={cn("text-sm font-light leading-relaxed", accentTargets.has("description") && accentTextClass)}>
                 {card.description}
               </p>
             )}
@@ -190,6 +231,32 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
   const cardStyle = stegaClean(d.style) || "simple";
+  const iconSize = ICON_SIZE_MAP[stegaClean(d.cardIconSize) || "medium"] || ICON_SIZE_MAP.medium;
+  const titleTypography = stegaClean(d.cardTitleTypography);
+  const parsedTypographySize = titleTypography?.fontSize ? Number(titleTypography.fontSize) : undefined;
+  const legacySize = typeof d.cardTitleFontSize === "number" ? d.cardTitleFontSize : undefined;
+  const cardTitleFontSize =
+    typeof parsedTypographySize === "number" && Number.isFinite(parsedTypographySize)
+      ? Math.min(Math.max(parsedTypographySize, 20), 96)
+      : typeof legacySize === "number"
+        ? Math.min(Math.max(legacySize, 20), 96)
+        : undefined;
+  const cardTitleAlignRaw = titleTypography?.textAlign;
+  const cardTitleAlign: "left" | "center" | "right" =
+    cardTitleAlignRaw === "center" || cardTitleAlignRaw === "right" ? cardTitleAlignRaw : "left";
+  const cardTitleFontWeightRaw = titleTypography?.fontWeight;
+  const cardTitleFontWeight =
+    cardTitleFontWeightRaw && ["400", "500", "600", "700", "800"].includes(cardTitleFontWeightRaw)
+      ? Number(cardTitleFontWeightRaw)
+      : undefined;
+  const cardTitleStyle: React.CSSProperties | undefined =
+    cardTitleFontSize || cardTitleFontWeight || titleTypography?.textColor
+      ? {
+          ...(cardTitleFontSize ? {fontSize: `${cardTitleFontSize}px`} : {}),
+          ...(cardTitleFontWeight ? {fontWeight: cardTitleFontWeight} : {}),
+          ...(titleTypography?.textColor ? {color: titleTypography.textColor} : {}),
+        }
+      : undefined;
   if (cards.length === 0) return null;
 
   return (
@@ -224,6 +291,9 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
             index={index}
             showStepNumbers={showStepNumbers}
             cardStyle={cardStyle}
+            iconSize={iconSize}
+            cardTitleStyle={cardTitleStyle}
+            cardTitleAlign={cardTitleAlign}
           />
         ))}
       </div>
