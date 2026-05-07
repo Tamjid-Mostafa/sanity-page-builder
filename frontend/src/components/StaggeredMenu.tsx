@@ -20,6 +20,7 @@ import Linkedin from "@/components/icons/linkedin";
 import Youtube from "@/components/icons/youtube";
 import XIcon from "@/components/icons/X";
 import TikTokIcon from "@/components/icons/tiktok";
+import { stegaClean } from "next-sanity";
 
 export interface StaggeredMenuSubItem {
   label: string;
@@ -748,11 +749,12 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                             instagram: <Instagram className="w-5 h-5" />,
                             linkedin: <Linkedin className="w-5 h-5" />,
                             x: <XIcon className="w-5 h-5" />,
+                            twitter: <XIcon className="w-5 h-5" />,
                             youtube: <Youtube className="w-5 h-5" />,
                             tiktok: <TikTokIcon className="w-5 h-5" />,
                           };
                           const platformKey = s.label.toLowerCase();
-                          const icon = socialIcons[platformKey];
+                          const icon = socialIcons[stegaClean(platformKey)];
                           
                           return (
                             <li key={s.label + i}>
@@ -760,7 +762,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                                 href={s.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-foreground/70 hover:text-primary transition-all duration-200 relative overflow-hidden group"
+                                className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center text-foreground hover:text-primary transition-all duration-200 relative overflow-hidden group"
                                 aria-label={s.label}
                                 variants={socialLinkVariants(i)}
                                 initial="closed"

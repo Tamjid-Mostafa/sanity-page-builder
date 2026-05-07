@@ -18,7 +18,8 @@ export const FloatingNav = ({
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     // Check if current is not undefined and is a number
     if (typeof current === "number") {
-      setIsAtTop(current < 0.06);
+      const nextIsAtTop = current < 0.06;
+      setIsAtTop((prev) => (prev === nextIsAtTop ? prev : nextIsAtTop));
       const previous = scrollYProgress.getPrevious();
       
       if (typeof previous === "number") {
@@ -26,13 +27,13 @@ export const FloatingNav = ({
 
         // At the top of the page - always show
         if (current < 0.05) {
-          setVisible(true);
+          setVisible((prev) => (prev ? prev : true));
         } else {
           // Not at top - show on scroll up, hide on scroll down
           if (direction < 0) {
-            setVisible(true);
+            setVisible((prev) => (prev ? prev : true));
           } else {
-            setVisible(false);
+            setVisible((prev) => (!prev ? prev : false));
           }
         }
       }
