@@ -184,6 +184,22 @@ export const gridRowType = defineType({
       },
     }),
     defineField({
+      name: 'paddingX',
+      title: 'Horizontal Padding',
+      type: 'string',
+      group: 'style',
+      initialValue: 'md',
+      options: {
+        list: [
+          {title: 'None', value: 'none'},
+          {title: 'Small', value: 'sm'},
+          {title: 'Medium', value: 'md'},
+          {title: 'Large', value: 'lg'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
       name: 'maxWidth',
       title: 'Max Width',
       type: 'string',

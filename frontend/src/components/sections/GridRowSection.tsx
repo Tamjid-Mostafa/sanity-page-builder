@@ -22,6 +22,13 @@ const PADDING_Y_MAP: Record<string, string> = {
   xl: "py-16 md:py-24",
 };
 
+const PADDING_X_MAP: Record<string, string> = {
+  none: "px-0",
+  sm: "px-4 sm:px-6 lg:px-8",
+  md: "px-6 sm:px-8 lg:px-12",
+  lg: "px-8 sm:px-12 lg:px-16",
+};
+
 const MAX_WIDTH_MAP: Record<string, string> = {
   narrow: "max-w-3xl",
   default: "max-w-7xl",
@@ -55,25 +62,26 @@ const VALIGN_MAP: Record<string, string> = {
 
 const STAGGER_MS = 100;
 
+type GridRowDataExtended = GridRowData & { containerAlign?: string; paddingX?: string | null };
+
 export function GridRowSection({ data }: { data: GridRowData }) {
+  const d = data as GridRowDataExtended;
   const layout = stegaClean(data.layout) || "full";
   const gridClass = LAYOUT_GRID[layout] || "grid-cols-1";
   const gapClass = GAP_MAP[stegaClean(data.gap) || "md"] || "";
   const paddingClass =
     PADDING_Y_MAP[stegaClean(data.paddingY) || "compact"] || "";
+  const paddingXClass =
+    PADDING_X_MAP[stegaClean(d.paddingX) || "md"] || PADDING_X_MAP.md;
   const maxWidthClass =
     MAX_WIDTH_MAP[stegaClean(data.maxWidth) || "full"] || "max-w-full";
   const alignClass =
-    ALIGN_MAP[
-      stegaClean(
-        (data as GridRowData & { containerAlign?: string }).containerAlign,
-      ) || "center"
-    ] || "mx-auto";
+    ALIGN_MAP[stegaClean(d.containerAlign) || "center"] || "mx-auto";
   const reverseClass = data.reverseOnMobile ? "flex-col-reverse md:grid" : "";
 
   return (
     <BlockStylesWrapper as="section" blockStyles={data.blockStyles} className={cn(paddingClass)}>
-      <div className={cn("container px-6 sm:px-8 lg:px-12", maxWidthClass, alignClass)}>
+      <div className={cn("container", paddingXClass, maxWidthClass, alignClass)}>
         <div className={cn("grid", gridClass, gapClass, reverseClass)}>
             {data.columns?.map((column, colIdx) => {
               const valign =
