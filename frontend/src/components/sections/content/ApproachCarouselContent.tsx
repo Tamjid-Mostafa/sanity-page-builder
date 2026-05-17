@@ -90,15 +90,15 @@ function ApproachCard({ card, index }: { card: ApproachCard; index: number }) {
   const textBlock = (
     <div className="px-7 py-6 flex flex-col gap-2">
       {card.label && (
-        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
-          {stegaClean(card.label)}
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
+         {card.label}
         </span>
       )}
       <h3 className="text-[1.45rem] font-heading font-bold text-white leading-[1.15]">
         {card.title}
       </h3>
       {card.description && (
-        <p className="text-sm font-light text-white/55 leading-relaxed">
+        <p className="text-sm font-light text-white leading-relaxed">
           {card.description}
         </p>
       )}

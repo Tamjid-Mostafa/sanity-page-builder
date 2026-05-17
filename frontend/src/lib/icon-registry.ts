@@ -5,11 +5,12 @@ import {
   Heart, Lightbulb, Shield, CheckCircle, Handshake,
   MapPin, Compass, ArrowRight, ExternalLink,
   MessageCircle, Mail, Phone,
-  Monitor, Smartphone, Code2,
+  Monitor, Smartphone, Code2, Laptop,
   Zap, Layers, Leaf, Building2, Clock,
   Workflow, Sparkles, Flame, Brain, Microscope,
   PenTool, Palette, Music, Camera, Video,
   Database, Server, Cpu, Wifi, Lock,
+  Dumbbell,
 } from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 
@@ -44,6 +45,8 @@ export const ICON_REGISTRY: Record<string, LucideIcon> = {
   'monitor': Monitor,
   'smartphone': Smartphone,
   'code-2': Code2,
+  'laptop': Laptop,
+  'dumbbell': Dumbbell,
   'zap': Zap,
   'layers': Layers,
   'leaf': Leaf,

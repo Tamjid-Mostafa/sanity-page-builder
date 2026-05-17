@@ -13,6 +13,8 @@ const STYLE_OPTIONS = [
   {title: 'Bordered', value: 'bordered'},
   {title: 'Shadow', value: 'shadow'},
   {title: 'Highlighted', value: 'highlighted'},
+  {title: 'Audience', value: 'audience'},
+  {title: 'Pathway', value: 'pathway'},
 ] as const
 
 const CARD_ICON_SIZE_OPTIONS = [
@@ -107,8 +109,10 @@ export const featureCardGridType = defineType({
                       'heart', 'lightbulb', 'shield', 'check-circle', 'handshake',
                       'map-pin', 'compass', 'arrow-right', 'external-link',
                       'message-circle', 'mail', 'phone',
-                      'monitor', 'smartphone', 'code-2',
+                      'monitor', 'smartphone', 'code-2', 'laptop',
                       'zap', 'layers', 'leaf', 'building-2', 'clock',
+                      'workflow', 'sparkles', 'flame', 'brain',
+                      'dumbbell', 'microscope', 'pen-tool', 'palette',
                     ],
                   },
                 }),

@@ -28,7 +28,7 @@ type ExtendedFeatureCardGridData = FeatureCardGridData & {
   eyebrow?: string | null;
   titleAlign?: string | null;
   showStepNumbers?: boolean | null;
-  style?: string | null;
+  style?: string | null | undefined;
   cardIconSize?: string | null;
   cardTitleTypography?: {
     textAlign?: string | null;
@@ -223,6 +223,75 @@ function LightCard({
   );
 }
 
+function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
+  const href = card.cta?.href
+  const label = card.cta?.label || "Learn more"
+  const icon = stegaClean(card.icon?.lucide)
+
+  const inner = (
+    <article className="group/card relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/50 bg-card/70 shadow-none ring-1 ring-black/3 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-primary/25 hover:bg-card">
+      <div
+        className="absolute left-5 right-5 top-0 h-px bg-linear-to-r from-transparent via-primary/55 to-transparent sm:left-6 sm:right-6"
+        aria-hidden
+      />
+      {card.coverImage?.asset && (
+        <div className="relative aspect-4/3 w-full overflow-hidden bg-muted sm:aspect-5/4">
+          <Image
+            src={urlFor(card.coverImage).width(600).fit("crop").url()}
+            alt={card.title || ""}
+            fill
+            className="object-cover transition-transform duration-500 ease-out group-hover/card:scale-[1.04]"
+            sizes="(max-width: 640px) 90vw, (max-width: 1280px) 45vw, 25vw"
+          />
+        </div>
+      )}
+      <div className="flex flex-1 flex-col gap-3 p-5 md:p-6">
+        {icon && (
+          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+            <RegistryIcon name={icon} className="h-5 w-5" strokeWidth={1.5} />
+          </div>
+        )}
+        <div className="min-w-0 flex-1 space-y-2">
+          {card.title && (
+            <h3 className="font-heading text-lg font-semibold leading-snug tracking-tight text-foreground md:text-xl">
+              {card.title}
+            </h3>
+          )}
+          {card.subtitle && (
+            <p className="text-sm font-medium leading-snug text-foreground">{card.subtitle}</p>
+          )}
+          {card.description && (
+            <p className="text-sm font-normal leading-relaxed text-muted-foreground">{card.description}</p>
+          )}
+        </div>
+        {href && (
+          <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+            {label}
+            <svg
+              className="h-3.5 w-3.5 transition-transform duration-200 group-hover/card:translate-x-0.5"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </span>
+        )}
+      </div>
+    </article>
+  )
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className="block h-full rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        {inner}
+      </a>
+    )
+  }
+  return <div className="h-full">{inner}</div>
+}
+
 function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
   return (
     <div className="group relative flex flex-col rounded-3xl border border-border/50 bg-card/70 p-6 shadow-none ring-1 ring-black/3 transition-[border-color,background-color] duration-300 hover:border-secondary/20 hover:bg-card md:p-7">
@@ -247,7 +316,9 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
   const cards = (data.cards || []) as ExtendedFeatureCard[];
   const columns = stegaClean(data.columns) || "3";
   const colClass = COLS_MAP[columns] || COLS_MAP["3"];
-  const isAudience = stegaClean(d.style) === "audience";
+  const style = stegaClean(d.style);
+  const isAudience = style === "audience";
+  const isPathway = style === "pathway";
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
   const cardStyle = stegaClean(d.style) || "simple";
@@ -303,9 +374,16 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
           )}
         </div>
       )}
-      <div className={`grid grid-cols-1 gap-5 ${isAudience ? "sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7" : colClass}`}>
+      <div className={cn(
+        "grid grid-cols-1",
+        isPathway  ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7" :
+        isAudience ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7" :
+        `gap-4 ${colClass}`
+      )}>
         {cards.map((card, index) =>
-          isAudience ? (
+          isPathway ? (
+            <PathwayCard key={card._key} card={card} />
+          ) : isAudience ? (
             <AudienceCard key={card._key} card={card} />
           ) : (
             <LightCard
