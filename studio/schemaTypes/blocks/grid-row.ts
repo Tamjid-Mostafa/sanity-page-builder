@@ -239,20 +239,43 @@ export const gridRowType = defineType({
     }),
   ],
   preview: {
-    select: {layout: 'layout', columns: 'columns'},
+    select: {
+      layout: 'layout',
+      columns: 'columns',
+      // Pull the most useful label fields from the first block in the first column
+      blockTitle:   'columns[0].content[0].title',
+      blockHeading: 'columns[0].content[0].heading',
+      blockEyebrow: 'columns[0].content[0].eyebrow',
+      // richTextBlock stores its heading inside portable-text children
+      richTextSpan: 'columns[0].content[0].content[0].children[0].text',
+    },
     prepare({
       layout,
       columns,
+      blockTitle,
+      blockHeading,
+      blockEyebrow,
+      richTextSpan,
     }: {
       layout?: string
       columns?: Array<unknown>
+      blockTitle?: string
+      blockHeading?: string
+      blockEyebrow?: string
+      richTextSpan?: string
     }) {
       const colCount = columns?.length ?? 0
-      const label =
+      const layoutLabel =
         LAYOUT_OPTIONS.find((o) => o.value === layout)?.title ?? layout ?? '—'
+
+      // Prefer a real content label in this order: title → heading → rich-text span → eyebrow
+      const derivedLabel = blockTitle || blockHeading || richTextSpan || blockEyebrow
+
       return {
-        title: `Grid Row — ${label}`,
-        subtitle: `${colCount} column${colCount !== 1 ? 's' : ''}`,
+        title: derivedLabel
+          ? `${derivedLabel}`
+          : `Grid Row — ${layoutLabel}`,
+        subtitle: `${layoutLabel} · ${colCount} col${colCount !== 1 ? 's' : ''}`,
         media: DashboardIcon,
       }
     },
