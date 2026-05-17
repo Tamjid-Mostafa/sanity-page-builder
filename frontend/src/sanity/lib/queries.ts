@@ -45,7 +45,7 @@ const heroFragment = /* groq */ `
     prospectusLink,
     slideDurationMs,
     // Non-slideshow layout
-    buttons[] { _key, _type, ... },
+    buttons[] { _key, _type, ..., ${blockStylesFragment} },
     mediaImage { ${imageFragment} },
     backgroundImage { ${imageFragment} },
     "backgroundVideoUrl": backgroundVideo.asset->url,
@@ -62,6 +62,7 @@ const contentFragment = /* groq */ `
       ${blockStylesFragment}
     },
     _type == "richTextBlock" => {
+      eyebrow,
       content[] { ... },
       ${blockStylesFragment}
     },

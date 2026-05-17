@@ -1,5 +1,6 @@
 import {defineType, defineField} from 'sanity'
 import {DocumentTextIcon} from '@sanity/icons'
+import {stringField} from '../shared/fields'
 
 export const richTextBlockType = defineType({
   name: 'richTextBlock',
@@ -7,6 +8,9 @@ export const richTextBlockType = defineType({
   type: 'object',
   icon: DocumentTextIcon,
   fields: [
+    stringField('eyebrow', 'Eyebrow', {
+      description: 'Small uppercase label above the content (e.g. "Home Page")',
+    }),
     defineField({
       name: 'content',
       title: 'Content',
@@ -21,11 +25,17 @@ export const richTextBlockType = defineType({
     }),
   ],
   preview: {
-    select: {content: 'content'},
-    prepare({content}: {content?: Array<{children?: Array<{text?: string}>}>}) {
+    select: {content: 'content', eyebrow: 'eyebrow'},
+    prepare({
+      content,
+      eyebrow,
+    }: {
+      content?: Array<{children?: Array<{text?: string}>}>
+      eyebrow?: string
+    }) {
       const firstBlock = content?.[0]
       const text = firstBlock?.children?.map((c) => c.text).join('') || 'Rich Text'
-      return {title: text, media: DocumentTextIcon}
+      return {title: text, subtitle: eyebrow, media: DocumentTextIcon}
     },
   },
 })

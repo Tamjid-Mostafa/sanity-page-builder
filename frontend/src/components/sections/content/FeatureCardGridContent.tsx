@@ -223,11 +223,31 @@ function LightCard({
   );
 }
 
+function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
+  return (
+    <div className="group relative flex flex-col rounded-3xl border border-border/50 bg-card/70 p-6 shadow-none ring-1 ring-black/3 transition-[border-color,background-color] duration-300 hover:border-secondary/20 hover:bg-card md:p-7">
+      <div
+        className="absolute left-6 right-6 top-0 h-px bg-linear-to-r from-transparent via-secondary/50 to-transparent md:left-7 md:right-7"
+        aria-hidden
+      />
+      <h3 className="mb-3 pt-1 font-heading text-lg font-semibold leading-snug tracking-tight text-foreground md:text-xl">
+        {card.title}
+      </h3>
+      {card.description && (
+        <p className="text-sm font-normal leading-relaxed text-muted-foreground md:text-[0.9375rem]">
+          {card.description}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) {
   const d = data as ExtendedFeatureCardGridData;
   const cards = (data.cards || []) as ExtendedFeatureCard[];
   const columns = stegaClean(data.columns) || "3";
   const colClass = COLS_MAP[columns] || COLS_MAP["3"];
+  const isAudience = stegaClean(d.style) === "audience";
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
   const cardStyle = stegaClean(d.style) || "simple";
@@ -283,19 +303,23 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
           )}
         </div>
       )}
-      <div className={`grid grid-cols-1 gap-4 ${colClass}`}>
-        {cards.map((card, index) => (
-          <LightCard
-            key={card._key}
-            card={card}
-            index={index}
-            showStepNumbers={showStepNumbers}
-            cardStyle={cardStyle}
-            iconSize={iconSize}
-            cardTitleStyle={cardTitleStyle}
-            cardTitleAlign={cardTitleAlign}
-          />
-        ))}
+      <div className={`grid grid-cols-1 gap-5 ${isAudience ? "sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7" : colClass}`}>
+        {cards.map((card, index) =>
+          isAudience ? (
+            <AudienceCard key={card._key} card={card} />
+          ) : (
+            <LightCard
+              key={card._key}
+              card={card}
+              index={index}
+              showStepNumbers={showStepNumbers}
+              cardStyle={cardStyle}
+              iconSize={iconSize}
+              cardTitleStyle={cardTitleStyle}
+              cardTitleAlign={cardTitleAlign}
+            />
+          )
+        )}
       </div>
     </div>
   );

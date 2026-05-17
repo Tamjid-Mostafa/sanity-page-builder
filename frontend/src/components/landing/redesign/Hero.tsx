@@ -33,7 +33,11 @@ export interface HeroSectionData {
   slides?: HeroSlide[];
   backgroundVideos?: HeroVideo[];
   slideDurationMs?: number;
-  primaryButton?: { label?: string; action?: "calendly" | "link"; href?: string };
+  primaryButton?: {
+    label?: string;
+    action?: "calendly" | "link";
+    href?: string;
+  };
   secondaryButton?: { label?: string; href?: string };
   pills?: string[];
   prospectusLink?: string;
@@ -64,23 +68,35 @@ const FALLBACK_SLIDES: HeroSlide[] = [
   {
     tag: "Personal Growth",
     headline: "Knowledge, confidence,\nand direction",
-    subtitle: "Helping capable young people develop the foundations to build meaningful lives.",
+    subtitle:
+      "Helping capable young people develop the foundations to build meaningful lives.",
   },
 ];
 
-const FALLBACK_PILLS = ["A Levels", "High School Diploma", "Global Development", "Personal Growth"];
+const FALLBACK_PILLS = [
+  "A Levels",
+  "High School Diploma",
+  "Global Development",
+  "Personal Growth",
+];
 
 // ---------------------------------------------------------------------------
 
 export function HeroSection({ block }: { block?: HeroSectionData }) {
-  const slides = (block?.slides?.length ? block.slides : FALLBACK_SLIDES);
+  const slides = block?.slides?.length ? block.slides : FALLBACK_SLIDES;
   const videos = block?.backgroundVideos ?? [];
   const slideDuration = block?.slideDurationMs ?? 6000;
   const pills = block?.pills?.length ? block.pills : FALLBACK_PILLS;
-  const prospectusLink = block?.prospectusLink ?? "/prospectus";
+  const prospectusLink = block?.prospectusLink;
 
-  const primaryBtn = block?.primaryButton ?? { label: "Book a Conversation", action: "calendly" as const };
-  const secondaryBtn = block?.secondaryButton ?? { label: "Check Your Fit", href: "/apply" };
+  const primaryBtn = block?.primaryButton ?? {
+    label: "Book a Conversation",
+    action: "calendly" as const,
+  };
+  const secondaryBtn = block?.secondaryButton ?? {
+    label: "Check Your Fit",
+    href: "/apply",
+  };
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -97,7 +113,9 @@ export function HeroSection({ block }: { block?: HeroSectionData }) {
 
   useEffect(() => {
     timerRef.current = setInterval(next, slideDuration);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [next, slideDuration]);
 
   const resetTimer = (idx: number) => {
@@ -107,7 +125,8 @@ export function HeroSection({ block }: { block?: HeroSectionData }) {
   };
 
   // Match video to slide by index; cycle if fewer videos than slides
-  const activeVideo = videos.length > 0 ? videos[activeIndex % videos.length] : undefined;
+  const activeVideo =
+    videos.length > 0 ? videos[activeIndex % videos.length] : undefined;
   const videoUrl = activeVideo?.videoUrl;
   const posterUrl = activeVideo?.poster?.asset?.url;
 
@@ -270,19 +289,21 @@ export function HeroSection({ block }: { block?: HeroSectionData }) {
             )}
 
             {/* Prospectus link */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.65, duration: 0.4 }}
-            >
-              <Link
-                href={prospectusLink}
-                className="text-xs sm:text-sm font-medium text-white/60 hover:text-white/90 underline underline-offset-4 transition-colors duration-200 inline-flex items-center gap-1.5"
+            {prospectusLink && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.65, duration: 0.4 }}
               >
-                <Download className="h-3.5 w-3.5" />
-                Download Prospectus
-              </Link>
-            </motion.div>
+                <Link
+                  href={prospectusLink}
+                  className="text-xs sm:text-sm font-medium text-white/60 hover:text-white/90 underline underline-offset-4 transition-colors duration-200 inline-flex items-center gap-1.5"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Download Prospectus
+                </Link>
+              </motion.div>
+            )}
           </div>
         </div>
 
@@ -312,7 +333,10 @@ export function HeroSection({ block }: { block?: HeroSectionData }) {
                     className="absolute inset-y-0 left-0 bg-white rounded-full"
                     initial={{ width: "0%" }}
                     animate={{ width: "100%" }}
-                    transition={{ duration: slideDuration / 1000, ease: "linear" }}
+                    transition={{
+                      duration: slideDuration / 1000,
+                      ease: "linear",
+                    }}
                   />
                 )}
                 {i < activeIndex && (
@@ -326,4 +350,3 @@ export function HeroSection({ block }: { block?: HeroSectionData }) {
     </section>
   );
 }
-

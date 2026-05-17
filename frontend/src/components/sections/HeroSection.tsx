@@ -245,7 +245,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
   const videos = data.backgroundVideos || [];
   const slideDuration = data.slideDurationMs ?? 6000;
   const pills = data.pills || [];
-  const prospectusLink = data.prospectusLink || "/prospectus";
+  const prospectusLink = data.prospectusLink;
   const primaryBtn = data.primaryButton || {
     label: "Book a Conversation",
     action: "calendly" as const,
@@ -449,25 +449,27 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
               </motion.div>
             )}
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.65, duration: 0.4 }}
-            >
-              <Link
-                href={prospectusLink}
-                className="text-xs sm:text-sm font-medium text-white/60 hover:text-white/90 underline underline-offset-4 transition-colors duration-200 inline-flex items-center gap-1.5"
+            {prospectusLink && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.65, duration: 0.4 }}
               >
-                <Download className="h-3.5 w-3.5" />
-                Download Prospectus
-              </Link>
-            </motion.div>
+                <Link
+                  href={prospectusLink}
+                  className="text-xs sm:text-sm font-medium text-white/60 hover:text-white/90 underline underline-offset-4 transition-colors duration-200 inline-flex items-center gap-1.5"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Download Prospectus
+                </Link>
+              </motion.div>
+            )}
           </div>
         </div>
 
         {totalSteps > 1 && (
           <div className="absolute bottom-14 md:bottom-16 lg:bottom-20 right-6 sm:right-8 lg:right-12 flex flex-col gap-3 items-end">
-            {Array.from({length: totalSteps}, (_, i) => (
+            {Array.from({ length: totalSteps }, (_, i) => (
               <button
                 key={i}
                 onClick={() => resetTimer(i)}

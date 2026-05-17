@@ -414,6 +414,21 @@ export type CardTitleTypography = {
   textColor?: string;
 };
 
+export type ProspectusLink = {
+  label?: string;
+  link?: Array<
+    | ({
+        _key: string;
+      } & LinkInternal)
+    | ({
+        _key: string;
+      } & LinkExternal)
+    | ({
+        _key: string;
+      } & PageSlug)
+  >;
+};
+
 export type SanityFileAssetReference = {
   _ref: string;
   _type: "reference";
@@ -640,6 +655,9 @@ export type GridRow = {
       | ({
           _key: string;
         } & TocBlock)
+      | ({
+          _key: string;
+        } & CtaSection)
     >;
     verticalAlign?: "top" | "center" | "bottom";
     blockStyles?: BlockStyles;
@@ -657,6 +675,21 @@ export type GridRow = {
 export type TocBlock = {
   _type: "tocBlock";
   title?: string;
+  blockStyles?: BlockStyles;
+};
+
+export type CtaSection = {
+  _type: "ctaSection";
+  eyebrow?: string;
+  heading: string;
+  subtitle?: string;
+  buttons?: Array<
+    {
+      _key: string;
+    } & CallToAction
+  >;
+  trustItems?: Array<string>;
+  prospectusLink?: ProspectusLink;
   blockStyles?: BlockStyles;
 };
 
@@ -736,6 +769,13 @@ export type FeatureCardGrid = {
   eyebrow?: string;
   title?: string;
   subtitle?: string;
+  bannerImage?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
   showStepNumbers?: boolean;
   cards: Array<{
     coverImage?: CoverImage;
@@ -751,7 +791,7 @@ export type FeatureCardGrid = {
   }>;
   titleAlign?: "left" | "center";
   columns?: "2" | "3" | "4";
-  style?: "simple" | "bordered" | "shadow" | "highlighted";
+  style?: "simple" | "bordered" | "shadow" | "highlighted" | "audience";
   cardIconSize?: "small" | "medium" | "large" | "xl";
   cardTitleTypography?: CardTitleTypography;
   blockStyles?: BlockStyles;
@@ -759,12 +799,28 @@ export type FeatureCardGrid = {
 
 export type FaqBlock = {
   _type: "faqBlock";
+  variation?: "default" | "grouped";
+  eyebrow?: string;
   title?: string;
   subtitle?: string;
-  items: Array<{
+  showCta?: boolean;
+  ctaLabel?: string;
+  items?: Array<{
     question: string;
     answer?: BlockContent;
     _type: "faqItem";
+    _key: string;
+  }>;
+  groups?: Array<{
+    label: string;
+    accent?: "primary" | "secondary";
+    items: Array<{
+      question: string;
+      answer?: BlockContent;
+      _type: "faqItem";
+      _key: string;
+    }>;
+    _type: "faqGroup";
     _key: string;
   }>;
   enableSchema?: boolean;
@@ -1189,6 +1245,7 @@ export type ImageBlock = {
 
 export type RichTextBlock = {
   _type: "richTextBlock";
+  eyebrow?: string;
   content: BlockContent;
   blockStyles?: BlockStyles;
 };
@@ -1196,11 +1253,8 @@ export type RichTextBlock = {
 export type CallToAction = {
   _type: "callToAction";
   label: string;
-  color?: string;
-  textColor?: string;
-  hoverColor?: string;
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  link: Array<
+  action?: "link" | "calendly";
+  link?: Array<
     | ({
         _key: string;
       } & LinkInternal)
@@ -1211,6 +1265,10 @@ export type CallToAction = {
         _key: string;
       } & PageSlug)
   >;
+  color?: string;
+  textColor?: string;
+  hoverColor?: string;
+  variant?: "primary" | "secondary" | "outline" | "ghost";
 };
 
 export type Seo = {
@@ -1619,6 +1677,7 @@ export type AllSanitySchemaTypes =
   | PrimaryButton
   | SecondaryButton
   | CardTitleTypography
+  | ProspectusLink
   | SanityFileAssetReference
   | Video
   | SanityImageAssetReference
@@ -1639,6 +1698,7 @@ export type AllSanitySchemaTypes =
   | PageBuilder
   | GridRow
   | TocBlock
+  | CtaSection
   | ImageGallery
   | TestimonialCarousel
   | ApproachCarousel
@@ -1701,7 +1761,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../frontend/src/sanity/lib/queries.ts
 // Variable: HOME_PAGE_QUERY
-// Query: *[_id == "homePage"][0] {      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    // Slideshow layout    slides[] { _key, tag, headline, subtitle },    backgroundVideos[] {      _key, title,      "videoUrl": video.asset->url,      poster {        asset->{ url, metadata { lqip, dimensions { width, height } } }      }    },    // Primary / secondary buttons for slideshow    primaryButton,    secondaryButton,    pills,    prospectusLink,    slideDurationMs,    // Non-slideshow layout    buttons[] { _key, _type, ... },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    "backgroundVideoUrl": backgroundVideo.asset->url,      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      content[] { ... },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "featureCardGrid" => {      eyebrow,      showStepNumbers,      ...,      cards[] {        _key, _type,        accentColor,        accentApplyTo,        title,        subtitle,        description,        cta,        coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "experienceCardGrid" => {      ...,      cards[] {        _key, _type,        title,        alt,        description,        image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "approachCarousel" => {      ...,      cards[] {        _key, _type,        label,        title,        description,        accentColor,        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialCarousel" => {      ...,      eyebrow,      titleAlign,      testimonials[] {        ...,        tag,        avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },          blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
+// Query: *[_id == "homePage"][0] {      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    // Slideshow layout    slides[] { _key, tag, headline, subtitle },    backgroundVideos[] {      _key, title,      "videoUrl": video.asset->url,      poster {        asset->{ url, metadata { lqip, dimensions { width, height } } }      }    },    // Primary / secondary buttons for slideshow    primaryButton,    secondaryButton,    pills,    prospectusLink,    slideDurationMs,    // Non-slideshow layout    buttons[] { _key, _type, ...,   blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  } },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    "backgroundVideoUrl": backgroundVideo.asset->url,      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      eyebrow,      content[] { ... },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "featureCardGrid" => {      eyebrow,      showStepNumbers,      ...,      bannerImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      cards[] {        _key, _type,        accentColor,        accentApplyTo,        title,        subtitle,        description,        cta,        coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "experienceCardGrid" => {      ...,      cards[] {        _key, _type,        title,        alt,        description,        image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "approachCarousel" => {      ...,      cards[] {        _key, _type,        label,        title,        description,        accentColor,        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialCarousel" => {      ...,      eyebrow,      titleAlign,      testimonials[] {        ...,        tag,        avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },          blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "faqBlock" => {      ...,      variation,      eyebrow,      showCta,      ctaLabel,      items[] { _key, _type, question, answer[] { ... } },      groups[] {        _key, _type, label, accent,        items[] { _key, _type, question, answer[] { ... } }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "ctaSection" => {      eyebrow, heading, subtitle,      buttons[] {        _key, _type, label, action, color, textColor, hoverColor, variant,        link[] { ... }      },      trustItems,      prospectusLink {        label,        link[] { ... }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
 export type HOME_PAGE_QUERY_RESULT =
   | {
       seo: null;
@@ -1943,11 +2003,8 @@ export type HOME_PAGE_QUERY_RESULT =
                     _key: string;
                     _type: "callToAction";
                     label: string;
-                    color?: string;
-                    textColor?: string;
-                    hoverColor?: string;
-                    variant?: "ghost" | "outline" | "primary" | "secondary";
-                    link: Array<
+                    action?: "calendly" | "link";
+                    link?: Array<
                       | ({
                           _key: string;
                         } & LinkExternal)
@@ -1958,6 +2015,10 @@ export type HOME_PAGE_QUERY_RESULT =
                           _key: string;
                         } & PageSlug)
                     >;
+                    color?: string;
+                    textColor?: string;
+                    hoverColor?: string;
+                    variant?: "ghost" | "outline" | "primary" | "secondary";
                     blockStyles: null;
                   }
                 | {
@@ -2028,6 +2089,104 @@ export type HOME_PAGE_QUERY_RESULT =
                     style?: "compact" | "inline" | "large";
                     backgroundColor?: string;
                     textColor?: string;
+                    blockStyles: {
+                      padding: Padding | null;
+                      margin: Margin | null;
+                      border: Border | null;
+                      borderTop: BorderTop | null;
+                      borderRadius: BorderRadius | null;
+                      background: {
+                        color: string | null;
+                        image: {
+                          asset: {
+                            _id: string;
+                            url: string;
+                            metadata: {
+                              lqip: string | null;
+                              dimensions: {
+                                width: number;
+                                height: number;
+                              } | null;
+                            } | null;
+                          } | null;
+                          alt: null;
+                          hotspot: SanityImageHotspot | null;
+                          crop: SanityImageCrop | null;
+                        } | null;
+                        size: "auto" | "contain" | "cover" | null;
+                        overlay: string | null;
+                      } | null;
+                      typography: Typography | null;
+                      effects: Effects | null;
+                    } | null;
+                  }
+                | {
+                    _key: string;
+                    _type: "ctaSection";
+                    eyebrow: string | null;
+                    heading: string;
+                    subtitle: string | null;
+                    buttons: Array<{
+                      _key: string;
+                      _type: "callToAction";
+                      label: string;
+                      action: "calendly" | "link" | null;
+                      color: string | null;
+                      textColor: string | null;
+                      hoverColor: string | null;
+                      variant:
+                        | "ghost"
+                        | "outline"
+                        | "primary"
+                        | "secondary"
+                        | null;
+                      link: Array<
+                        | {
+                            _key: string;
+                            _type: "linkExternal";
+                            title: string;
+                            url: string;
+                            openInNewTab?: boolean;
+                          }
+                        | {
+                            _key: string;
+                            _type: "linkInternal";
+                            title?: string;
+                            reference: PageReference;
+                          }
+                        | {
+                            _key: string;
+                            _type: "pageSlug";
+                            title: string;
+                            slug: string;
+                          }
+                      > | null;
+                    }> | null;
+                    trustItems: Array<string> | null;
+                    prospectusLink: {
+                      label: string | null;
+                      link: Array<
+                        | {
+                            _key: string;
+                            _type: "linkExternal";
+                            title: string;
+                            url: string;
+                            openInNewTab?: boolean;
+                          }
+                        | {
+                            _key: string;
+                            _type: "linkInternal";
+                            title?: string;
+                            reference: PageReference;
+                          }
+                        | {
+                            _key: string;
+                            _type: "pageSlug";
+                            title: string;
+                            slug: string;
+                          }
+                      > | null;
+                    } | null;
                     blockStyles: {
                       padding: Padding | null;
                       margin: Margin | null;
@@ -2187,14 +2346,98 @@ export type HOME_PAGE_QUERY_RESULT =
                 | {
                     _key: string;
                     _type: "faqBlock";
+                    variation: "default" | "grouped" | null;
+                    eyebrow: string | null;
                     title?: string;
                     subtitle?: string;
+                    showCta: boolean | null;
+                    ctaLabel: string | null;
                     items: Array<{
-                      question: string;
-                      answer?: BlockContent;
-                      _type: "faqItem";
                       _key: string;
-                    }>;
+                      _type: "faqItem";
+                      question: string;
+                      answer: Array<
+                        | {
+                            children?: Array<{
+                              marks?: Array<string>;
+                              text?: string;
+                              _type: "span";
+                              _key: string;
+                            }>;
+                            style?:
+                              | "blockquote"
+                              | "h2"
+                              | "h3"
+                              | "h4"
+                              | "normal";
+                            listItem?: "bullet" | "number";
+                            markDefs?: Array<{
+                              href?: string;
+                              openInNewTab?: boolean;
+                              _type: "link";
+                              _key: string;
+                            }>;
+                            level?: number;
+                            _type: "block";
+                            _key: string;
+                          }
+                        | {
+                            asset?: SanityImageAssetReference;
+                            media?: unknown;
+                            hotspot?: SanityImageHotspot;
+                            crop?: SanityImageCrop;
+                            alt?: string;
+                            _type: "image";
+                            _key: string;
+                          }
+                      > | null;
+                    }> | null;
+                    groups: Array<{
+                      _key: string;
+                      _type: "faqGroup";
+                      label: string;
+                      accent: "primary" | "secondary" | null;
+                      items: Array<{
+                        _key: string;
+                        _type: "faqItem";
+                        question: string;
+                        answer: Array<
+                          | {
+                              children?: Array<{
+                                marks?: Array<string>;
+                                text?: string;
+                                _type: "span";
+                                _key: string;
+                              }>;
+                              style?:
+                                | "blockquote"
+                                | "h2"
+                                | "h3"
+                                | "h4"
+                                | "normal";
+                              listItem?: "bullet" | "number";
+                              markDefs?: Array<{
+                                href?: string;
+                                openInNewTab?: boolean;
+                                _type: "link";
+                                _key: string;
+                              }>;
+                              level?: number;
+                              _type: "block";
+                              _key: string;
+                            }
+                          | {
+                              asset?: SanityImageAssetReference;
+                              media?: unknown;
+                              hotspot?: SanityImageHotspot;
+                              crop?: SanityImageCrop;
+                              alt?: string;
+                              _type: "image";
+                              _key: string;
+                            }
+                        > | null;
+                      }>;
+                    }> | null;
                     enableSchema?: boolean;
                     allowMultipleOpen?: boolean;
                     firstOpenByDefault?: boolean;
@@ -2235,6 +2478,22 @@ export type HOME_PAGE_QUERY_RESULT =
                     eyebrow?: string;
                     title?: string;
                     subtitle?: string;
+                    bannerImage: {
+                      asset: {
+                        _id: string;
+                        url: string;
+                        metadata: {
+                          lqip: string | null;
+                          dimensions: {
+                            width: number;
+                            height: number;
+                          } | null;
+                        } | null;
+                      } | null;
+                      alt: null;
+                      hotspot: SanityImageHotspot | null;
+                      crop: SanityImageCrop | null;
+                    } | null;
                     showStepNumbers?: boolean;
                     cards: Array<{
                       _key: string;
@@ -2284,7 +2543,12 @@ export type HOME_PAGE_QUERY_RESULT =
                     }>;
                     titleAlign?: "center" | "left";
                     columns?: "2" | "3" | "4";
-                    style?: "bordered" | "highlighted" | "shadow" | "simple";
+                    style?:
+                      | "audience"
+                      | "bordered"
+                      | "highlighted"
+                      | "shadow"
+                      | "simple";
                     cardIconSize?: "large" | "medium" | "small" | "xl";
                     cardTitleTypography?: CardTitleTypography;
                     blockStyles: {
@@ -2719,6 +2983,7 @@ export type HOME_PAGE_QUERY_RESULT =
                 | {
                     _key: string;
                     _type: "richTextBlock";
+                    eyebrow: string | null;
                     content: Array<
                       | {
                           children?: Array<{
@@ -3306,11 +3571,8 @@ export type HOME_PAGE_QUERY_RESULT =
               _key: string;
               _type: "callToAction";
               label: string;
-              color?: string;
-              textColor?: string;
-              hoverColor?: string;
-              variant?: "ghost" | "outline" | "primary" | "secondary";
-              link: Array<
+              action?: "calendly" | "link";
+              link?: Array<
                 | ({
                     _key: string;
                   } & LinkExternal)
@@ -3321,6 +3583,11 @@ export type HOME_PAGE_QUERY_RESULT =
                     _key: string;
                   } & PageSlug)
               >;
+              color?: string;
+              textColor?: string;
+              hoverColor?: string;
+              variant?: "ghost" | "outline" | "primary" | "secondary";
+              blockStyles: null;
             }> | null;
             mediaImage: {
               asset: {
@@ -3412,7 +3679,7 @@ export type HOME_PAGE_QUERY_RESULT =
 
 // Source: ../frontend/src/sanity/lib/queries.ts
 // Variable: PAGE_QUERY
-// Query: *[_type == "page" && slug.current == $slug][0] {    _id, title, slug,      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    // Slideshow layout    slides[] { _key, tag, headline, subtitle },    backgroundVideos[] {      _key, title,      "videoUrl": video.asset->url,      poster {        asset->{ url, metadata { lqip, dimensions { width, height } } }      }    },    // Primary / secondary buttons for slideshow    primaryButton,    secondaryButton,    pills,    prospectusLink,    slideDurationMs,    // Non-slideshow layout    buttons[] { _key, _type, ... },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    "backgroundVideoUrl": backgroundVideo.asset->url,      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      content[] { ... },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "featureCardGrid" => {      eyebrow,      showStepNumbers,      ...,      cards[] {        _key, _type,        accentColor,        accentApplyTo,        title,        subtitle,        description,        cta,        coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "experienceCardGrid" => {      ...,      cards[] {        _key, _type,        title,        alt,        description,        image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "approachCarousel" => {      ...,      cards[] {        _key, _type,        label,        title,        description,        accentColor,        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialCarousel" => {      ...,      eyebrow,      titleAlign,      testimonials[] {        ...,        tag,        avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },          blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
+// Query: *[_type == "page" && slug.current == $slug][0] {    _id, title, slug,      seo {    metaTitle, metaDescription, noIndex,    ogImage { asset->{ _id, url } }  },      pageBuilder[] {    _key, _type, ...,      _type == "heroSection" => {    ...,    // Slideshow layout    slides[] { _key, tag, headline, subtitle },    backgroundVideos[] {      _key, title,      "videoUrl": video.asset->url,      poster {        asset->{ url, metadata { lqip, dimensions { width, height } } }      }    },    // Primary / secondary buttons for slideshow    primaryButton,    secondaryButton,    pills,    prospectusLink,    slideDurationMs,    // Non-slideshow layout    buttons[] { _key, _type, ...,   blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  } },    mediaImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    backgroundImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },    "backgroundVideoUrl": backgroundVideo.asset->url,      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },    columns[] {      _key, ...,        content[] {    _key, _type, ...,    _type == "imageBlock" => {      image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      caption,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "richTextBlock" => {      eyebrow,      content[] { ... },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "logoRow" => {      logos[] { image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, alt, link },      grayscale, size,        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialQuote" => {      ...,      avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "iconText" => {      ...,      icon {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "featureCardGrid" => {      eyebrow,      showStepNumbers,      ...,      bannerImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },      cards[] {        _key, _type,        accentColor,        accentApplyTo,        title,        subtitle,        description,        cta,        coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "experienceCardGrid" => {      ...,      cards[] {        _key, _type,        title,        alt,        description,        image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "approachCarousel" => {      ...,      cards[] {        _key, _type,        label,        title,        description,        accentColor,        icon {          source,          lucide,          image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }        }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "testimonialCarousel" => {      ...,      eyebrow,      titleAlign,      testimonials[] {        ...,        tag,        avatar {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop },          blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "faqBlock" => {      ...,      variation,      eyebrow,      showCta,      ctaLabel,      items[] { _key, _type, question, answer[] { ... } },      groups[] {        _key, _type, label, accent,        items[] { _key, _type, question, answer[] { ... } }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },    _type == "ctaSection" => {      eyebrow, heading, subtitle,      buttons[] {        _key, _type, label, action, color, textColor, hoverColor, variant,        link[] { ... }      },      trustItems,      prospectusLink {        label,        link[] { ... }      },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  },        blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }    },      blockStyles {    padding, margin, border, borderTop, borderRadius,    background { color, image {   asset->{    _id,    url,    metadata { lqip, dimensions { width, height } }  },  alt,  hotspot,  crop }, size, overlay },    typography, effects  }  }  }
 export type PAGE_QUERY_RESULT = {
   _id: string;
   title: string;
@@ -3638,11 +3905,8 @@ export type PAGE_QUERY_RESULT = {
                 _key: string;
                 _type: "callToAction";
                 label: string;
-                color?: string;
-                textColor?: string;
-                hoverColor?: string;
-                variant?: "ghost" | "outline" | "primary" | "secondary";
-                link: Array<
+                action?: "calendly" | "link";
+                link?: Array<
                   | ({
                       _key: string;
                     } & LinkExternal)
@@ -3653,6 +3917,10 @@ export type PAGE_QUERY_RESULT = {
                       _key: string;
                     } & PageSlug)
                 >;
+                color?: string;
+                textColor?: string;
+                hoverColor?: string;
+                variant?: "ghost" | "outline" | "primary" | "secondary";
                 blockStyles: null;
               }
             | {
@@ -3723,6 +3991,99 @@ export type PAGE_QUERY_RESULT = {
                 style?: "compact" | "inline" | "large";
                 backgroundColor?: string;
                 textColor?: string;
+                blockStyles: {
+                  padding: Padding | null;
+                  margin: Margin | null;
+                  border: Border | null;
+                  borderTop: BorderTop | null;
+                  borderRadius: BorderRadius | null;
+                  background: {
+                    color: string | null;
+                    image: {
+                      asset: {
+                        _id: string;
+                        url: string;
+                        metadata: {
+                          lqip: string | null;
+                          dimensions: {
+                            width: number;
+                            height: number;
+                          } | null;
+                        } | null;
+                      } | null;
+                      alt: null;
+                      hotspot: SanityImageHotspot | null;
+                      crop: SanityImageCrop | null;
+                    } | null;
+                    size: "auto" | "contain" | "cover" | null;
+                    overlay: string | null;
+                  } | null;
+                  typography: Typography | null;
+                  effects: Effects | null;
+                } | null;
+              }
+            | {
+                _key: string;
+                _type: "ctaSection";
+                eyebrow: string | null;
+                heading: string;
+                subtitle: string | null;
+                buttons: Array<{
+                  _key: string;
+                  _type: "callToAction";
+                  label: string;
+                  action: "calendly" | "link" | null;
+                  color: string | null;
+                  textColor: string | null;
+                  hoverColor: string | null;
+                  variant: "ghost" | "outline" | "primary" | "secondary" | null;
+                  link: Array<
+                    | {
+                        _key: string;
+                        _type: "linkExternal";
+                        title: string;
+                        url: string;
+                        openInNewTab?: boolean;
+                      }
+                    | {
+                        _key: string;
+                        _type: "linkInternal";
+                        title?: string;
+                        reference: PageReference;
+                      }
+                    | {
+                        _key: string;
+                        _type: "pageSlug";
+                        title: string;
+                        slug: string;
+                      }
+                  > | null;
+                }> | null;
+                trustItems: Array<string> | null;
+                prospectusLink: {
+                  label: string | null;
+                  link: Array<
+                    | {
+                        _key: string;
+                        _type: "linkExternal";
+                        title: string;
+                        url: string;
+                        openInNewTab?: boolean;
+                      }
+                    | {
+                        _key: string;
+                        _type: "linkInternal";
+                        title?: string;
+                        reference: PageReference;
+                      }
+                    | {
+                        _key: string;
+                        _type: "pageSlug";
+                        title: string;
+                        slug: string;
+                      }
+                  > | null;
+                } | null;
                 blockStyles: {
                   padding: Padding | null;
                   margin: Margin | null;
@@ -3882,14 +4243,88 @@ export type PAGE_QUERY_RESULT = {
             | {
                 _key: string;
                 _type: "faqBlock";
+                variation: "default" | "grouped" | null;
+                eyebrow: string | null;
                 title?: string;
                 subtitle?: string;
+                showCta: boolean | null;
+                ctaLabel: string | null;
                 items: Array<{
-                  question: string;
-                  answer?: BlockContent;
-                  _type: "faqItem";
                   _key: string;
-                }>;
+                  _type: "faqItem";
+                  question: string;
+                  answer: Array<
+                    | {
+                        children?: Array<{
+                          marks?: Array<string>;
+                          text?: string;
+                          _type: "span";
+                          _key: string;
+                        }>;
+                        style?: "blockquote" | "h2" | "h3" | "h4" | "normal";
+                        listItem?: "bullet" | "number";
+                        markDefs?: Array<{
+                          href?: string;
+                          openInNewTab?: boolean;
+                          _type: "link";
+                          _key: string;
+                        }>;
+                        level?: number;
+                        _type: "block";
+                        _key: string;
+                      }
+                    | {
+                        asset?: SanityImageAssetReference;
+                        media?: unknown;
+                        hotspot?: SanityImageHotspot;
+                        crop?: SanityImageCrop;
+                        alt?: string;
+                        _type: "image";
+                        _key: string;
+                      }
+                  > | null;
+                }> | null;
+                groups: Array<{
+                  _key: string;
+                  _type: "faqGroup";
+                  label: string;
+                  accent: "primary" | "secondary" | null;
+                  items: Array<{
+                    _key: string;
+                    _type: "faqItem";
+                    question: string;
+                    answer: Array<
+                      | {
+                          children?: Array<{
+                            marks?: Array<string>;
+                            text?: string;
+                            _type: "span";
+                            _key: string;
+                          }>;
+                          style?: "blockquote" | "h2" | "h3" | "h4" | "normal";
+                          listItem?: "bullet" | "number";
+                          markDefs?: Array<{
+                            href?: string;
+                            openInNewTab?: boolean;
+                            _type: "link";
+                            _key: string;
+                          }>;
+                          level?: number;
+                          _type: "block";
+                          _key: string;
+                        }
+                      | {
+                          asset?: SanityImageAssetReference;
+                          media?: unknown;
+                          hotspot?: SanityImageHotspot;
+                          crop?: SanityImageCrop;
+                          alt?: string;
+                          _type: "image";
+                          _key: string;
+                        }
+                    > | null;
+                  }>;
+                }> | null;
                 enableSchema?: boolean;
                 allowMultipleOpen?: boolean;
                 firstOpenByDefault?: boolean;
@@ -3930,6 +4365,22 @@ export type PAGE_QUERY_RESULT = {
                 eyebrow?: string;
                 title?: string;
                 subtitle?: string;
+                bannerImage: {
+                  asset: {
+                    _id: string;
+                    url: string;
+                    metadata: {
+                      lqip: string | null;
+                      dimensions: {
+                        width: number;
+                        height: number;
+                      } | null;
+                    } | null;
+                  } | null;
+                  alt: null;
+                  hotspot: SanityImageHotspot | null;
+                  crop: SanityImageCrop | null;
+                } | null;
                 showStepNumbers?: boolean;
                 cards: Array<{
                   _key: string;
@@ -3979,7 +4430,12 @@ export type PAGE_QUERY_RESULT = {
                 }>;
                 titleAlign?: "center" | "left";
                 columns?: "2" | "3" | "4";
-                style?: "bordered" | "highlighted" | "shadow" | "simple";
+                style?:
+                  | "audience"
+                  | "bordered"
+                  | "highlighted"
+                  | "shadow"
+                  | "simple";
                 cardIconSize?: "large" | "medium" | "small" | "xl";
                 cardTitleTypography?: CardTitleTypography;
                 blockStyles: {
@@ -4414,6 +4870,7 @@ export type PAGE_QUERY_RESULT = {
             | {
                 _key: string;
                 _type: "richTextBlock";
+                eyebrow: string | null;
                 content: Array<
                   | {
                       children?: Array<{
@@ -5001,11 +5458,8 @@ export type PAGE_QUERY_RESULT = {
           _key: string;
           _type: "callToAction";
           label: string;
-          color?: string;
-          textColor?: string;
-          hoverColor?: string;
-          variant?: "ghost" | "outline" | "primary" | "secondary";
-          link: Array<
+          action?: "calendly" | "link";
+          link?: Array<
             | ({
                 _key: string;
               } & LinkExternal)
@@ -5016,6 +5470,11 @@ export type PAGE_QUERY_RESULT = {
                 _key: string;
               } & PageSlug)
           >;
+          color?: string;
+          textColor?: string;
+          hoverColor?: string;
+          variant?: "ghost" | "outline" | "primary" | "secondary";
+          blockStyles: null;
         }> | null;
         mediaImage: {
           asset: {
@@ -5331,8 +5790,8 @@ export type SITE_SETTINGS_QUERY_RESULT =
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_id == "homePage"][0] {\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    // Slideshow layout\n    slides[] { _key, tag, headline, subtitle },\n    backgroundVideos[] {\n      _key, title,\n      "videoUrl": video.asset->url,\n      poster {\n        asset->{ url, metadata { lqip, dimensions { width, height } } }\n      }\n    },\n    // Primary / secondary buttons for slideshow\n    primaryButton,\n    secondaryButton,\n    pills,\n    prospectusLink,\n    slideDurationMs,\n    // Non-slideshow layout\n    buttons[] { _key, _type, ... },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    "backgroundVideoUrl": backgroundVideo.asset->url,\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "featureCardGrid" => {\n      eyebrow,\n      showStepNumbers,\n      ...,\n      cards[] {\n        _key, _type,\n        accentColor,\n        accentApplyTo,\n        title,\n        subtitle,\n        description,\n        cta,\n        coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "experienceCardGrid" => {\n      ...,\n      cards[] {\n        _key, _type,\n        title,\n        alt,\n        description,\n        image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "approachCarousel" => {\n      ...,\n      cards[] {\n        _key, _type,\n        label,\n        title,\n        description,\n        accentColor,\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialCarousel" => {\n      ...,\n      eyebrow,\n      titleAlign,\n      testimonials[] {\n        ...,\n        tag,\n        avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': HOME_PAGE_QUERY_RESULT;
-    '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id, title, slug,\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    // Slideshow layout\n    slides[] { _key, tag, headline, subtitle },\n    backgroundVideos[] {\n      _key, title,\n      "videoUrl": video.asset->url,\n      poster {\n        asset->{ url, metadata { lqip, dimensions { width, height } } }\n      }\n    },\n    // Primary / secondary buttons for slideshow\n    primaryButton,\n    secondaryButton,\n    pills,\n    prospectusLink,\n    slideDurationMs,\n    // Non-slideshow layout\n    buttons[] { _key, _type, ... },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    "backgroundVideoUrl": backgroundVideo.asset->url,\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "featureCardGrid" => {\n      eyebrow,\n      showStepNumbers,\n      ...,\n      cards[] {\n        _key, _type,\n        accentColor,\n        accentApplyTo,\n        title,\n        subtitle,\n        description,\n        cta,\n        coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "experienceCardGrid" => {\n      ...,\n      cards[] {\n        _key, _type,\n        title,\n        alt,\n        description,\n        image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "approachCarousel" => {\n      ...,\n      cards[] {\n        _key, _type,\n        label,\n        title,\n        description,\n        accentColor,\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialCarousel" => {\n      ...,\n      eyebrow,\n      titleAlign,\n      testimonials[] {\n        ...,\n        tag,\n        avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': PAGE_QUERY_RESULT;
+    '\n  *[_id == "homePage"][0] {\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    // Slideshow layout\n    slides[] { _key, tag, headline, subtitle },\n    backgroundVideos[] {\n      _key, title,\n      "videoUrl": video.asset->url,\n      poster {\n        asset->{ url, metadata { lqip, dimensions { width, height } } }\n      }\n    },\n    // Primary / secondary buttons for slideshow\n    primaryButton,\n    secondaryButton,\n    pills,\n    prospectusLink,\n    slideDurationMs,\n    // Non-slideshow layout\n    buttons[] { _key, _type, ..., \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    "backgroundVideoUrl": backgroundVideo.asset->url,\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      eyebrow,\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "featureCardGrid" => {\n      eyebrow,\n      showStepNumbers,\n      ...,\n      bannerImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      cards[] {\n        _key, _type,\n        accentColor,\n        accentApplyTo,\n        title,\n        subtitle,\n        description,\n        cta,\n        coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "experienceCardGrid" => {\n      ...,\n      cards[] {\n        _key, _type,\n        title,\n        alt,\n        description,\n        image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "approachCarousel" => {\n      ...,\n      cards[] {\n        _key, _type,\n        label,\n        title,\n        description,\n        accentColor,\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialCarousel" => {\n      ...,\n      eyebrow,\n      titleAlign,\n      testimonials[] {\n        ...,\n        tag,\n        avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "faqBlock" => {\n      ...,\n      variation,\n      eyebrow,\n      showCta,\n      ctaLabel,\n      items[] { _key, _type, question, answer[] { ... } },\n      groups[] {\n        _key, _type, label, accent,\n        items[] { _key, _type, question, answer[] { ... } }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "ctaSection" => {\n      eyebrow, heading, subtitle,\n      buttons[] {\n        _key, _type, label, action, color, textColor, hoverColor, variant,\n        link[] { ... }\n      },\n      trustItems,\n      prospectusLink {\n        label,\n        link[] { ... }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': HOME_PAGE_QUERY_RESULT;
+    '\n  *[_type == "page" && slug.current == $slug][0] {\n    _id, title, slug,\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n,\n    \n  pageBuilder[] {\n    _key, _type, ...,\n    \n  _type == "heroSection" => {\n    ...,\n    // Slideshow layout\n    slides[] { _key, tag, headline, subtitle },\n    backgroundVideos[] {\n      _key, title,\n      "videoUrl": video.asset->url,\n      poster {\n        asset->{ url, metadata { lqip, dimensions { width, height } } }\n      }\n    },\n    // Primary / secondary buttons for slideshow\n    primaryButton,\n    secondaryButton,\n    pills,\n    prospectusLink,\n    slideDurationMs,\n    // Non-slideshow layout\n    buttons[] { _key, _type, ..., \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n },\n    mediaImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    backgroundImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    "backgroundVideoUrl": backgroundVideo.asset->url,\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n    columns[] {\n      _key, ...,\n      \n  content[] {\n    _key, _type, ...,\n    _type == "imageBlock" => {\n      image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      caption,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "richTextBlock" => {\n      eyebrow,\n      content[] { ... },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "logoRow" => {\n      logos[] { image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, alt, link },\n      grayscale, size,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialQuote" => {\n      ...,\n      avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "iconText" => {\n      ...,\n      icon { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "featureCardGrid" => {\n      eyebrow,\n      showStepNumbers,\n      ...,\n      bannerImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n      cards[] {\n        _key, _type,\n        accentColor,\n        accentApplyTo,\n        title,\n        subtitle,\n        description,\n        cta,\n        coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "experienceCardGrid" => {\n      ...,\n      cards[] {\n        _key, _type,\n        title,\n        alt,\n        description,\n        image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "approachCarousel" => {\n      ...,\n      cards[] {\n        _key, _type,\n        label,\n        title,\n        description,\n        accentColor,\n        icon {\n          source,\n          lucide,\n          image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }\n        }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "testimonialCarousel" => {\n      ...,\n      eyebrow,\n      titleAlign,\n      testimonials[] {\n        ...,\n        tag,\n        avatar { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n        \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "faqBlock" => {\n      ...,\n      variation,\n      eyebrow,\n      showCta,\n      ctaLabel,\n      items[] { _key, _type, question, answer[] { ... } },\n      groups[] {\n        _key, _type, label, accent,\n        items[] { _key, _type, question, answer[] { ... } }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    _type == "ctaSection" => {\n      eyebrow, heading, subtitle,\n      buttons[] {\n        _key, _type, label, action, color, textColor, hoverColor, variant,\n        link[] { ... }\n      },\n      trustItems,\n      prospectusLink {\n        label,\n        link[] { ... }\n      },\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n,\n      \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n    },\n    \n  blockStyles {\n    padding, margin, border, borderTop, borderRadius,\n    background { color, image { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n }, size, overlay },\n    typography, effects\n  }\n\n  }\n\n  }\n': PAGE_QUERY_RESULT;
     '\n  *[_type == "page" && defined(slug.current)] {\n    "slug": slug.current\n  }\n': PAGE_SLUGS_QUERY_RESULT;
     '\n  *[_type == "blogPost"] | order(publishedAt desc) {\n    _id, title, slug, excerpt, publishedAt, author,\n    coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n\n  }\n': BLOG_POSTS_QUERY_RESULT;
     '\n  *[_type == "blogPost" && slug.current == $slug][0] {\n    _id, title, slug, excerpt, publishedAt, author,\n    coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions { width, height } }\n  },\n  alt,\n  hotspot,\n  crop\n },\n    body[] { ... },\n    \n  seo {\n    metaTitle, metaDescription, noIndex,\n    ogImage { asset->{ _id, url } }\n  }\n\n  }\n': BLOG_POST_QUERY_RESULT;

@@ -23,7 +23,7 @@ export function SanityImage({value, width = 1200, height, className, priority, f
   const dimensions = value.asset.metadata?.dimensions
   const computedHeight = height || (dimensions ? Math.round(width * (dimensions.height / dimensions.width)) : Math.round(width / 1.5))
 
-  const src = urlFor(value).width(width).height(computedHeight).fit('max').url()
+  const src = urlFor(value).width(width).fit('max').url()
 
   const defaultSizes = sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px'
   const placeholder = value.asset.metadata?.lqip ? 'blur' as const : 'empty' as const
@@ -38,7 +38,7 @@ export function SanityImage({value, width = 1200, height, className, priority, f
         fill
         sizes={defaultSizes}
         quality={quality}
-        priority={priority}
+        preload={priority}
         placeholder={placeholder}
         blurDataURL={blurDataURL}
       />
