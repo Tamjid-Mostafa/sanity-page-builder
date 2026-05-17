@@ -79,7 +79,7 @@ const components: PortableTextComponents = {
     },
     normal: ({children}) => <p className="mb-4 font-light leading-relaxed">{children}</p>,
     blockquote: ({children}) => (
-      <blockquote className="my-6 border-l-4 border-primary/30 pl-4 italic text-muted">
+      <blockquote className="my-6 border-l-2 border-secondary pl-4 text-foreground">
         {children}
       </blockquote>
     ),

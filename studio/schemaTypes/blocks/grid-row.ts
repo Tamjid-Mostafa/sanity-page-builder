@@ -113,6 +113,7 @@ export const gridRowType = defineType({
                   {title: 'Top', value: 'top'},
                   {title: 'Center', value: 'center'},
                   {title: 'Bottom', value: 'bottom'},
+                  {title: 'Sticky', value: 'sticky'},
                 ],
               },
             }),

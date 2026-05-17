@@ -58,6 +58,8 @@ const VALIGN_MAP: Record<string, string> = {
   top: "self-start",
   center: "self-center",
   bottom: "self-end",
+  // sticky requires self-start so the cell doesn't stretch to row height
+  sticky: "self-start lg:sticky lg:top-28",
 };
 
 const STAGGER_MS = 100;
