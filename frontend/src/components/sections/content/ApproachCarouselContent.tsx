@@ -6,8 +6,7 @@ import { stegaClean } from "next-sanity";
 import { Image } from "next-sanity/image";
 import Autoplay from "embla-carousel-autoplay";
 import { urlFor } from "@/sanity/lib/image";
-import type { LucideProps } from "lucide-react";
-import { ICON_REGISTRY } from "@/lib/icon-registry";
+import { IconRenderer } from "@/lib/icon-registry";
 import { cn } from "@/lib/utils";
 import {
   Carousel,
@@ -41,11 +40,6 @@ type ApproachCarouselData = {
   blockStyles?: unknown;
 };
 
-function RegistryIcon({ name, ...props }: { name: string } & LucideProps) {
-  const Icon = ICON_REGISTRY[name];
-  if (!Icon) return null;
-  return <Icon {...props} />;
-}
 
 function ApproachCard({ card, index }: { card: ApproachCard; index: number }) {
   const accent = stegaClean(card.accentColor) || "primary";
@@ -74,8 +68,8 @@ function ApproachCard({ card, index }: { card: ApproachCard; index: number }) {
             height={44}
           />
         ) : card.icon?.lucide ? (
-          <RegistryIcon
-            name={stegaClean(card.icon.lucide)!}
+          <IconRenderer
+            name={stegaClean(card.icon.lucide)}
             className={cn(
               "h-11 w-11",
               isPrimary ? "text-primary/90" : "text-secondary"

@@ -1,13 +1,14 @@
-import {useCallback} from 'react'
+import React, {useCallback} from 'react'
 import {
   type ArrayOfObjectsInputProps,
   useFormValue,
   insert,
   setIfMissing,
 } from 'sanity'
-import {randomKey} from '@sanity/util/content'
+
 import {Button, Card, Flex, Text, Stack, Box} from '@sanity/ui'
 import {AddIcon, WarningOutlineIcon} from '@sanity/icons'
+import {randomKey} from '../lib/randomKey'
 
 const LAYOUT_COLUMN_COUNT: Record<string, number> = {
   'full': 1,

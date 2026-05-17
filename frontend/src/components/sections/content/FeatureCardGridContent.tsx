@@ -3,8 +3,7 @@
 import { stegaClean } from "next-sanity";
 import { Image } from "next-sanity/image";
 import { urlFor } from "@/sanity/lib/image";
-import type { LucideProps } from "lucide-react";
-import { ICON_REGISTRY } from "@/lib/icon-registry";
+import { IconRenderer } from "@/lib/icon-registry";
 import type { FeatureCardGridData } from "@/types/sanity";
 import { cn } from "@/lib/utils";
 
@@ -40,11 +39,6 @@ type ExtendedFeatureCardGridData = FeatureCardGridData & {
   cardTitleFontSize?: number | null;
 };
 
-function RegistryIcon({ name, ...props }: { name: string } & LucideProps) {
-  const Icon = ICON_REGISTRY[name];
-  if (!Icon) return null;
-  return <Icon {...props} />;
-}
 
 const COLS_MAP: Record<string, string> = {
   "2": "sm:grid-cols-2",
@@ -70,7 +64,10 @@ const ACCENT_ICON_BG: Record<string, string> = {
   none: "bg-muted",
 };
 
-const ICON_SIZE_MAP: Record<string, { box: string; icon: string; image: string }> = {
+const ICON_SIZE_MAP: Record<
+  string,
+  { box: string; icon: string; image: string }
+> = {
   small: { box: "w-8 h-8 rounded-md", icon: "w-4 h-4", image: "w-4 h-4" },
   medium: { box: "w-10 h-10 rounded-lg", icon: "w-5 h-5", image: "w-5 h-5" },
   large: { box: "w-12 h-12 rounded-xl", icon: "w-6 h-6", image: "w-6 h-6" },
@@ -79,7 +76,7 @@ const ICON_SIZE_MAP: Record<string, { box: string; icon: string; image: string }
 
 const CARD_STYLE_CLASSES: Record<string, string> = {
   simple: "bg-card shadow-sm hover:shadow-md",
-  bordered: "bg-card border border-border shadow-none hover:shadow-sm",
+  bordered: "bg-card border border-border shadow-sm hover:shadow-md",
   shadow: "bg-card shadow-md hover:shadow-lg",
   highlighted: "bg-card border border-primary/20 shadow-sm hover:shadow-md",
 };
@@ -102,19 +99,24 @@ function LightCard({
   cardTitleAlign: "left" | "center" | "right";
 }) {
   const accent = stegaClean(card.accentColor) || "none";
-  const accentTargets = new Set((card.accentApplyTo || ["icon"]).map((item) => stegaClean(item)));
+  const accentTargets = new Set(
+    (card.accentApplyTo || ["icon"]).map((item) => stegaClean(item)),
+  );
   const accentBarClass = ACCENT_BAR[accent] ?? "hidden";
   const accentTextClass = ACCENT_TEXT[accent] ?? "";
   const iconBgClass = ACCENT_ICON_BG[accent] ?? "bg-muted";
-  const cardStyleClass = CARD_STYLE_CLASSES[cardStyle] ?? CARD_STYLE_CLASSES.simple;
+  const cardStyleClass =
+    CARD_STYLE_CLASSES[cardStyle] ?? CARD_STYLE_CLASSES.simple;
   const showAccentBar = cardStyle === "bordered" || cardStyle === "highlighted";
 
   return (
     <div className="group relative hover:-translate-y-1 transition-transform duration-300">
-      <div className={cn(
-        "relative h-full rounded-2xl transition-shadow duration-300 flex flex-col overflow-hidden",
-        cardStyleClass,
-      )}>
+      <div
+        className={cn(
+          "relative h-full rounded-2xl transition-shadow duration-300 flex flex-col overflow-hidden",
+          cardStyleClass,
+        )}
+      >
         {showAccentBar && (
           <div
             className={`absolute top-0 left-0 right-0 h-0.5 z-10 ${accentBarClass}`}
@@ -124,7 +126,11 @@ function LightCard({
         {card.coverImage?.asset && (
           <div className="relative w-full h-44 overflow-hidden shrink-0">
             <Image
-              src={urlFor(card.coverImage).width(600).height(176).fit("crop").url()}
+              src={urlFor(card.coverImage)
+                .width(600)
+                .height(176)
+                .fit("crop")
+                .url()}
               alt={card.title || ""}
               fill
               className="object-cover"
@@ -134,32 +140,45 @@ function LightCard({
         )}
         <div className="flex flex-col gap-3 p-5 flex-1">
           {(card.icon || showStepNumbers) && (
-            <div className={cn("flex shrink-0", showStepNumbers ? "items-center justify-between" : "") }>
+            <div
+              className={cn(
+                "flex shrink-0",
+                showStepNumbers ? "items-center justify-between" : "",
+              )}
+            >
               {card.icon && (
                 <div
                   className={cn(
                     "inline-flex items-center justify-center",
                     iconSize.box,
-                    accentTargets.has("iconBg") ? iconBgClass : "bg-muted"
+                    accentTargets.has("iconBg") ? iconBgClass : "bg-muted",
                   )}
                 >
-                  {stegaClean(card.icon.source) === "image" && card.icon.image?.asset ? (
+                  {stegaClean(card.icon.source) === "image" &&
+                  card.icon.image?.asset ? (
                     <Image
-                      src={urlFor(card.icon.image).width(40).height(40).fit("max").url()}
+                      src={urlFor(card.icon.image)
+                        .width(40)
+                        .height(40)
+                        .fit("max")
+                        .url()}
                       alt=""
                       width={20}
                       height={20}
-                      className={cn("transition-transform duration-300 group-hover:scale-110", iconSize.image)}
+                      className={cn(
+                        "transition-transform duration-300 group-hover:scale-110",
+                        iconSize.image,
+                      )}
                     />
                   ) : card.icon.lucide ? (
-                    <RegistryIcon
-                      name={stegaClean(card.icon.lucide)!}
+                    <IconRenderer
+                      name={stegaClean(card.icon.lucide)}
                       className={cn(
                         "transition-transform duration-300 group-hover:scale-110",
                         iconSize.icon,
                         accentTargets.has("icon")
                           ? accentTextClass || "text-foreground"
-                          : "text-foreground"
+                          : "text-foreground",
                       )}
                       strokeWidth={1.5}
                     />
@@ -178,8 +197,12 @@ function LightCard({
               <h3
                 className={cn(
                   "text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]",
-                  cardTitleAlign === "center" ? "text-center" : cardTitleAlign === "right" ? "text-right" : "text-left",
-                  accentTargets.has("title") && accentTextClass
+                  cardTitleAlign === "center"
+                    ? "text-center"
+                    : cardTitleAlign === "right"
+                      ? "text-right"
+                      : "text-left",
+                  accentTargets.has("title") && accentTextClass,
                 )}
                 style={cardTitleStyle}
               >
@@ -187,10 +210,22 @@ function LightCard({
               </h3>
             )}
             {card.subtitle && (
-              <p className={cn("text-sm font-medium", accentTargets.has("subtitle") && accentTextClass)}>{card.subtitle}</p>
+              <p
+                className={cn(
+                  "text-sm font-medium",
+                  accentTargets.has("subtitle") && accentTextClass,
+                )}
+              >
+                {card.subtitle}
+              </p>
             )}
             {card.description && (
-              <p className={cn("text-sm font-light leading-relaxed", accentTargets.has("description") && accentTextClass)}>
+              <p
+                className={cn(
+                  "text-sm font-light leading-relaxed",
+                  accentTargets.has("description") && accentTextClass,
+                )}
+              >
                 {card.description}
               </p>
             )}
@@ -224,9 +259,9 @@ function LightCard({
 }
 
 function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
-  const href = card.cta?.href
-  const label = card.cta?.label || "Learn more"
-  const icon = stegaClean(card.icon?.lucide)
+  const href = card.cta?.href;
+  const label = card.cta?.label || "Learn more";
+  const icon = stegaClean(card.icon?.lucide);
 
   const inner = (
     <article className="group/card relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/50 bg-card/70 shadow-none ring-1 ring-black/3 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-1 hover:border-primary/25 hover:bg-card">
@@ -248,7 +283,7 @@ function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
       <div className="flex flex-1 flex-col gap-3 p-5 md:p-6">
         {icon && (
           <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-            <RegistryIcon name={icon} className="h-5 w-5" strokeWidth={1.5} />
+            <IconRenderer name={icon} className="h-5 w-5" strokeWidth={1.5} />
           </div>
         )}
         <div className="min-w-0 flex-1 space-y-2">
@@ -258,10 +293,14 @@ function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
             </h3>
           )}
           {card.subtitle && (
-            <p className="text-sm font-medium leading-snug text-foreground">{card.subtitle}</p>
+            <p className="text-sm font-medium leading-snug text-foreground">
+              {card.subtitle}
+            </p>
           )}
           {card.description && (
-            <p className="text-sm font-normal leading-relaxed text-muted-foreground">{card.description}</p>
+            <p className="text-sm font-normal leading-relaxed text-muted-foreground">
+              {card.description}
+            </p>
           )}
         </div>
         {href && (
@@ -269,15 +308,23 @@ function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
             {label}
             <svg
               className="h-3.5 w-3.5 transition-transform duration-200 group-hover/card:translate-x-0.5"
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
             </svg>
           </span>
         )}
       </div>
     </article>
-  )
+  );
 
   if (href) {
     return (
@@ -287,9 +334,9 @@ function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
       >
         {inner}
       </a>
-    )
+    );
   }
-  return <div className="h-full">{inner}</div>
+  return <div className="h-full">{inner}</div>;
 }
 
 function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
@@ -311,7 +358,11 @@ function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
   );
 }
 
-export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) {
+export function FeatureCardGridContent({
+  data,
+}: {
+  data: FeatureCardGridData;
+}) {
   const d = data as ExtendedFeatureCardGridData;
   const cards = (data.cards || []) as ExtendedFeatureCard[];
   const columns = stegaClean(data.columns) || "3";
@@ -322,30 +373,41 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
   const cardStyle = stegaClean(d.style) || "simple";
-  const iconSize = ICON_SIZE_MAP[stegaClean(d.cardIconSize) || "medium"] || ICON_SIZE_MAP.medium;
+  const iconSize =
+    ICON_SIZE_MAP[stegaClean(d.cardIconSize) || "medium"] ||
+    ICON_SIZE_MAP.medium;
   const titleTypography = stegaClean(d.cardTitleTypography);
-  const parsedTypographySize = titleTypography?.fontSize ? Number(titleTypography.fontSize) : undefined;
-  const legacySize = typeof d.cardTitleFontSize === "number" ? d.cardTitleFontSize : undefined;
+  const parsedTypographySize = titleTypography?.fontSize
+    ? Number(titleTypography.fontSize)
+    : undefined;
+  const legacySize =
+    typeof d.cardTitleFontSize === "number" ? d.cardTitleFontSize : undefined;
   const cardTitleFontSize =
-    typeof parsedTypographySize === "number" && Number.isFinite(parsedTypographySize)
+    typeof parsedTypographySize === "number" &&
+    Number.isFinite(parsedTypographySize)
       ? Math.min(Math.max(parsedTypographySize, 20), 96)
       : typeof legacySize === "number"
         ? Math.min(Math.max(legacySize, 20), 96)
         : undefined;
   const cardTitleAlignRaw = titleTypography?.textAlign;
   const cardTitleAlign: "left" | "center" | "right" =
-    cardTitleAlignRaw === "center" || cardTitleAlignRaw === "right" ? cardTitleAlignRaw : "left";
+    cardTitleAlignRaw === "center" || cardTitleAlignRaw === "right"
+      ? cardTitleAlignRaw
+      : "left";
   const cardTitleFontWeightRaw = titleTypography?.fontWeight;
   const cardTitleFontWeight =
-    cardTitleFontWeightRaw && ["400", "500", "600", "700", "800"].includes(cardTitleFontWeightRaw)
+    cardTitleFontWeightRaw &&
+    ["400", "500", "600", "700", "800"].includes(cardTitleFontWeightRaw)
       ? Number(cardTitleFontWeightRaw)
       : undefined;
   const cardTitleStyle: React.CSSProperties | undefined =
     cardTitleFontSize || cardTitleFontWeight || titleTypography?.textColor
       ? {
-          ...(cardTitleFontSize ? {fontSize: `${cardTitleFontSize}px`} : {}),
-          ...(cardTitleFontWeight ? {fontWeight: cardTitleFontWeight} : {}),
-          ...(titleTypography?.textColor ? {color: titleTypography.textColor} : {}),
+          ...(cardTitleFontSize ? { fontSize: `${cardTitleFontSize}px` } : {}),
+          ...(cardTitleFontWeight ? { fontWeight: cardTitleFontWeight } : {}),
+          ...(titleTypography?.textColor
+            ? { color: titleTypography.textColor }
+            : {}),
         }
       : undefined;
   if (cards.length === 0) return null;
@@ -353,7 +415,12 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
   return (
     <div>
       {(d.eyebrow || d.title || d.subtitle) && (
-        <div className={cn("mb-8", titleAlign === "center" ? "text-center" : "text-left") }>
+        <div
+          className={cn(
+            "mb-8",
+            titleAlign === "center" ? "text-center" : "text-left",
+          )}
+        >
           {d.eyebrow && (
             <p className="text-xs font-semibold uppercase tracking-[0.14em] mb-2 text-primary">
               {d.eyebrow}
@@ -365,21 +432,27 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
             </h2>
           )}
           {d.subtitle && (
-            <p className={cn(
-              "mt-4 text-sm sm:text-base font-light leading-relaxed max-w-3xl",
-              titleAlign === "center" && "mx-auto"
-            )}>
+            <p
+              className={cn(
+                "mt-4 text-sm sm:text-base font-light leading-relaxed max-w-3xl",
+                titleAlign === "center" && "mx-auto",
+              )}
+            >
               {d.subtitle}
             </p>
           )}
         </div>
       )}
-      <div className={cn(
-        "grid grid-cols-1",
-        isPathway  ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7" :
-        isAudience ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7" :
-        `gap-4 ${colClass}`
-      )}>
+      <div
+        className={cn(
+          "grid grid-cols-1",
+          isPathway
+            ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
+            : isAudience
+              ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7"
+              : `gap-4 ${colClass}`,
+        )}
+      >
         {cards.map((card, index) =>
           isPathway ? (
             <PathwayCard key={card._key} card={card} />
@@ -396,7 +469,7 @@ export function FeatureCardGridContent({ data }: { data: FeatureCardGridData }) 
               cardTitleStyle={cardTitleStyle}
               cardTitleAlign={cardTitleAlign}
             />
-          )
+          ),
         )}
       </div>
     </div>

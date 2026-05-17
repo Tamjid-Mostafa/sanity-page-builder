@@ -101,20 +101,7 @@ export const featureCardGridType = defineType({
                   title: 'Lucide Icon',
                   type: 'lucide-icon',
                   hidden: ({parent}) => parent?.source !== 'lucide',
-                  options: {
-                    allowedIcons: [
-                      'graduation-cap', 'globe', 'book-open', 'users', 'user',
-                      'target', 'award', 'star', 'trophy', 'medal',
-                      'briefcase', 'trending-up', 'rocket', 'bar-chart-2',
-                      'heart', 'lightbulb', 'shield', 'check-circle', 'handshake',
-                      'map-pin', 'compass', 'arrow-right', 'external-link',
-                      'message-circle', 'mail', 'phone',
-                      'monitor', 'smartphone', 'code-2', 'laptop',
-                      'zap', 'layers', 'leaf', 'building-2', 'clock',
-                      'workflow', 'sparkles', 'flame', 'brain',
-                      'dumbbell', 'microscope', 'pen-tool', 'palette',
-                    ],
-                  },
+                  
                 }),
                 defineField({
                   name: 'image',

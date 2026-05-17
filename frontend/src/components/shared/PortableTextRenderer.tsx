@@ -1,5 +1,5 @@
 import {PortableText, type PortableTextComponents} from 'next-sanity'
-import type {PortableTextBlock} from '@portabletext/types'
+import type {PortableTextBlock} from 'next-sanity'
 
 type PortableTextInput = PortableTextBlock[] | Array<Record<string, unknown>>
 import {Image} from 'next-sanity/image'

@@ -16,7 +16,7 @@ import {cn} from '@/lib/utils'
 import {openCalendly} from '@/lib/site-cta'
 import type {FaqBlockData} from '@/types/sanity'
 
-type FaqItem = FaqBlockData['items'][number]
+type FaqItem = NonNullable<FaqBlockData['items']>[number]
 
 // --- JSON-LD -----------------------------------------------------------------
 
