@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import {MapPin} from 'lucide-react'
+import {ArrowRight, MapPin} from 'lucide-react'
 import {stegaClean} from 'next-sanity'
+import {Button} from '@/components/ui/button'
 import {MotionInView} from '@/components/motion/MotionInView'
 import {cn} from '@/lib/utils'
 import type {ExperienceCardGridData} from '@/types/sanity'
@@ -30,9 +31,13 @@ function renderFooterText(
   highlightColor?: string | null,
 ) {
   if (!text) return null
-  if (!highlight || !text.includes(highlight)) return text
-  const parts = text.split(highlight)
-  const color = highlightColor?.trim() || null
+
+  const cleanHighlight = highlight ? stegaClean(highlight) : null
+  const cleanText = stegaClean(text)
+  if (!cleanHighlight || !cleanText.includes(cleanHighlight)) return text
+
+  const parts = cleanText.split(cleanHighlight)
+  const color = highlightColor ? stegaClean(highlightColor).trim() : null
 
   return (
     <>
@@ -43,7 +48,7 @@ function renderFooterText(
       >
         {highlight}
       </span>
-      {parts.slice(1).join(highlight)}
+      {parts.slice(1).join(cleanHighlight)}
     </>
   )
 }
@@ -56,35 +61,30 @@ export function ExperienceCardGridContent({
   const d = data as ExtendedExperienceCardGridData
   const cards = d.cards || []
   const titleAlign = stegaClean(d.titleAlign) === 'center' ? 'center' : 'left'
-  const title = stegaClean(d.title)
-  const subtitle = stegaClean(d.subtitle)
-  const bodyParagraph = stegaClean(d.bodyParagraph)
-  const locationLabel = stegaClean(d.locationLabel)
-  const ctaLabel = stegaClean(d.ctaLabel)
-  const ctaHref = stegaClean(d.ctaHref)
+  const ctaHref = d.ctaHref ? stegaClean(d.ctaHref) : undefined
 
   if (cards.length === 0) return null
 
   const ctaIsExternal = Boolean(ctaHref?.startsWith('http'))
-  const introText = subtitle || bodyParagraph
+  const introText = d.subtitle || d.bodyParagraph
 
   return (
     <div>
-      {(locationLabel || title || introText) && (
+      {(d.locationLabel || d.title || introText) && (
         <MotionInView
           className={cn('mb-8', titleAlign === 'center' ? 'text-center' : 'text-left')}
           margin="-100px"
         >
-          {locationLabel && (
+          {d.locationLabel && (
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/20 px-4 py-2">
               <MapPin className="h-5 w-5 text-secondary" />
-              <span className="text-sm font-medium text-secondary">{locationLabel}</span>
+              <span className="text-sm font-medium text-secondary">{d.locationLabel}</span>
             </div>
           )}
 
-          {title && (
+          {d.title && (
             <h2 className="text-3xl font-heading font-bold leading-[1.08] tracking-tight text-background sm:text-4xl md:text-[2.625rem]">
-              {title}
+              {d.title}
             </h2>
           )}
 
@@ -114,25 +114,27 @@ export function ExperienceCardGridContent({
       {d.footerText && (
         <MotionInView className="mt-8 text-center" margin="-20px" delay={0.15}>
           <p className="mx-auto max-w-3xl text-base leading-relaxed text-background/90 md:text-lg">
-            {renderFooterText(
-              stegaClean(d.footerText),
-              stegaClean(d.footerHighlight),
-              stegaClean(d.footerHighlightColor),
-            )}
+            {renderFooterText(d.footerText, d.footerHighlight, d.footerHighlightColor)}
           </p>
         </MotionInView>
       )}
 
-      {ctaLabel && ctaHref && (
-        <MotionInView className="mt-8" margin="-20px" delay={0.2}>
-          <Link
-            href={ctaHref}
-            target={ctaIsExternal ? '_blank' : undefined}
-            rel={ctaIsExternal ? 'noopener noreferrer' : undefined}
-            className="inline-block text-sm font-medium text-background transition-colors duration-200 hover:text-background/80"
+      {d.ctaLabel && ctaHref && (
+        <MotionInView className="mt-10 flex justify-center" margin="-20px" delay={0.2}>
+          <Button
+            size="lg"
+            className="h-auto rounded-full bg-primary px-8 py-3 text-primary-foreground hover:bg-primary/90"
+            asChild
           >
-            {ctaLabel}
-          </Link>
+            <Link
+              href={ctaHref}
+              target={ctaIsExternal ? '_blank' : undefined}
+              rel={ctaIsExternal ? 'noopener noreferrer' : undefined}
+            >
+              {d.ctaLabel}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
         </MotionInView>
       )}
     </div>
