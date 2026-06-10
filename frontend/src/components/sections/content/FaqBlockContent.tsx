@@ -44,10 +44,13 @@ function FAQColumn({
   items,
   openKey,
   onToggle,
+  isSecondaryColumn = false,
 }: {
   items: FaqItem[]
   openKey: string | null
   onToggle: (key: string) => void
+  /** Right column: keep top border on mobile where columns stack (union point). */
+  isSecondaryColumn?: boolean
 }) {
   return (
     <div className="flex flex-col">
@@ -56,7 +59,10 @@ function FAQColumn({
         return (
           <div
             key={item._key}
-            className="border-t border-border first:border-t-0"
+            className={cn(
+              'border-t border-border',
+              isSecondaryColumn ? 'md:first:border-t-0' : 'first:border-t-0',
+            )}
           >
             <button
               type="button"
@@ -170,12 +176,22 @@ function DefaultFaq({data}: {data: FaqBlockData}) {
         {allowMultipleOpen ? (
           <>
             <FAQColumn items={left} openKey={leftOpenKey} onToggle={toggleLeft} />
-            <FAQColumn items={right} openKey={rightOpenKey} onToggle={toggleRight} />
+            <FAQColumn
+              items={right}
+              openKey={rightOpenKey}
+              onToggle={toggleRight}
+              isSecondaryColumn
+            />
           </>
         ) : (
           <>
             <FAQColumn items={left} openKey={openKey} onToggle={toggleGlobal} />
-            <FAQColumn items={right} openKey={openKey} onToggle={toggleGlobal} />
+            <FAQColumn
+              items={right}
+              openKey={openKey}
+              onToggle={toggleGlobal}
+              isSecondaryColumn
+            />
           </>
         )}
       </div>
