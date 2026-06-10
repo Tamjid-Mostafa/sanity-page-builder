@@ -7,6 +7,10 @@ import Link from "next/link";
 import { ArrowRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { easing, duration, scale } from "@/lib/animations";
+import {
+  SITE_CONTAINER_SECTION,
+  contentMaxWidthClass,
+} from "@/lib/site-layout";
 import { openCalendly } from "@/lib/site-cta";
 import { cn } from "@/lib/utils";
 import { urlFor } from "@/sanity/lib/image";
@@ -42,12 +46,6 @@ type HeroSectionWithSlideshow = HeroSectionData & {
   prospectusLink?: string;
   backgroundVideoUrl?: string;
   backgroundVideo?: { asset?: { url?: string } };
-};
-
-const MAX_WIDTH_MAP: Record<string, string> = {
-  narrow: "max-w-3xl",
-  default: "max-w-7xl",
-  wide: "max-w-[1400px]",
 };
 
 const ALIGN_MAP: Record<string, string> = {
@@ -102,7 +100,10 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
   const fullWidthData = data as HeroSectionWithSlideshow;
   const alignClass =
     ALIGN_MAP[stegaClean(data.alignment) || "center"] || ALIGN_MAP.center;
-  const maxWidthClass = MAX_WIDTH_MAP[stegaClean(data.maxWidth) || "default"];
+  const maxWidthClass = contentMaxWidthClass(
+    stegaClean(data.maxWidth),
+    "default",
+  );
   const bgType = stegaClean(data.backgroundType);
   const hasMediaBg = bgType === "image" || bgType === "video";
   const overlayOpacity = (data.overlay ?? 0) / 100;
@@ -180,7 +181,10 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
 
 function SplitHero({ data }: { data: HeroSectionData }) {
   const isMediaLeft = stegaClean(data.mediaPosition) === "left";
-  const maxWidthClass = MAX_WIDTH_MAP[stegaClean(data.maxWidth) || "default"];
+  const maxWidthClass = contentMaxWidthClass(
+    stegaClean(data.maxWidth),
+    "default",
+  );
 
   return (
     <section style={buildBackground(data)}>
@@ -348,7 +352,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
       </AnimatePresence>
 
       <div className="relative z-10 w-full">
-        <div className="container mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 pb-14 md:pb-16 lg:pb-20">
+        <div className={SITE_CONTAINER_SECTION}>
           <div className="flex flex-col gap-5 max-w-lg">
             <AnimatePresence mode="wait">
               <motion.span

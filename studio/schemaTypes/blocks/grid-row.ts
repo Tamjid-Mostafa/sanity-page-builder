@@ -211,7 +211,7 @@ export const gridRowType = defineType({
         list: [
           {title: 'Narrow (768px)', value: 'narrow'},
           {title: 'Content (896px)', value: 'content'},
-          {title: 'Default (1200px)', value: 'default'},
+          {title: 'Default (site container)', value: 'default'},
           {title: 'Wide (1400px)', value: 'wide'},
           {title: 'Full Width', value: 'full'},
         ],

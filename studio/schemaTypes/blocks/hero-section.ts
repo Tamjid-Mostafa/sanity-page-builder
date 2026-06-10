@@ -366,7 +366,7 @@ export const heroSectionType = defineType({
       options: {
         list: [
           {title: 'Narrow (768px)', value: 'narrow'},
-          {title: 'Default (1200px)', value: 'default'},
+          {title: 'Default (site container)', value: 'default'},
           {title: 'Wide (1400px)', value: 'wide'},
         ],
       },

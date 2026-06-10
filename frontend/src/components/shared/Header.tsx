@@ -11,6 +11,7 @@ import {
   HoveredLink,
 } from "@/components/ui/navbar-menu";
 import { StaggeredMenu, StaggeredMenuItem } from "@/components/StaggeredMenu";
+import { SITE_CONTAINER } from "@/lib/site-layout";
 import { getSanityImageProps } from "@/sanity/lib/image";
 import type {
   SiteSettings,
@@ -125,7 +126,7 @@ export function Header({ settings }: { settings: SiteSettings | null }) {
     <>
       <div className="hidden lg:block">
         <FloatingNav className="px-0">
-          <nav className="container mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
+          <nav className={SITE_CONTAINER}>
             <div className="flex items-center justify-between h-16 lg:h-20">
               <LogoWithText
                 href="/"

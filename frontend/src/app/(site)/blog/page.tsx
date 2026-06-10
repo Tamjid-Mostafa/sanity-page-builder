@@ -4,6 +4,7 @@ import {BLOG_POSTS_QUERY, SITE_SETTINGS_QUERY} from '@/sanity/lib/queries'
 import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {BlogCard} from '@/components/blog/BlogCard'
+import {SITE_CONTAINER} from '@/lib/site-layout'
 
 export const revalidate = 86400
 
@@ -22,7 +23,7 @@ export default async function BlogIndex() {
     <>
       <Header settings={settings} />
       <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className={`${SITE_CONTAINER} py-16`}>
           <div className="mb-12">
             <h1 className="text-3xl font-bold tracking-tighter text-foreground sm:text-4xl">
               Blog

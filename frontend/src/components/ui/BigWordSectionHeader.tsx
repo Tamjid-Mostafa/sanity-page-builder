@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { SITE_CONTAINER } from "@/lib/site-layout";
 import { cn } from "@/lib/utils";
 
 interface BigWordSectionHeaderProps {
@@ -59,7 +60,7 @@ export function BigWordSectionHeader({
       </div>
 
       {/* Content - on top of big word */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className={cn("relative z-10", SITE_CONTAINER)}>
         {eyebrow && (
           <motion.p
             initial={{ opacity: 0, y: 10 }}
