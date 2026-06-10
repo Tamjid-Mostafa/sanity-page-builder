@@ -6,6 +6,7 @@ import {blockContentType} from './objects/rich-text'
 import {linkInternalType, linkExternalType, pageSlugType} from './objects/link'
 import {youtubeVideoType, externalVideoType} from './objects/video'
 import {seoType} from './objects/seo'
+import {footerNavLinkType} from './objects/footer-nav-link'
 
 // Blocks (page builder)
 import {blockTypes} from './blocks'
@@ -25,6 +26,7 @@ const objectTypes: SchemaTypeDefinition[] = [
   youtubeVideoType,
   externalVideoType,
   seoType,
+  footerNavLinkType,
 ]
 
 const documentTypes: SchemaTypeDefinition[] = [

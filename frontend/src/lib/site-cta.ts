@@ -10,6 +10,11 @@ export const SITE_CALENDLY_URL =
   process.env.NEXT_PUBLIC_CALENDLY_URL?.trim() ||
   "https://calendly.com/icollegebarcelona-info/30min";
 
+export const SITE_CTA_FORM_URL =
+  process.env.NEXT_PUBLIC_SITE_CTA_FORM_URL?.trim() ||
+  process.env.NEXT_PUBLIC_ATHLETES_FIT_FORM_URL?.trim() ||
+  "";
+
 /**
  * Opens the Calendly popup widget.
  * Falls back to opening in a new tab if the widget script hasn't loaded yet.

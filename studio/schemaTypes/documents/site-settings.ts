@@ -217,87 +217,110 @@ export const siteSettingsType = defineType({
 
     // --- Footer ---
     defineField({
-      name: 'footerStyle',
-      title: 'Footer Style',
-      type: 'string',
+      name: 'footerTagline',
+      title: 'Footer Tagline',
+      type: 'text',
       group: 'footer',
-      initialValue: 'default',
-      options: {
-        list: [
-          {title: 'Default', value: 'default'},
-          {title: 'Gradient', value: 'gradient'},
-          {title: 'Dark', value: 'dark'},
-        ],
-        layout: 'radio',
-      },
+      rows: 2,
+      description: 'Centered intro text at the top of the footer.',
     }),
     defineField({
-      name: 'footerDescription',
-      title: 'Footer Description',
+      name: 'footerTaglineLinkText',
+      title: 'Tagline Link Text',
+      type: 'string',
+      group: 'footer',
+    }),
+    defineField({
+      name: 'footerTaglineLinkHref',
+      title: 'Tagline Link URL',
+      type: 'string',
+      group: 'footer',
+      description: 'Internal path (e.g. /) or anchor (e.g. #hero)',
+    }),
+    defineField({
+      name: 'footerAboutLinks',
+      title: 'About Links',
+      type: 'array',
+      group: 'footer',
+      of: [defineArrayMember({type: 'footerNavLink'})],
+    }),
+    defineField({
+      name: 'footerAcademyLinks',
+      title: 'Academy Links',
+      type: 'array',
+      group: 'footer',
+      of: [defineArrayMember({type: 'footerNavLink'})],
+    }),
+    defineField({
+      name: 'footerGlobalLinks',
+      title: 'Global Links',
+      type: 'array',
+      group: 'footer',
+      of: [defineArrayMember({type: 'footerNavLink'})],
+    }),
+    defineField({
+      name: 'footerConnectCtaText',
+      title: 'Connect CTA Text',
+      type: 'string',
+      group: 'footer',
+      initialValue: 'Book a Conversation',
+    }),
+    defineField({
+      name: 'footerConnectCtaUrl',
+      title: 'Connect CTA URL',
+      type: 'string',
+      group: 'footer',
+      description: 'Calendly URL, form URL, or internal path. Leave empty for site Calendly.',
+    }),
+    defineField({
+      name: 'footerContactEmail',
+      title: 'Contact Email',
+      type: 'string',
+      group: 'footer',
+    }),
+    defineField({
+      name: 'footerWhatsappNumber',
+      title: 'WhatsApp Number',
+      type: 'string',
+      group: 'footer',
+      description: 'Displayed number (e.g. +34 618 332 384)',
+    }),
+    defineField({
+      name: 'footerContactAddress',
+      title: 'Location Line 1',
+      type: 'string',
+      group: 'footer',
+      description: 'e.g. Online internationally',
+    }),
+    defineField({
+      name: 'footerContactCity',
+      title: 'Location Line 2',
+      type: 'string',
+      group: 'footer',
+      description: 'e.g. Barcelona hub by appointment',
+    }),
+    defineField({
+      name: 'footerBrandLine',
+      title: 'Brand Statement',
       type: 'text',
       group: 'footer',
       rows: 3,
-      description: 'Short description displayed in the footer next to the logo.',
+      description: 'Centered paragraph between navigation and logo bar.',
     }),
     defineField({
-      name: 'footerColumns',
-      title: 'Footer Link Columns',
+      name: 'footerCopyrightName',
+      title: 'Copyright Name',
+      type: 'string',
+      group: 'footer',
+      initialValue: 'iCollege Life',
+      description: 'Shown as © {year} {name}',
+    }),
+    defineField({
+      name: 'footerLegalLinks',
+      title: 'Legal Links',
       type: 'array',
       group: 'footer',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'footerColumn',
-          fields: [
-            defineField({
-              name: 'title',
-              title: 'Column Title',
-              type: 'string',
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: 'links',
-              title: 'Links',
-              type: 'array',
-              of: [
-                defineArrayMember({
-                  type: 'object',
-                  name: 'footerLink',
-                  fields: [
-                    defineField({
-                      name: 'label',
-                      title: 'Label',
-                      type: 'string',
-                      validation: (rule) => rule.required(),
-                    }),
-                    defineField({
-                      name: 'href',
-                      title: 'Link',
-                      type: 'string',
-                      validation: (rule) => rule.required(),
-                    }),
-                  ],
-                  preview: {
-                    select: {label: 'label', href: 'href'},
-                    prepare({label, href}: {label?: string; href?: string}) {
-                      return {title: label || 'Link', subtitle: href}
-                    },
-                  },
-                }),
-              ],
-            }),
-          ],
-          preview: {
-            select: {title: 'title', links: 'links'},
-            prepare({title, links}: {title?: string; links?: Array<unknown>}) {
-              return {
-                title: title || 'Column',
-                subtitle: `${links?.length ?? 0} links`,
-              }
-            },
-          },
-        }),
-      ],
+      of: [defineArrayMember({type: 'footerNavLink'})],
     }),
   ],
   preview: {

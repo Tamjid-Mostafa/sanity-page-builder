@@ -248,11 +248,20 @@ export const SITE_SETTINGS_QUERY = defineQuery(/* groq */ `
         items[] { _key, label, href, description, icon { ${imageFragment} } }
       }
     },
-    footerStyle,
-    footerDescription,
-    footerColumns[] {
-      _key, title,
-      links[] { _key, label, href }
-    }
+    footerTagline,
+    footerTaglineLinkText,
+    footerTaglineLinkHref,
+    footerAboutLinks[] { _key, text, url, newTab },
+    footerAcademyLinks[] { _key, text, url, newTab },
+    footerGlobalLinks[] { _key, text, url, newTab },
+    footerConnectCtaText,
+    footerConnectCtaUrl,
+    footerContactEmail,
+    footerWhatsappNumber,
+    footerContactAddress,
+    footerContactCity,
+    footerBrandLine,
+    footerCopyrightName,
+    footerLegalLinks[] { _key, text, url, newTab }
   }
 `)
