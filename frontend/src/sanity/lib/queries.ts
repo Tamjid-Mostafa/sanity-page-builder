@@ -111,6 +111,15 @@ const contentFragment = /* groq */ `
     },
     _type == "experienceCardGrid" => {
       ...,
+      eyebrow,
+      bodyParagraph,
+      locationLabel,
+      titleAlign,
+      footerText,
+      footerHighlight,
+      footerHighlightColor,
+      ctaLabel,
+      ctaHref,
       cards[] {
         _key, _type,
         title,

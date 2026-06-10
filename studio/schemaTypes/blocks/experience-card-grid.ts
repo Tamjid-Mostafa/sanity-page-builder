@@ -19,6 +19,12 @@ export const experienceCardGridType = defineType({
       description: 'Badge text above the heading, e.g. Barcelona, Spain',
     }),
     defineField({
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      description: 'Small label above the heading, e.g. iCollege Global',
+    }),
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -36,6 +42,13 @@ export const experienceCardGridType = defineType({
       type: 'string',
       initialValue: 'left',
       options: {list: [...TITLE_ALIGN_OPTIONS], layout: 'radio'},
+    }),
+    defineField({
+      name: 'bodyParagraph',
+      title: 'Body Paragraph',
+      type: 'text',
+      rows: 4,
+      description: 'Introductory paragraph between the heading and image cards.',
     }),
     defineField({
       name: 'cards',
@@ -99,6 +112,18 @@ export const experienceCardGridType = defineType({
       title: 'Highlight Color',
       type: 'string',
       description: 'CSS color for the highlighted phrase (e.g. #F5A623 or var(--color-secondary)).',
+    }),
+    defineField({
+      name: 'ctaLabel',
+      title: 'CTA Label',
+      type: 'string',
+      description: 'Button text below the cards, e.g. Explore iCollege Global',
+    }),
+    defineField({
+      name: 'ctaHref',
+      title: 'CTA URL',
+      type: 'string',
+      description: 'Internal path (e.g. /global-experiences) or full URL',
     }),
     defineField({
       name: 'blockStyles',
