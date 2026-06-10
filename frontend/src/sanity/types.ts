@@ -4656,6 +4656,7 @@ export type PAGE_QUERY_RESULT = {
                 _key: string;
                 _type: "logoRow";
                 logos: Array<{
+                  _key: number;
                   image: {
                     asset: {
                       _id: string;

@@ -1,10 +1,9 @@
 ﻿'use client'
 
 import {useState, useCallback} from 'react'
-import {motion} from 'motion/react'
+import {motion, AnimatePresence} from 'motion/react'
 import {Calendar, ArrowRight} from 'lucide-react'
-import {stegaClean} from '@sanity/client/stega'
-import {PortableTextRenderer} from '../../shared/PortableTextRenderer'
+import {stegaClean} from 'next-sanity'
 import {toPlainText} from '@portabletext/toolkit'
 import {
   Accordion,
@@ -12,7 +11,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import {PortableTextRenderer} from '../../shared/PortableTextRenderer'
 import {cn} from '@/lib/utils'
+import {easing} from '@/lib/animations'
 import {openCalendly} from '@/lib/site-cta'
 import type {FaqBlockData} from '@/types/sanity'
 
@@ -37,28 +38,106 @@ function buildJsonLd(items: FaqItem[]) {
   }
 }
 
-// --- Default variation -------------------------------------------------------
+// --- Default variation (two-column accordion) --------------------------------
+
+function FAQColumn({
+  items,
+  openKey,
+  onToggle,
+}: {
+  items: FaqItem[]
+  openKey: string | null
+  onToggle: (key: string) => void
+}) {
+  return (
+    <div className="flex flex-col">
+      {items.map((item) => {
+        const isOpen = openKey === item._key
+        return (
+          <div
+            key={item._key}
+            className="border-t border-border first:border-t-0"
+          >
+            <button
+              type="button"
+              onClick={() => onToggle(item._key)}
+              className={cn(
+                'w-full flex items-start justify-between gap-4 py-5 text-left transition-opacity duration-200',
+                isOpen ? 'opacity-100' : 'opacity-90',
+              )}
+              aria-expanded={isOpen}
+            >
+              <span className="text-sm font-medium leading-snug pr-2 sm:text-[15px]">
+                {item.question || 'Untitled'}
+              </span>
+              <span
+                className="shrink-0 w-6 text-center text-xl font-light leading-none select-none opacity-80"
+                aria-hidden
+              >
+                {isOpen ? '−' : '+'}
+              </span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{height: 0, opacity: 0}}
+                  animate={{height: 'auto', opacity: 1}}
+                  exit={{height: 0, opacity: 0}}
+                  transition={{duration: 0.28, ease: easing.smooth}}
+                  className="overflow-hidden"
+                >
+                  <div className="pb-5 pr-8 text-sm leading-relaxed opacity-70">
+                    {item.answer && item.answer.length > 0 ? (
+                      <PortableTextRenderer value={item.answer} />
+                    ) : (
+                      <p>No answer provided.</p>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 function DefaultFaq({data}: {data: FaqBlockData}) {
   const allowMultipleOpen = data.allowMultipleOpen ?? true
   const firstOpenByDefault = data.firstOpenByDefault ?? false
   const items = data.items || []
 
-  const initialOpen =
-    firstOpenByDefault && items.length > 0 ? new Set([items[0]._key]) : new Set<string>()
+  const initialOpenKey =
+    firstOpenByDefault && items.length > 0 ? items[0]._key : null
 
-  const [openKeys, setOpenKeys] = useState<ReadonlySet<string>>(initialOpen)
+  const [openKey, setOpenKey] = useState<string | null>(initialOpenKey)
+  const [leftOpenKey, setLeftOpenKey] = useState<string | null>(initialOpenKey)
+  const [rightOpenKey, setRightOpenKey] = useState<string | null>(null)
 
-  const toggleItem = useCallback(
+  const toggleGlobal = useCallback(
     (key: string) => {
-      setOpenKeys((prev) => {
-        const next = new Set(prev)
-        if (next.has(key)) {
-          next.delete(key)
-        } else {
-          if (!allowMultipleOpen) next.clear()
-          next.add(key)
-        }
+      setOpenKey((prev) => (prev === key ? null : key))
+    },
+    [],
+  )
+
+  const toggleLeft = useCallback(
+    (key: string) => {
+      setLeftOpenKey((prev) => {
+        const next = prev === key ? null : key
+        if (!allowMultipleOpen) setRightOpenKey(null)
+        return next
+      })
+    },
+    [allowMultipleOpen],
+  )
+
+  const toggleRight = useCallback(
+    (key: string) => {
+      setRightOpenKey((prev) => {
+        const next = prev === key ? null : key
+        if (!allowMultipleOpen) setLeftOpenKey(null)
         return next
       })
     },
@@ -67,64 +146,38 @@ function DefaultFaq({data}: {data: FaqBlockData}) {
 
   if (items.length === 0) return null
 
+  const mid = Math.ceil(items.length / 2)
+  const left = items.slice(0, mid)
+  const right = items.slice(mid)
+  const hasHeader = Boolean(data.title || data.subtitle)
+
   return (
     <div>
       {data.title && (
-        <h2 className="text-2xl font-heading font-bold tracking-tight text-foreground sm:text-3xl">
+        <h2 className="text-2xl font-heading font-bold tracking-tight sm:text-3xl">
           {data.title}
         </h2>
       )}
-      {data.subtitle && <p className="mt-2 text-base text-muted">{data.subtitle}</p>}
-
+      {data.subtitle && (
+        <p className="mt-2 text-base opacity-70">{data.subtitle}</p>
+      )}
       <div
-        className={`${data.title || data.subtitle ? 'mt-8' : ''} divide-y divide-border rounded-xl border border-border`}
+        className={cn(
+          'grid md:grid-cols-2 md:gap-x-12 lg:gap-x-20',
+          hasHeader && 'mt-8',
+        )}
       >
-        {items.map((item) => {
-          const isOpen = openKeys.has(item._key)
-          return (
-            <div key={item._key}>
-              <button
-                type="button"
-                className="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-muted/30"
-                aria-expanded={isOpen}
-                onClick={() => toggleItem(item._key)}
-              >
-                <span className="pr-4 font-medium text-foreground">
-                  {item.question || 'Untitled'}
-                </span>
-                <span
-                  className="flex h-6 w-6 shrink-0 items-center justify-center text-muted transition-transform duration-200"
-                  style={{transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)'}}
-                  aria-hidden="true"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M8 3v10M3 8h10"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  isOpen ? 'max-h-500 opacity-100' : 'max-h-0 opacity-0'
-                }`}
-              >
-                <div className="px-6 pb-5">
-                  {item.answer && item.answer.length > 0 ? (
-                    <div className="prose prose-slate max-w-none">
-                      <PortableTextRenderer value={item.answer} />
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted">No answer provided.</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )
-        })}
+        {allowMultipleOpen ? (
+          <>
+            <FAQColumn items={left} openKey={leftOpenKey} onToggle={toggleLeft} />
+            <FAQColumn items={right} openKey={rightOpenKey} onToggle={toggleRight} />
+          </>
+        ) : (
+          <>
+            <FAQColumn items={left} openKey={openKey} onToggle={toggleGlobal} />
+            <FAQColumn items={right} openKey={openKey} onToggle={toggleGlobal} />
+          </>
+        )}
       </div>
     </div>
   )
@@ -163,7 +216,6 @@ function GroupedFaq({data}: {data: GroupedFaqData}) {
         />
       )}
 
-      {/* Header row */}
       <motion.div
         initial={{opacity: 0, y: 16}}
         whileInView={{opacity: 1, y: 0}}
@@ -196,7 +248,6 @@ function GroupedFaq({data}: {data: GroupedFaqData}) {
         )}
       </motion.div>
 
-      {/* Outer single accordion */}
       <motion.div
         initial={{opacity: 0, y: 16}}
         whileInView={{opacity: 1, y: 0}}
@@ -276,7 +327,7 @@ export function FaqBlockContent({data}: {data: FaqBlockData}) {
 
   return (
     <div>
-      {enableSchema && (
+      {enableSchema && items.length > 0 && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{__html: JSON.stringify(buildJsonLd(items))}}

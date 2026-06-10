@@ -47,6 +47,34 @@ export const logoRowType = defineType({
       ],
     }),
     defineField({
+      name: 'displayStyle',
+      title: 'Display Style',
+      type: 'string',
+      initialValue: 'row',
+      options: {
+        list: [
+          {title: 'Row (flex)', value: 'row'},
+          {title: 'Grid (bordered cards)', value: 'grid'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'gridColumns',
+      title: 'Grid Columns (desktop)',
+      type: 'number',
+      initialValue: 6,
+      hidden: ({parent}) => parent?.displayStyle !== 'grid',
+      options: {
+        list: [
+          {title: '3', value: 3},
+          {title: '4', value: 4},
+          {title: '5', value: 5},
+          {title: '6', value: 6},
+        ],
+      },
+    }),
+    defineField({
       name: 'grayscale',
       title: 'Grayscale',
       type: 'boolean',
