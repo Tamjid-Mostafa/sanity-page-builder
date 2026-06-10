@@ -2,10 +2,10 @@
 
 import {stegaClean} from 'next-sanity'
 import {motion} from 'motion/react'
-import {Calendar, ArrowRight} from 'lucide-react'
+import {ArrowRight} from 'lucide-react'
 import Link from 'next/link'
-import {Button} from '@/components/ui/button'
-import {openCalendly} from '@/lib/site-cta'
+import {BookConversationButton, OutlineCtaButton} from '@/components/BookConversationButton'
+import {cn} from '@/lib/utils'
 import type {CtaSectionData} from '@/types/sanity'
 
 // --- Link resolution ---------------------------------------------------------
@@ -25,104 +25,132 @@ function resolveHref(linkItems?: Array<{_type: string; [key: string]: unknown}>)
   }
 }
 
+function isExternalLink(linkItems?: Array<{_type: string; [key: string]: unknown}>): boolean {
+  const item = linkItems?.[0] as LinkItem | undefined
+  return stegaClean(item?._type) === 'linkExternal' && Boolean((item as LinkExternal).newWindow)
+}
+
+type BodyParagraph = { _key: string; text: string; emphasis?: boolean }
+
+function resolveBodyParagraphs(
+  bodyParagraphs: CtaSectionData['bodyParagraphs'],
+  subtitle?: string | null,
+): BodyParagraph[] {
+  if (bodyParagraphs && bodyParagraphs.length > 0) {
+    return bodyParagraphs
+      .map((paragraph, index) => ({
+        _key: paragraph._key ?? `body-${index}`,
+        text: stegaClean(paragraph.text) ?? '',
+        emphasis: paragraph.emphasis ?? false,
+      }))
+      .filter((paragraph) => paragraph.text.length > 0)
+  }
+
+  if (!subtitle) return []
+
+  const parts = subtitle.split(/\n\n+/).map((part) => part.trim()).filter(Boolean)
+  return parts.map((text, index) => ({
+    _key: `subtitle-${index}`,
+    text,
+    emphasis: parts.length > 1 && index === parts.length - 1,
+  }))
+}
+
 // --- Component ---------------------------------------------------------------
 export function CtaSectionContent({data}: {data: CtaSectionData}) {
   const eyebrow = stegaClean(data.eyebrow)
   const heading = stegaClean(data.heading)
   const subtitle = stegaClean(data.subtitle)
+  const bodyParagraphs = resolveBodyParagraphs(data.bodyParagraphs, subtitle)
   const buttons = data.buttons ?? []
   const trustItems = (data.trustItems ?? []) as string[]
   const prospectus = data.prospectusLink
+  const hasBody = bodyParagraphs.length > 0
 
   return (
-    <div className="flex flex-col items-center text-center">
+    <motion.div
+      initial={{opacity: 0, y: 16}}
+      whileInView={{opacity: 1, y: 0}}
+      viewport={{once: true, margin: '-80px'}}
+      transition={{duration: 0.5}}
+      className="mx-auto flex w-full max-w-4xl flex-col items-center text-center"
+    >
       {eyebrow && (
-        <motion.p
-          initial={{opacity: 0, y: 12}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true, margin: '-80px'}}
-          transition={{duration: 0.5}}
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary mb-5"
-        >
+        <p className="mb-5 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {eyebrow}
-        </motion.p>
+        </p>
       )}
 
       {heading && (
-        <motion.h2
-          initial={{opacity: 0, y: 12}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true, margin: '-80px'}}
-          transition={{duration: 0.5, delay: 0.05}}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] font-heading font-bold text-white tracking-tight leading-[1.04] mb-6 max-w-3xl"
-        >
+        <h2 className="mb-6 max-w-3xl font-heading text-4xl font-bold tracking-tight leading-[1.06] sm:text-5xl md:text-6xl lg:text-[3.25rem]">
           {heading}
-        </motion.h2>
+        </h2>
       )}
 
-      {subtitle && (
-        <motion.p
-          initial={{opacity: 0, y: 12}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true, margin: '-80px'}}
-          transition={{duration: 0.5, delay: 0.1}}
-          className="text-base md:text-lg text-white font-light leading-relaxed max-w-xl mb-10"
-        >
-          {subtitle}
-        </motion.p>
+      {hasBody && (
+        <div className="mb-10 max-w-2xl space-y-4 text-base font-medium leading-relaxed md:text-lg">
+          {bodyParagraphs.map((paragraph) => (
+            <p
+              key={paragraph._key}
+              className={cn(
+                paragraph.emphasis &&
+                  'pt-1 font-heading text-lg font-semibold md:text-xl',
+              )}
+            >
+              {paragraph.text}
+            </p>
+          ))}
+        </div>
       )}
 
       {buttons.length > 0 && (
-        <motion.div
-          initial={{opacity: 0, y: 16}}
-          whileInView={{opacity: 1, y: 0}}
-          viewport={{once: true}}
-          transition={{delay: 0.2, duration: 0.5}}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10"
-        >
+        <div className="mb-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           {buttons.map((btn) => {
             if (!btn.label) return null
             const action = stegaClean(btn.action) || 'link'
-            const href = resolveHref(btn.link as Array<{_type: string; [key: string]: unknown}>)
-            const isCalendly = action === 'calendly'
-            const hasCustomColors = Boolean(btn.color || btn.textColor)
-            const inlineStyle: React.CSSProperties = hasCustomColors
-              ? {backgroundColor: stegaClean(btn.color) || undefined, color: stegaClean(btn.textColor) || undefined}
-              : {}
-            const btnClass = 'px-8 h-14 text-base rounded-xl font-bold group transition-colors duration-200 flex items-center gap-2'
-            const colorClass = hasCustomColors ? 'hover:opacity-90' : 'bg-primary text-primary-foreground hover:bg-primary/90'
+            const label = stegaClean(btn.label)
 
-            if (isCalendly) {
+            if (action === 'calendly') {
               return (
-                <Button key={btn._key} size="lg" type="button" onClick={() => openCalendly()}
-                  className={`${btnClass} ${colorClass} cursor-pointer`} style={inlineStyle}>
-                  <Calendar className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-                  {btn.label}
-                </Button>
+                <BookConversationButton
+                  key={btn._key}
+                  tone="on-dark"
+                  size="lg"
+                  showIcon
+                  showArrow={false}
+                  label={label}
+                />
               )
             }
+
+            const href = resolveHref(btn.link as Array<{_type: string; [key: string]: unknown}>)
             return (
-              <Button key={btn._key} size="lg" asChild className={`${btnClass} ${colorClass}`} style={inlineStyle}>
-                <Link href={href}>{btn.label}</Link>
-              </Button>
+              <OutlineCtaButton
+                key={btn._key}
+                href={href}
+                label={label}
+                tone="on-dark"
+                size="lg"
+                newTab={isExternalLink(btn.link as Array<{_type: string; [key: string]: unknown}>)}
+              />
             )
           })}
-        </motion.div>
+        </div>
       )}
 
       {trustItems.length > 0 && (
         <>
-          <div className="w-12 h-px bg-white/15 mb-8" />
+          <div className="mb-8 h-px w-12 bg-current opacity-15" />
           <motion.div
             initial={{opacity: 0}}
             whileInView={{opacity: 1}}
             viewport={{once: true}}
-            transition={{delay: 0.4, duration: 0.5}}
-            className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-white text-xs font-medium tracking-wide"
+            transition={{delay: 0.35, duration: 0.5}}
+            className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-xs font-medium tracking-wide"
           >
             {trustItems.map((item, i) => (
               <span key={i} className="flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-secondary inline-block" />
+                <span className="inline-block h-1 w-1 rounded-full bg-secondary" />
                 {stegaClean(item)}
               </span>
             ))}
@@ -135,18 +163,18 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
           initial={{opacity: 0}}
           whileInView={{opacity: 1}}
           viewport={{once: true}}
-          transition={{delay: 0.5, duration: 0.5}}
+          transition={{delay: 0.45, duration: 0.5}}
           className="mt-8"
         >
           <Link
             href={resolveHref(prospectus.link as Array<{_type: string; [key: string]: unknown}>)}
-            className="group inline-flex items-center gap-1.5 text-sm text-white hover:text-secondary transition-colors duration-200"
+            className="group inline-flex items-center gap-1.5 text-sm opacity-90 transition-colors duration-200 hover:text-secondary"
           >
             {prospectus.label}
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-200" />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
         </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }

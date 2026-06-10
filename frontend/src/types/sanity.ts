@@ -61,12 +61,42 @@ export type ExperienceCardGridData = Extract<ContentBlock, {_type: 'experienceCa
 export type TestimonialCarouselData = Extract<ContentBlock, {_type: 'testimonialCarousel'}>
 export type ImageGalleryData = Extract<ContentBlock, {_type: 'imageGallery'}>
 export type TocBlockData = Extract<ContentBlock, {_type: 'tocBlock'}>
+export type PartnersNetworkData = {
+  _type: 'partnersNetwork'
+  _key?: string
+  eyebrow?: string
+  heading?: string
+  subtitle?: string
+  logosLabel?: string
+  logos?: Array<{
+    _key?: string
+    alt?: string
+    link?: string
+    image?: {
+      asset?: {
+        _id?: string
+        url?: string
+        metadata?: {lqip?: string; dimensions?: {width?: number; height?: number}}
+      }
+    }
+  }>
+  displayStyle?: 'row' | 'grid' | null
+  gridColumns?: number | null
+  grayscale?: boolean | null
+  size?: 'small' | 'medium' | 'large' | null
+  blockStyles?: Record<string, unknown>
+}
 export type CtaSectionData = {
   _type: 'ctaSection'
   _key?: string
   eyebrow?: string
   heading?: string
   subtitle?: string
+  bodyParagraphs?: Array<{
+    _key?: string
+    text?: string
+    emphasis?: boolean
+  }>
   buttons?: Array<{
     _key?: string
     _type: 'callToAction'

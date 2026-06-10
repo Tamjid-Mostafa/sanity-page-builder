@@ -68,7 +68,14 @@ const contentFragment = /* groq */ `
     },
     _type == "logoRow" => {
       logos[] { image { ${imageFragment} }, alt, link },
+      displayStyle, gridColumns,
       grayscale, size,
+      ${blockStylesFragment}
+    },
+    _type == "partnersNetwork" => {
+      eyebrow, heading, subtitle, logosLabel,
+      logos[] { _key, image { ${imageFragment} }, alt, link },
+      displayStyle, gridColumns, grayscale, size,
       ${blockStylesFragment}
     },
     _type == "testimonialQuote" => {
@@ -156,6 +163,7 @@ const contentFragment = /* groq */ `
     },
     _type == "ctaSection" => {
       eyebrow, heading, subtitle,
+      bodyParagraphs[] { _key, text, emphasis },
       buttons[] {
         _key, _type, label, action, color, textColor, hoverColor, variant,
         link[] { ... }

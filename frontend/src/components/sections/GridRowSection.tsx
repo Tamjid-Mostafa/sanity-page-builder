@@ -31,6 +31,7 @@ const PADDING_X_MAP: Record<string, string> = {
 
 const MAX_WIDTH_MAP: Record<string, string> = {
   narrow: "max-w-3xl",
+  content: "max-w-4xl",
   default: "max-w-7xl",
   wide: "max-w-[1400px]",
   full: "max-w-full",

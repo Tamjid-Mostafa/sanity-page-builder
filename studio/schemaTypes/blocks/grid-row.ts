@@ -95,6 +95,7 @@ export const gridRowType = defineType({
                 defineArrayMember({type: 'imageGallery'}),
                 defineArrayMember({type: 'tocBlock'}),
                 defineArrayMember({type: 'ctaSection'}),
+                defineArrayMember({type: 'partnersNetwork'}),
               ],
               options: {
                 insertMenu: {
@@ -209,6 +210,7 @@ export const gridRowType = defineType({
       options: {
         list: [
           {title: 'Narrow (768px)', value: 'narrow'},
+          {title: 'Content (896px)', value: 'content'},
           {title: 'Default (1200px)', value: 'default'},
           {title: 'Wide (1400px)', value: 'wide'},
           {title: 'Full Width', value: 'full'},

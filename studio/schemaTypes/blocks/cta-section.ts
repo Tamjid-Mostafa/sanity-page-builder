@@ -10,7 +10,47 @@ export const ctaSectionType = defineType({
   fields: [
     stringField('eyebrow', 'Eyebrow', {description: 'Small uppercase label above the heading (e.g. "Next step")'}),
     stringField('heading', 'Heading', {required: true}),
-    stringField('subtitle', 'Subtitle', {rows: 3}),
+    stringField('subtitle', 'Subtitle', {
+      rows: 3,
+      description: 'Legacy single paragraph. Prefer Body Paragraphs for multi-line copy.',
+    }),
+    defineField({
+      name: 'bodyParagraphs',
+      title: 'Body Paragraphs',
+      type: 'array',
+      description: 'Supporting copy below the heading. Mark the last line as emphasized for the bold closing statement.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'ctaBodyParagraph',
+          fields: [
+            defineField({
+              name: 'text',
+              title: 'Text',
+              type: 'text',
+              rows: 3,
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: 'emphasis',
+              title: 'Emphasized style',
+              type: 'boolean',
+              description: 'Use for the bold closing statement',
+              initialValue: false,
+            }),
+          ],
+          preview: {
+            select: {title: 'text', emphasis: 'emphasis'},
+            prepare({title, emphasis}: {title?: string; emphasis?: boolean}) {
+              return {
+                title: title || 'Paragraph',
+                subtitle: emphasis ? 'Emphasized' : undefined,
+              }
+            },
+          },
+        }),
+      ],
+    }),
     defineField({
       name: 'buttons',
       title: 'CTA Buttons',

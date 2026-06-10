@@ -15,6 +15,7 @@ interface BookConversationButtonProps {
   /** Override the Calendly URL (defaults to SITE_CALENDLY_URL) */
   calendlyUrl?: string;
   showIcon?: boolean;
+  showArrow?: boolean;
   label?: string;
 }
 
@@ -33,6 +34,7 @@ export function BookConversationButton({
   className,
   calendlyUrl,
   showIcon = false,
+  showArrow = true,
   label = "Book a Conversation",
 }: BookConversationButtonProps) {
   const url = calendlyUrl ?? SITE_CALENDLY_URL;
@@ -53,16 +55,18 @@ export function BookConversationButton({
         size={size}
         onClick={() => openCalendly(url)}
         className={cn(
-          "rounded-lg font-semibold shadow-md transition-all duration-300 hover:shadow-lg group cursor-pointer",
-          size === "lg" ? "px-8 py-3 text-sm" : "px-6 py-2.5 text-sm",
+          "rounded-xl font-bold shadow-md transition-all duration-300 hover:shadow-lg group cursor-pointer",
+          size === "lg" ? "h-14 px-8 text-base" : "px-6 py-2.5 text-sm",
           baseClass,
         )}
       >
         {showIcon && (
-          <Calendar className="h-4 w-4 mr-1.5 group-hover:rotate-12 transition-transform duration-300" />
+          <Calendar className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform duration-300" />
         )}
         <span>{label}</span>
-        <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-300" />
+        {showArrow && (
+          <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-300" />
+        )}
       </Button>
     </motion.div>
   );
@@ -104,8 +108,8 @@ export function OutlineCtaButton({
         variant="outline"
         asChild
         className={cn(
-          "rounded-lg font-semibold transition-all duration-300 group",
-          size === "lg" ? "px-8 py-3 text-sm" : "px-6 py-2.5 text-sm",
+          "rounded-xl font-bold transition-all duration-300 group",
+          size === "lg" ? "h-14 px-8 text-base" : "px-6 py-2.5 text-sm",
           tone === "on-dark" ? darkClass : lightClass,
         )}
       >

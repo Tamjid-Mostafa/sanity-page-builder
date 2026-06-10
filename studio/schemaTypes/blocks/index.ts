@@ -30,6 +30,7 @@ import {tocBlockType} from './toc-block'
 import {testimonialCarouselType} from './testimonial-carousel'
 import {imageGalleryType} from './image-gallery'
 import {ctaSectionType} from './cta-section'
+import {partnersNetworkType} from './partners-network'
 
 // Grid Row (the page builder section)
 import {gridRowType} from './grid-row'
@@ -63,6 +64,7 @@ export {
   testimonialCarouselType,
   imageGalleryType,
   ctaSectionType,
+  partnersNetworkType,
   tocBlockType,
   gridRowType,
 }
@@ -111,6 +113,7 @@ export const blockTypes = [
   testimonialCarouselType,
   imageGalleryType,
   ctaSectionType,
+  partnersNetworkType,
   tocBlockType,
   gridRowType,
   pageBuilderType,
