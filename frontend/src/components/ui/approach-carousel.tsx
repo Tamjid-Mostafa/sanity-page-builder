@@ -1,129 +1,134 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React, { useMemo } from "react";
+import Autoplay from "embla-carousel-autoplay";
 import { motion } from "motion/react";
+import { IconRenderer } from "@/lib/icon-registry";
+import { cn } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-export interface CarouselItem {
-  icon: React.ComponentType<{ className?: string }>;
+export interface ApproachCarouselItem {
+  icon: string;
+  label?: string;
   title: string;
   description: string;
-  colorClass: string;
-  iconBgClass: string;
+  colorClass?: string;
+  iconBgClass?: string;
 }
 
 interface ApproachCarouselProps {
-  items: CarouselItem[];
+  items: ApproachCarouselItem[];
   className?: string;
 }
 
-export const ApproachCarousel = ({
-  items,
-  className = "",
-}: ApproachCarouselProps) => {
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+const AUTOPLAY_DELAY_MS = 5000;
 
-  const checkScrollability = () => {
-    if (carouselRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    }
-  };
-
-  useEffect(() => {
-    checkScrollability();
-    const carousel = carouselRef.current;
-    if (carousel) {
-      carousel.addEventListener("scroll", checkScrollability);
-      window.addEventListener("resize", checkScrollability);
-      return () => {
-        carousel.removeEventListener("scroll", checkScrollability);
-        window.removeEventListener("resize", checkScrollability);
-      };
-    }
-  }, []);
-
-  const scroll = (direction: "left" | "right") => {
-    if (carouselRef.current) {
-      const scrollAmount = 300;
-      carouselRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
+export function ApproachCarousel({ items, className }: ApproachCarouselProps) {
+  const plugins = useMemo(
+    () => [Autoplay({ delay: AUTOPLAY_DELAY_MS, stopOnInteraction: true })],
+    [],
+  );
 
   return (
-    <div className={cn("relative w-full", className)}>
-      {/* Left gradient overlay */}
-      <div className="absolute left-0 top-0 z-10 h-full w-8 bg-gradient-to-r from-background to-transparent pointer-events-none md:w-12" />
-
-      {/* Right gradient overlay */}
-      <div className="absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-background to-transparent pointer-events-none md:w-12" />
-
-      {/* Carousel container */}
-      <div
-        ref={carouselRef}
-        className="flex overflow-x-auto scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] gap-4 px-4 md:px-6 py-4"
+    <div className={cn("w-full", className)}>
+      <Carousel
+        opts={{ align: "start", loop: true }}
+        plugins={plugins}
+        className="w-full"
       >
-        {items.map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <motion.div
-              key={`carousel-item-${index}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="shrink-0 w-full sm:w-1/2 lg:w-1/3"
-            >
-              <div className="group relative h-full rounded-lg border border-border/30 bg-background p-6 transition-all duration-300 hover:border-border/60 hover:shadow-sm">
-                {/* Icon */}
+        <CarouselContent className="-ml-3 md:-ml-4">
+          {items.map((item, index) => {
+            const isSecondary = item.colorClass?.includes("secondary");
+            const iconOnTop = index % 2 === 0;
+
+            const iconBlock = (
+              <div className="flex-1 flex items-center justify-center relative py-8">
                 <div
                   className={cn(
-                    "relative z-10 mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110",
-                    item.iconBgClass
+                    "absolute h-44 w-44 rounded-full blur-3xl opacity-25",
+                    isSecondary ? "bg-secondary" : "bg-primary",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "relative inline-flex h-[88px] w-[88px] items-center justify-center rounded-3xl ring-1 ring-white/10",
+                    isSecondary ? "bg-secondary/15" : "bg-primary/20",
                   )}
                 >
-                  <Icon className={cn("h-6 w-6", item.colorClass)} />
+                  <IconRenderer
+                    name={item.icon}
+                    className={cn(
+                      "h-11 w-11",
+                      isSecondary ? "text-secondary" : "text-primary",
+                    )}
+                    strokeWidth={1.2}
+                  />
                 </div>
+              </div>
+            );
 
-                {/* Content */}
-                <h3 className="mb-2 text-lg font-semibold text-foreground">
+            const textBlock = (
+              <div className="px-7 py-6 flex flex-col gap-2">
+                {item.label && (
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
+                    {item.label}
+                  </span>
+                )}
+                <h3 className="text-[1.45rem] font-heading font-bold text-white leading-[1.15]">
                   {item.title}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-sm font-light text-white leading-relaxed">
                   {item.description}
                 </p>
               </div>
-            </motion.div>
-          );
-        })}
-      </div>
+            );
 
-      {/* Navigation buttons (hidden on mobile, visible on tablet+) */}
-      <div className="hidden sm:flex gap-2 mt-6 justify-end px-4">
-        <button
-          onClick={() => scroll("left")}
-          disabled={!canScrollLeft}
-          aria-label="Previous items"
-          className="relative z-20 flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-background text-foreground transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:border-border hover:enabled:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <button
-          onClick={() => scroll("right")}
-          disabled={!canScrollRight}
-          aria-label="Next items"
-          className="relative z-20 flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-background text-foreground transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:border-border hover:enabled:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-      </div>
+            return (
+              <CarouselItem
+                key={`approach-item-${index}`}
+                className="pl-3 md:pl-4 basis-4/5 sm:basis-1/2 lg:basis-1/3 py-2"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                  className="h-full"
+                >
+                  <div
+                    className="group h-full rounded-2xl border border-white/[0.07] shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col min-h-[340px]"
+                    style={{ background: "oklch(0.18 0.01 255)" }}
+                  >
+                    {iconOnTop ? (
+                      <>
+                        {iconBlock}
+                        {textBlock}
+                      </>
+                    ) : (
+                      <>
+                        {textBlock}
+                        {iconBlock}
+                      </>
+                    )}
+                  </div>
+                </motion.div>
+              </CarouselItem>
+            );
+          })}
+        </CarouselContent>
+
+        <div className="absolute bottom-[-48px] right-0 flex items-center justify-end gap-2 mt-3">
+          <CarouselPrevious className="static translate-y-0 translate-x-0 h-9 w-9 rounded-full border border-border bg-card text-foreground hover:bg-muted shadow-sm transition-colors" />
+          <CarouselNext className="static translate-y-0 translate-x-0 h-9 w-9 rounded-full border border-border bg-card text-foreground hover:bg-muted shadow-sm transition-colors" />
+        </div>
+      </Carousel>
     </div>
   );
-};
+}
