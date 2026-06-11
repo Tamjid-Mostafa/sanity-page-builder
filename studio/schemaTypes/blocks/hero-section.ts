@@ -191,11 +191,20 @@ export const heroSectionType = defineType({
       hidden: ({parent}) => parent?.layout === 'videoSlideshow',
     }),
     defineField({
+      name: 'headingHighlight',
+      title: 'Heading Highlight',
+      type: 'string',
+      group: 'content',
+      description: 'Optional word or phrase rendered in the secondary brand colour after the heading.',
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
+    }),
+    defineField({
       name: 'subtitle',
       title: 'Subtitle',
       type: 'text',
       group: 'content',
-      rows: 3,
+      rows: 6,
+      description: 'Use a blank line between paragraphs.',
       hidden: ({parent}) => parent?.layout === 'videoSlideshow',
     }),
     defineField({
@@ -287,6 +296,15 @@ export const heroSectionType = defineType({
       components: {input: ColorStringInput},
     }),
     defineField({
+      name: 'gradientMid',
+      title: 'Gradient Middle',
+      type: 'string',
+      group: 'background',
+      description: 'Optional middle stop for a 3-colour gradient',
+      hidden: ({parent}) => parent?.backgroundType !== 'gradient',
+      components: {input: ColorStringInput},
+    }),
+    defineField({
       name: 'gradientTo',
       title: 'Gradient To',
       type: 'string',
@@ -294,6 +312,15 @@ export const heroSectionType = defineType({
       description: 'End hex color',
       hidden: ({parent}) => parent?.backgroundType !== 'gradient',
       components: {input: ColorStringInput},
+    }),
+    defineField({
+      name: 'decorativeBackground',
+      title: 'Decorative Background',
+      type: 'boolean',
+      group: 'background',
+      description: 'Adds glow orbs and vignette overlays on gradient heroes (e.g. About page).',
+      initialValue: false,
+      hidden: ({parent}) => parent?.backgroundType !== 'gradient',
     }),
     defineField({
       name: 'gradientDirection',
@@ -350,9 +377,25 @@ export const heroSectionType = defineType({
         list: [
           {title: 'Auto', value: 'auto'},
           {title: '50vh', value: '50vh'},
+          {title: '70vh', value: '70vh'},
           {title: '75vh', value: '75vh'},
           {title: '100vh (Full Screen)', value: '100vh'},
         ],
+      },
+    }),
+    defineField({
+      name: 'verticalAlign',
+      title: 'Vertical Alignment',
+      type: 'string',
+      group: 'style',
+      initialValue: 'center',
+      hidden: ({parent}) => parent?.layout === 'videoSlideshow',
+      options: {
+        list: [
+          {title: 'Center', value: 'center'},
+          {title: 'Bottom', value: 'end'},
+        ],
+        layout: 'radio',
       },
     }),
     defineField({

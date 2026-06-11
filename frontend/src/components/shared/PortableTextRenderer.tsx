@@ -64,7 +64,7 @@ const components: PortableTextComponents = {
     h2: ({children}) => {
       const id = slugify(extractText(children))
       return (
-        <h2 id={id} className="mt-8 mb-6 text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08] text-foreground scroll-mt-20">
+        <h2 id={id} className="mt-8 mb-6 text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08] scroll-mt-20">
           {children}
         </h2>
       )
@@ -77,16 +77,25 @@ const components: PortableTextComponents = {
       const id = slugify(extractText(children))
       return <h4 id={id} className="mt-4 mb-2 text-xl font-semibold scroll-mt-20">{children}</h4>
     },
-    normal: ({children}) => <p className="mb-4 font-light leading-relaxed">{children}</p>,
+    normal: ({children}) => <p className="mb-4 leading-relaxed">{children}</p>,
     blockquote: ({children}) => (
-      <blockquote className="my-6 border-l-2 border-secondary pl-4 text-foreground">
+      <blockquote className="my-6 border-l-2 border-secondary pl-4">
         {children}
       </blockquote>
     ),
   },
   list: {
-    bullet: ({children}) => <ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>,
+    bullet: ({children}) => <ul className="mb-4 space-y-3">{children}</ul>,
     number: ({children}) => <ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>,
+  },
+  listItem: {
+    bullet: ({children}) => (
+      <li className="flex items-start gap-3 leading-relaxed">
+        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-secondary" aria-hidden="true" />
+        <span>{children}</span>
+      </li>
+    ),
+    number: ({children}) => <li className="mb-1">{children}</li>,
   },
 }
 

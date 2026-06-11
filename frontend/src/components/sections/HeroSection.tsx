@@ -11,7 +11,7 @@ import {
   SITE_CONTAINER_SECTION,
   contentMaxWidthClass,
 } from "@/lib/site-layout";
-import { openCalendly } from "@/lib/site-cta";
+import { openCalendly, SITE_CTA_FORM_URL } from "@/lib/site-cta";
 import { cn } from "@/lib/utils";
 import { urlFor } from "@/sanity/lib/image";
 import { BlockStylesWrapper } from "../shared/BlockStylesWrapper";
@@ -36,6 +36,10 @@ type HeroSectionWithSlideshow = HeroSectionData & {
   slides?: SlideshowSlide[];
   backgroundVideos?: SlideshowVideo[];
   slideDurationMs?: number;
+  headingHighlight?: string | null;
+  gradientMid?: string | null;
+  decorativeBackground?: boolean | null;
+  verticalAlign?: string | null;
   primaryButton?: {
     label?: string;
     action?: "calendly" | "link";
@@ -59,11 +63,20 @@ function buildBackground(data: HeroSectionData): React.CSSProperties {
   const bgType = stegaClean(data.backgroundType);
 
   switch (bgType) {
-    case "gradient":
-      if (data.gradientFrom && data.gradientTo) {
-        style.background = `linear-gradient(${stegaClean(data.gradientDirection) || "to bottom right"}, ${stegaClean(data.gradientFrom)}, ${stegaClean(data.gradientTo)})`;
+    case "gradient": {
+      const from = data.gradientFrom ? stegaClean(data.gradientFrom) : null;
+      const mid = (data as HeroSectionWithSlideshow).gradientMid
+        ? stegaClean((data as HeroSectionWithSlideshow).gradientMid)
+        : null;
+      const to = data.gradientTo ? stegaClean(data.gradientTo) : null;
+      const direction = stegaClean(data.gradientDirection) || "to bottom right";
+      if (from && to) {
+        style.background = mid
+          ? `linear-gradient(${direction}, ${from}, ${mid}, ${to})`
+          : `linear-gradient(${direction}, ${from}, ${to})`;
       }
       break;
+    }
     case "color":
       if (data.backgroundColor)
         style.backgroundColor = stegaClean(data.backgroundColor);
@@ -84,6 +97,125 @@ function buildBackground(data: HeroSectionData): React.CSSProperties {
   return style;
 }
 
+function resolveCtaHref(
+  linkItems?: Array<{ _type: string; [key: string]: unknown }>,
+): { href: string; isExternal: boolean } {
+  const item = linkItems?.[0];
+  if (!item) return { href: "#", isExternal: false };
+
+  switch (stegaClean(item._type)) {
+    case "linkExternal":
+      return {
+        href: (item as { url?: string }).url || "#",
+        isExternal: Boolean((item as { newWindow?: boolean }).newWindow),
+      };
+    case "linkInternal":
+      return {
+        href: `/${(item as { reference?: { slug?: { current?: string } } }).reference?.slug?.current || ""}`,
+        isExternal: false,
+      };
+    case "pageSlug":
+      return {
+        href: `/${(item as { slug?: string }).slug || ""}`,
+        isExternal: false,
+      };
+    default:
+      return { href: "#", isExternal: false };
+  }
+}
+
+function GradientDecor() {
+  return (
+    <>
+      <div className="absolute top-0 right-0 h-[600px] w-[600px] rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 h-[400px] w-[400px] rounded-full bg-secondary/10 blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-r from-black/50 via-black/20 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-linear-to-t from-black/60 to-transparent" />
+    </>
+  );
+}
+
+function FullWidthHeroButtons({
+  buttons,
+  darkSurface,
+}: {
+  buttons: HeroSectionData["buttons"];
+  darkSurface?: boolean;
+}) {
+  if (!buttons || buttons.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5, duration: 0.4 }}
+      className="flex flex-row flex-wrap gap-3 pt-1"
+    >
+      {buttons.map((btn) => {
+        const action = stegaClean((btn as { action?: string }).action) || "link";
+        const { href, isExternal } = resolveCtaHref(
+          (btn as { link?: Array<{ _type: string; [key: string]: unknown }> }).link,
+        );
+        const isOutline = stegaClean((btn as { variant?: string }).variant) === "outline";
+        const resolvedHref =
+          href === "#" && isOutline && SITE_CTA_FORM_URL
+            ? SITE_CTA_FORM_URL
+            : href;
+
+        const buttonClass = cn(
+          "px-6 py-2.5 text-sm rounded-lg shadow-md transition-all duration-300 group",
+          darkSurface && isOutline
+            ? "border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+            : isOutline
+              ? ""
+              : "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg cursor-pointer",
+        );
+
+        const inner = (
+          <>
+            {btn.label}
+            <ArrowRight className="ml-1.5 h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+          </>
+        );
+
+        return (
+          <motion.div
+            key={btn._key}
+            whileHover={{ scale: scale.button }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: duration.fast, ease: easing.smooth }}
+          >
+            {action === "calendly" ? (
+              <Button
+                size="default"
+                onClick={() => openCalendly()}
+                className={buttonClass}
+              >
+                {inner}
+              </Button>
+            ) : (
+              <Button
+                size="default"
+                variant={isOutline ? "outline" : "default"}
+                asChild
+                className={buttonClass}
+              >
+                <Link
+                  href={resolvedHref}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                >
+                  {inner}
+                </Link>
+              </Button>
+            )}
+          </motion.div>
+        );
+      })}
+    </motion.div>
+  );
+}
+
 function HeroButtons({ buttons }: { buttons: HeroSectionData["buttons"] }) {
   if (!buttons || buttons.length === 0) return null;
 
@@ -98,8 +230,8 @@ function HeroButtons({ buttons }: { buttons: HeroSectionData["buttons"] }) {
 
 function FullWidthHero({ data }: { data: HeroSectionData }) {
   const fullWidthData = data as HeroSectionWithSlideshow;
-  const alignClass =
-    ALIGN_MAP[stegaClean(data.alignment) || "center"] || ALIGN_MAP.center;
+  const alignment = stegaClean(data.alignment) || "center";
+  const alignClass = ALIGN_MAP[alignment] || ALIGN_MAP.center;
   const maxWidthClass = contentMaxWidthClass(
     stegaClean(data.maxWidth),
     "default",
@@ -110,13 +242,141 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
   const videoSrc =
     fullWidthData.backgroundVideoUrl ||
     fullWidthData.backgroundVideo?.asset?.url;
+  const verticalAlign = stegaClean(fullWidthData.verticalAlign) || "center";
+  const isDecorative =
+    bgType === "gradient" && Boolean(fullWidthData.decorativeBackground);
+  const minHeight = stegaClean(data.minHeight) || (isDecorative ? "70vh" : undefined);
+  const sectionStyle = buildBackground(data);
+  if (minHeight && minHeight !== "auto") {
+    sectionStyle.minHeight = minHeight;
+  }
+
+  const isImageBanner =
+    bgType === "image" &&
+    hasMediaBg &&
+    alignment === "left" &&
+    (data.overlay ?? 0) >= 40 &&
+    !data.badge &&
+    !(data.buttons && data.buttons.length > 0);
+
+  if (isDecorative) {
+    return (
+      <section
+        className={cn(
+          "relative flex overflow-hidden bg-black",
+          verticalAlign === "end" ? "items-end" : "items-center",
+        )}
+        style={sectionStyle}
+        aria-label={data.heading || "Hero section"}
+      >
+        <GradientDecor />
+
+        <div className="relative z-10 w-full">
+          <div className={SITE_CONTAINER_SECTION}>
+            <div className="flex max-w-2xl flex-col gap-5">
+              {data.badge && (
+                <motion.span
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className="inline-block w-fit text-[11px] font-semibold uppercase tracking-[0.18em] text-white sm:text-xs"
+                >
+                  {data.badge}
+                </motion.span>
+              )}
+
+              {data.heading && (
+                <motion.h1
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="font-heading text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-[2.625rem]"
+                >
+                  {data.heading}
+                  {fullWidthData.headingHighlight && (
+                    <>
+                      {" "}
+                      <span className="text-secondary">
+                        {fullWidthData.headingHighlight}
+                      </span>
+                    </>
+                  )}
+                </motion.h1>
+              )}
+
+              {data.subtitle && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                  className="max-w-[52ch] space-y-4 text-sm font-bold leading-relaxed text-white whitespace-pre-line sm:text-base"
+                >
+                  {data.subtitle}
+                </motion.div>
+              )}
+
+              {data.buttons && data.buttons.length > 0 && (
+                <FullWidthHeroButtons buttons={data.buttons} darkSurface />
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (isImageBanner) {
+    return (
+      <section
+        className="relative h-[340px] overflow-hidden md:h-[420px]"
+        aria-label={data.heading || "Image banner"}
+      >
+        {data.backgroundImage?.asset && (
+          <SanityImg
+            src={urlFor(data.backgroundImage).width(1920).fit("max").url()}
+            alt=""
+            fill
+            sizes="100vw"
+            quality={80}
+            className="object-cover object-center"
+            priority
+          />
+        )}
+        <div className="absolute inset-0 bg-foreground/50" />
+        <div className="absolute inset-0 flex items-center">
+          <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="max-w-2xl font-heading text-2xl font-bold leading-[1.15] text-background sm:text-3xl md:text-4xl"
+            >
+              {data.heading}
+              {fullWidthData.headingHighlight && (
+                <>
+                  {" "}
+                  <span className="text-secondary">
+                    {fullWidthData.headingHighlight}
+                  </span>
+                </>
+              )}
+              {data.subtitle ? ` ${data.subtitle}` : ""}
+            </motion.p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
-      className="relative flex items-center overflow-hidden"
-      style={buildBackground(data)}
+      className={cn(
+        "relative flex overflow-hidden",
+        verticalAlign === "end" ? "items-end" : "items-center",
+      )}
+      style={sectionStyle}
     >
-      {/* Background image */}
       {bgType === "image" && data.backgroundImage?.asset && (
         <SanityImg
           src={urlFor(data.backgroundImage).width(1920).fit("max").url()}
@@ -129,7 +389,6 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
         />
       )}
 
-      {/* Background video */}
       {bgType === "video" && videoSrc && (
         <video
           autoPlay
@@ -142,7 +401,6 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
         </video>
       )}
 
-      {/* Overlay */}
       {hasMediaBg && overlayOpacity > 0 && (
         <div
           className="absolute inset-0 bg-black"
@@ -151,7 +409,10 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
       )}
 
       <div
-        className={`relative z-10 mx-auto w-full px-4 py-20 sm:px-6 lg:px-8 ${maxWidthClass}`}
+        className={cn(
+          "relative z-10 w-full",
+          verticalAlign === "end" ? SITE_CONTAINER_SECTION : `mx-auto px-4 py-20 sm:px-6 lg:px-8 ${maxWidthClass}`,
+        )}
       >
         <div className={`flex flex-col ${alignClass}`}>
           {data.badge && (
@@ -161,11 +422,19 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
           {data.heading && (
             <h1 className="text-4xl font-heading font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
               {data.heading}
+              {fullWidthData.headingHighlight && (
+                <>
+                  {" "}
+                  <span className="text-secondary">
+                    {fullWidthData.headingHighlight}
+                  </span>
+                </>
+              )}
             </h1>
           )}
 
           {data.subtitle && (
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed opacity-80 sm:text-xl">
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed opacity-80 whitespace-pre-line sm:text-xl">
               {data.subtitle}
             </p>
           )}
