@@ -361,7 +361,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 8 }}
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="inline-block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-white/60 w-fit"
+                className="inline-block text-[11px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-white w-fit"
               >
                 {activeSlide.tag}
               </motion.span>
@@ -387,7 +387,7 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="text-sm sm:text-base font-bold leading-relaxed text-white/90 max-w-[38ch]"
+                className="text-sm sm:text-base font-bold leading-relaxed text-white max-w-[40ch] whitespace-pre-line"
               >
                 {activeSlide.subtitle}
               </motion.p>

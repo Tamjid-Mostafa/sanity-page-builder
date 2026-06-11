@@ -49,7 +49,13 @@ export const heroSectionType = defineType({
           fields: [
             defineField({name: 'tag', title: 'Tag / Label', type: 'string', description: 'Small uppercase label above headline'}),
             defineField({name: 'headline', title: 'Headline', type: 'string', validation: (r) => r.required()}),
-            defineField({name: 'subtitle', title: 'Subtitle', type: 'text', rows: 3}),
+            defineField({
+              name: 'subtitle',
+              title: 'Subtitle',
+              type: 'text',
+              rows: 6,
+              description: 'Use a blank line between paragraphs (up to 3).',
+            }),
           ],
           preview: {
             select: {tag: 'tag', headline: 'headline'},
