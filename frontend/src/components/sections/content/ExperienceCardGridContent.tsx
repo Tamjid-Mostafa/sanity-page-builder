@@ -4,53 +4,18 @@ import Link from 'next/link'
 import {ArrowRight, MapPin} from 'lucide-react'
 import {stegaClean} from 'next-sanity'
 import {Button} from '@/components/ui/button'
+import {SectionHeading} from '@/components/ui/SectionHeading'
 import {MotionInView} from '@/components/motion/MotionInView'
-import {cn} from '@/lib/utils'
 import type {ExperienceCardGridData} from '@/types/sanity'
-import {
-  ExperienceCardGridCard,
-  type ExperienceCard,
-} from './ExperienceCardGridCard'
+import {ExperienceCardGridCard} from './ExperienceCardGridCard'
 
 type ExtendedExperienceCardGridData = ExperienceCardGridData & {
   eyebrow?: string | null
   bodyParagraph?: string | null
   locationLabel?: string | null
   titleAlign?: string | null
-  footerText?: string | null
-  footerHighlight?: string | null
-  footerHighlightColor?: string | null
   ctaLabel?: string | null
   ctaHref?: string | null
-  cards?: ExperienceCard[]
-}
-
-function renderFooterText(
-  text?: string | null,
-  highlight?: string | null,
-  highlightColor?: string | null,
-) {
-  if (!text) return null
-
-  const cleanHighlight = highlight ? stegaClean(highlight) : null
-  const cleanText = stegaClean(text)
-  if (!cleanHighlight || !cleanText.includes(cleanHighlight)) return text
-
-  const parts = cleanText.split(cleanHighlight)
-  const color = highlightColor ? stegaClean(highlightColor).trim() : null
-
-  return (
-    <>
-      {parts[0]}
-      <span
-        className={cn('font-semibold', !color && 'text-secondary')}
-        style={color ? {color} : undefined}
-      >
-        {highlight}
-      </span>
-      {parts.slice(1).join(cleanHighlight)}
-    </>
-  )
 }
 
 export function ExperienceCardGridContent({
@@ -66,38 +31,40 @@ export function ExperienceCardGridContent({
   if (cards.length === 0) return null
 
   const ctaIsExternal = Boolean(ctaHref?.startsWith('http'))
-  const introText = d.subtitle || d.bodyParagraph
 
   return (
-    <div>
-      {(d.locationLabel || d.title || introText) && (
+    <div className="border-t border-white/10">
+      <MotionInView className="mb-8" margin="-100px">
+        {d.locationLabel && (
+          <div className="mb-6 inline-flex gap-2 rounded-full border border-secondary/30 bg-secondary/20 px-4 py-2">
+            <MapPin className="h-5 w-5 text-secondary" />
+            <span className="text-sm font-medium text-secondary">{d.locationLabel}</span>
+          </div>
+        )}
+
+        {d.eyebrow && (
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-secondary">
+            {d.eyebrow}
+          </p>
+        )}
+
+        {d.title && (
+          <SectionHeading
+            title={d.title}
+            subtitle={d.subtitle || undefined}
+            tone="inverse"
+            align={titleAlign}
+          />
+        )}
+      </MotionInView>
+
+      {d.bodyParagraph && (
         <MotionInView
-          className={cn('mb-8', titleAlign === 'center' ? 'text-center' : 'text-left')}
-          margin="-100px"
+          className="mb-10 max-w-3xl space-y-4 text-sm font-medium leading-relaxed text-background sm:text-base"
+          margin="-40px"
+          delay={0.05}
         >
-          {d.locationLabel && (
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/20 px-4 py-2">
-              <MapPin className="h-5 w-5 text-secondary" />
-              <span className="text-sm font-medium text-secondary">{d.locationLabel}</span>
-            </div>
-          )}
-
-          {d.title && (
-            <h2 className="text-3xl font-heading font-bold leading-[1.08] tracking-tight text-background sm:text-4xl md:text-[2.625rem]">
-              {d.title}
-            </h2>
-          )}
-
-          {introText && (
-            <p
-              className={cn(
-                'mt-4 max-w-3xl text-sm leading-relaxed text-background sm:text-base',
-                titleAlign === 'center' && 'mx-auto',
-              )}
-            >
-              {introText}
-            </p>
-          )}
+          <p>{d.bodyParagraph}</p>
         </MotionInView>
       )}
 
@@ -111,19 +78,11 @@ export function ExperienceCardGridContent({
         ))}
       </div>
 
-      {d.footerText && (
-        <MotionInView className="mt-8 text-center" margin="-20px" delay={0.15}>
-          <p className="mx-auto max-w-3xl text-base leading-relaxed text-background/90 md:text-lg">
-            {renderFooterText(d.footerText, d.footerHighlight, d.footerHighlightColor)}
-          </p>
-        </MotionInView>
-      )}
-
       {d.ctaLabel && ctaHref && (
         <MotionInView className="mt-10 flex justify-center" margin="-20px" delay={0.2}>
           <Button
             size="lg"
-            className="h-auto rounded-full bg-primary px-8 py-3 text-primary-foreground hover:bg-primary/90"
+            className="rounded-xl bg-primary px-8 text-primary-foreground hover:bg-primary/90"
             asChild
           >
             <Link

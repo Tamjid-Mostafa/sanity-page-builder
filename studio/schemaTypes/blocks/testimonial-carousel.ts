@@ -11,7 +11,7 @@ export const testimonialCarouselType = defineType({
       name: 'eyebrow',
       title: 'Eyebrow',
       type: 'string',
-      initialValue: 'Student voices',
+      initialValue: 'Testimonials',
       description: 'Small uppercase label above the title.',
     }),
     defineField({
@@ -43,13 +43,13 @@ export const testimonialCarouselType = defineType({
       name: 'autoPlay',
       title: 'Auto Play',
       type: 'boolean',
-      initialValue: false,
+      initialValue: true,
     }),
     defineField({
       name: 'autoPlayInterval',
       title: 'Auto Play Interval (seconds)',
       type: 'number',
-      initialValue: 5,
+      initialValue: 6,
       validation: (rule) => rule.min(2).max(30),
       hidden: ({parent}) => !parent?.autoPlay,
     }),
@@ -57,7 +57,7 @@ export const testimonialCarouselType = defineType({
       name: 'showDots',
       title: 'Show Dots',
       type: 'boolean',
-      initialValue: true,
+      initialValue: false,
     }),
     defineField({
       name: 'showArrows',
