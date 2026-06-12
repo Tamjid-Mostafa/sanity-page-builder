@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/navbar-menu";
 import { StaggeredMenu, StaggeredMenuItem } from "@/components/StaggeredMenu";
 import { SITE_CONTAINER } from "@/lib/site-layout";
+import { stegaClean } from "next-sanity";
 import { getSanityImageProps } from "@/sanity/lib/image";
 import type {
   SiteSettings,
@@ -19,6 +20,17 @@ import type {
   NavLink,
   NavDropdown,
 } from "@/types/sanity";
+
+const SOCIAL_PLATFORM_LABELS: Record<string, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  linkedin: "LinkedIn",
+  tiktok: "TikTok",
+  twitter: "X",
+  x: "X",
+  youtube: "YouTube",
+  github: "GitHub",
+};
 
 const hasText = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
@@ -108,10 +120,17 @@ export function Header({ settings }: { settings: SiteSettings | null }) {
     () =>
       (settings?.socialLinks ?? [])
         .filter((social) => hasText(social?.platform) && hasText(social?.url))
-        .map((social) => ({
-          label: social.platform,
-          link: social.url,
-        })),
+        .map((social) => {
+          const platformKey = stegaClean(social.platform);
+          const normalizedKey =
+            platformKey === "twitter" ? "x" : platformKey.toLowerCase();
+          return {
+            label:
+              SOCIAL_PLATFORM_LABELS[normalizedKey] ?? social.platform ?? "",
+            link: stegaClean(social.url),
+            platformKey: normalizedKey,
+          };
+        }),
     [settings?.socialLinks],
   );
 

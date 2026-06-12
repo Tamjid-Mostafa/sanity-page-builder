@@ -59,7 +59,7 @@ function mapSocialLinks(settings: SiteSettings | null): SocialLinks {
     const platform = stegaClean(link.platform)
     const url = stegaClean(link.url)
     if (!platform || !url) continue
-    const key = platform === 'twitter' ? 'x' : platform
+    const key = platform === 'twitter' ? 'x' : platform.toLowerCase()
     if (FOOTER_SOCIAL_KEYS.has(key)) {
       result[key as keyof SocialLinks] = url
     }

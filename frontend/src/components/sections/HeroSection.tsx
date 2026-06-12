@@ -39,6 +39,7 @@ type HeroSectionWithSlideshow = HeroSectionData & {
   headingHighlight?: string | null;
   gradientMid?: string | null;
   decorativeBackground?: boolean | null;
+  hubOverlay?: boolean | null;
   verticalAlign?: string | null;
   primaryButton?: {
     label?: string;
@@ -257,7 +258,15 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
     alignment === "left" &&
     (data.overlay ?? 0) >= 40 &&
     !data.badge &&
-    !(data.buttons && data.buttons.length > 0);
+    !(data.buttons && data.buttons.length > 0) &&
+    !fullWidthData.hubOverlay;
+
+  const isHubOverlay =
+    bgType === "image" && Boolean(stegaClean(fullWidthData.hubOverlay));
+
+  if (isHubOverlay) {
+    return <HubOverlayHero data={data} />;
+  }
 
   if (isDecorative) {
     return (
@@ -267,7 +276,7 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
           verticalAlign === "end" ? "items-end" : "items-center",
         )}
         style={sectionStyle}
-        aria-label={data.heading || "Hero section"}
+        aria-label={stegaClean(data.heading) || "Hero section"}
       >
         <GradientDecor />
 
@@ -329,7 +338,7 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
     return (
       <section
         className="relative h-[340px] overflow-hidden md:h-[420px]"
-        aria-label={data.heading || "Image banner"}
+        aria-label={stegaClean(data.heading) || "Image banner"}
       >
         {data.backgroundImage?.asset && (
           <SanityImg
@@ -339,7 +348,7 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
             sizes="100vw"
             quality={80}
             className="object-cover object-center"
-            priority
+            preload 
           />
         )}
         <div className="absolute inset-0 bg-foreground/50" />
@@ -385,7 +394,7 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
           sizes="100vw"
           quality={80}
           className="object-cover"
-          priority
+          preload 
         />
       )}
 
@@ -780,6 +789,96 @@ function VideoSlideshowHero({ data }: { data: HeroSectionWithSlideshow }) {
             ))}
           </div>
         )}
+      </div>
+    </section>
+  );
+}
+
+function HubOverlayHero({data}: {data: HeroSectionData}) {
+  const fullWidthData = data as HeroSectionWithSlideshow;
+  const paragraphs = (data.subtitle ?? "")
+    .split(/\n\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const tagline =
+    paragraphs.length > 1 ? paragraphs[paragraphs.length - 1] : null;
+  const bodyParagraphs = tagline ? paragraphs.slice(0, -1) : paragraphs;
+  const imageUrl = data.backgroundImage?.asset
+    ? urlFor(data.backgroundImage).width(1920).fit("max").url()
+    : null;
+
+  return (
+    <section
+      className="relative overflow-hidden bg-foreground"
+      aria-label={stegaClean(data.heading) || "Hub location"}
+    >
+      {imageUrl && (
+        <SanityImg
+          src={imageUrl}
+          alt={data.backgroundImage?.alt || "Professional learning environment"}
+          width={1920}
+          height={560}
+          sizes="100vw"
+          quality={80}
+          className="h-[420px] w-full object-cover object-center opacity-30 md:h-[560px]"
+        />
+      )}
+
+      <div className="absolute inset-0 bg-linear-to-b from-foreground/60 via-foreground/40 to-foreground/80" />
+      <div className="absolute inset-0 bg-linear-to-r from-foreground/50 to-transparent" />
+
+      <div className="absolute inset-0 flex items-center">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="max-w-2xl">
+            {data.badge && (
+              <motion.p
+                initial={{opacity: 0, y: 12}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.5}}
+                className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-secondary"
+              >
+                {data.badge}
+              </motion.p>
+            )}
+
+            {data.heading && (
+              <motion.h2
+                initial={{opacity: 0, y: 16}}
+                whileInView={{opacity: 1, y: 0}}
+                viewport={{once: true}}
+                transition={{duration: 0.6, delay: 0.1}}
+                className="mb-6 font-heading text-2xl font-bold leading-[1.2] tracking-tight text-background sm:text-3xl md:text-[2rem]"
+              >
+                {data.heading}{" "}
+                {fullWidthData.headingHighlight && (
+                  <span className="text-secondary">
+                    {fullWidthData.headingHighlight}
+                  </span>
+                )}
+              </motion.h2>
+            )}
+
+            {bodyParagraphs.length > 0 && (
+              <motion.div
+                initial={{opacity: 0}}
+                whileInView={{opacity: 1}}
+                viewport={{once: true}}
+                transition={{duration: 0.5, delay: 0.2}}
+                className="max-w-lg space-y-4 text-sm font-medium leading-relaxed text-background sm:text-base"
+              >
+                {bodyParagraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+                {tagline && (
+                  <p className="font-heading font-semibold text-secondary">
+                    {tagline}
+                  </p>
+                )}
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -9,17 +9,23 @@ import {SectionRenderer} from '@/components/SectionRenderer'
 
 export const revalidate = 86400
 
+function resolveSlug(slug: string | string[]): string {
+  return (Array.isArray(slug) ? slug : [slug]).filter(Boolean).join('/')
+}
+
 export async function generateStaticParams() {
   const data = await client.withConfig({useCdn: false}).fetch(PAGE_SLUGS_QUERY)
-  return (data ?? []).map((page) => ({slug: page.slug}))
+  return (data ?? []).map((page: {slug: string}) => ({
+    slug: page.slug.split('/').filter(Boolean),
+  }))
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{slug: string}>
+  params: Promise<{slug: string[]}>
 }): Promise<Metadata> {
-  const {slug} = await params
+  const slug = resolveSlug((await params).slug)
   const {data: page} = await sanityFetch({query: PAGE_QUERY, params: {slug}})
 
   if (!page) return {}
@@ -39,9 +45,9 @@ export async function generateMetadata({
 export default async function DynamicPage({
   params,
 }: {
-  params: Promise<{slug: string}>
+  params: Promise<{slug: string[]}>
 }) {
-  const {slug} = await params
+  const slug = resolveSlug((await params).slug)
 
   const [{data: page}, {data: settings}] = await Promise.all([
     sanityFetch({query: PAGE_QUERY, params: {slug}}),

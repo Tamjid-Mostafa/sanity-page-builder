@@ -7,33 +7,12 @@ import type {
 } from '@/sanity/types'
 
 // ---------- Settings ----------
-export type SiteSettings = NonNullable<SITE_SETTINGS_QUERY_RESULT> & {
-  footerTagline?: string | null
-  footerTaglineLinkText?: string | null
-  footerTaglineLinkHref?: string | null
-  footerAboutLinks?: FooterNavLink[] | null
-  footerAcademyLinks?: FooterNavLink[] | null
-  footerGlobalLinks?: FooterNavLink[] | null
-  footerConnectCtaText?: string | null
-  footerConnectCtaUrl?: string | null
-  footerContactEmail?: string | null
-  footerWhatsappNumber?: string | null
-  footerContactAddress?: string | null
-  footerContactCity?: string | null
-  footerBrandLine?: string | null
-  footerCopyrightName?: string | null
-  footerLegalLinks?: FooterNavLink[] | null
-}
+export type SiteSettings = NonNullable<SITE_SETTINGS_QUERY_RESULT>
 export type NavItem = NonNullable<SiteSettings['mainNav']>[number]
 export type NavLink = Extract<NavItem, {_type: 'navLink'}>
 export type NavDropdown = Extract<NavItem, {_type: 'navDropdown'}>
 export type DropdownItem = NavDropdown['items'][number]
-export type FooterNavLink = {
-  _key?: string
-  text?: string
-  url?: string
-  newTab?: boolean
-}
+export type FooterNavLink = NonNullable<SiteSettings['footerAboutLinks']>[number]
 export type SocialLink = NonNullable<SiteSettings['socialLinks']>[number]
 
 // ---------- Pages ----------

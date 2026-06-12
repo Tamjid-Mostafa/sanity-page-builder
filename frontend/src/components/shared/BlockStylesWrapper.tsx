@@ -1,5 +1,6 @@
 import type {CSSProperties, ReactNode} from 'react'
 import {stegaClean} from 'next-sanity'
+import {cn} from '@/lib/utils'
 
 interface BlockStyles {
   padding?: {
@@ -28,12 +29,20 @@ const SHADOW_MAP: Record<string, string> = {
   xl: '0 20px 25px rgba(0,0,0,0.1)',
 }
 
+function overlayLayer(overlay: string) {
+  const value = overlay.trim()
+  if (!value) return null
+  if (value.startsWith('linear-gradient') || value.startsWith('radial-gradient')) {
+    return value
+  }
+  return `linear-gradient(${value}, ${value})`
+}
+
 function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
   if (!bs) return {}
 
   const styles: Record<string, string | number | undefined> = {}
 
-  // Padding — base as inline, responsive as CSS custom properties
   if (bs.padding) {
     if (bs.padding.top) styles.paddingTop = bs.padding.top
     if (bs.padding.right) styles.paddingRight = bs.padding.right
@@ -49,7 +58,6 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
     if (bs.padding.leftLg) styles['--pl-lg'] = bs.padding.leftLg
   }
 
-  // Margin — same pattern
   if (bs.margin) {
     if (bs.margin.top) styles.marginTop = bs.margin.top
     if (bs.margin.right) styles.marginRight = bs.margin.right
@@ -65,37 +73,42 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
     if (bs.margin.leftLg) styles['--ml-lg'] = bs.margin.leftLg
   }
 
-  // Border (all sides)
   if (bs.border) {
     if (bs.border.width) styles.borderWidth = bs.border.width
     if (bs.border.style) styles.borderStyle = bs.border.style
     if (bs.border.color) styles.borderColor = bs.border.color
   }
 
-  // Border top only
   if (bs.borderTop) {
     if (bs.borderTop.width) styles.borderTopWidth = bs.borderTop.width
     if (bs.borderTop.style) styles.borderTopStyle = bs.borderTop.style
     if (bs.borderTop.color) styles.borderTopColor = bs.borderTop.color
   }
 
-  // Border radius
   if (bs.borderRadius) {
     const {topLeft, topRight, bottomRight, bottomLeft} = bs.borderRadius
     styles.borderRadius = `${topLeft || '0'} ${topRight || '0'} ${bottomRight || '0'} ${bottomLeft || '0'}`
   }
 
-  // Background
   if (bs.background) {
+    const imageUrl = bs.background.image?.asset?.url
+    const overlay = bs.background.overlay
+      ? overlayLayer(stegaClean(bs.background.overlay) as string)
+      : null
+
     if (bs.background.color) styles.backgroundColor = bs.background.color
-    if (bs.background.image?.asset?.url) {
-      styles.backgroundImage = `url(${bs.background.image.asset.url})`
-      styles.backgroundSize = bs.background.size || 'cover'
+
+    if (imageUrl) {
+      const size = bs.background.size || 'cover'
+      styles.backgroundImage = overlay
+        ? `${overlay}, url(${imageUrl})`
+        : `url(${imageUrl})`
+      styles.backgroundSize = overlay ? `${size}, cover` : size
       styles.backgroundPosition = 'center'
+      styles.backgroundRepeat = 'no-repeat'
     }
   }
 
-  // Typography
   if (bs.typography) {
     if (bs.typography.textAlign) styles.textAlign = bs.typography.textAlign
     if (bs.typography.fontSize) styles.fontSize = `${bs.typography.fontSize}px`
@@ -103,7 +116,6 @@ function buildStyles(bs: BlockStyles | undefined | null): CSSProperties {
     if (bs.typography.textColor) styles.color = bs.typography.textColor
   }
 
-  // Effects
   if (bs.effects) {
     if (bs.effects.shadow) styles.boxShadow = SHADOW_MAP[bs.effects.shadow] || 'none'
     if (typeof bs.effects.opacity === 'number') styles.opacity = bs.effects.opacity / 100
@@ -126,17 +138,14 @@ export function BlockStylesWrapper({
 }) {
   const clean = blockStyles ? stegaClean(blockStyles) : blockStyles
   const inlineStyles = buildStyles(clean)
-  const hasOverlay = clean?.background?.overlay && clean?.background?.image?.asset?.url
+  const hasImageBg = Boolean(clean?.background?.image?.asset?.url)
 
   return (
-    <Tag className={className || undefined} style={inlineStyles}>
-      {hasOverlay && (
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{backgroundColor: clean!.background!.overlay!}}
-        />
-      )}
-      {hasOverlay ? <div className="relative">{children}</div> : children}
+    <Tag
+      className={cn(hasImageBg && 'relative overflow-hidden', className)}
+      style={inlineStyles}
+    >
+      {children}
     </Tag>
   )
 }

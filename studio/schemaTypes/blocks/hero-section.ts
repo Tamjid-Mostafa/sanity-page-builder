@@ -363,7 +363,18 @@ export const heroSectionType = defineType({
       initialValue: 0,
       validation: (rule) => rule.min(0).max(100),
       hidden: ({parent}) =>
-        !['image', 'video'].includes(parent?.backgroundType as string),
+        !['image', 'video'].includes(parent?.backgroundType as string) ||
+        parent?.hubOverlay === true,
+    }),
+    defineField({
+      name: 'hubOverlay',
+      title: 'Hub overlay style',
+      type: 'boolean',
+      group: 'background',
+      description:
+        'Dimmed image with gradient scrim, secondary eyebrow, and h2 typography (How We Work Barcelona hub section).',
+      initialValue: false,
+      hidden: ({parent}) => parent?.backgroundType !== 'image',
     }),
 
     // Style

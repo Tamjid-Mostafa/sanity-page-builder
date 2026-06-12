@@ -50,7 +50,7 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
       {eyebrow && (
         <p
           className={cn(
-            'not-prose mb-2 text-xs font-semibold uppercase tracking-[0.14em]',
+            'not-prose mb-2! text-xs font-semibold uppercase tracking-[0.14em]',
             onDark ? 'text-secondary' : 'text-primary',
           )}
         >

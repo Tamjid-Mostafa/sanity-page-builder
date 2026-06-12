@@ -20,7 +20,6 @@ import Linkedin from "@/components/icons/linkedin";
 import Youtube from "@/components/icons/youtube";
 import XIcon from "@/components/icons/X";
 import TikTokIcon from "@/components/icons/tiktok";
-import { stegaClean } from "next-sanity";
 
 export interface StaggeredMenuSubItem {
   label: string;
@@ -42,6 +41,8 @@ export interface StaggeredMenuItem {
 export interface StaggeredMenuSocialItem {
   label: string;
   link: string;
+  /** Cleaned platform id for icon lookup (e.g. instagram, x) — not for display */
+  platformKey?: string;
 }
 
 export interface StaggeredMenuProps {
@@ -743,7 +744,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                         role="list"
                       >
                         {socialItems.map((s, i) => {
-                          // Map social platform names to icons
                           const socialIcons: Record<string, React.ReactNode> = {
                             facebook: <Facebook className="w-5 h-5" />,
                             instagram: <Instagram className="w-5 h-5" />,
@@ -753,8 +753,13 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
                             youtube: <Youtube className="w-5 h-5" />,
                             tiktok: <TikTokIcon className="w-5 h-5" />,
                           };
-                          const platformKey = s.label.toLowerCase();
-                          const icon = socialIcons[stegaClean(platformKey)];
+                          const platformKey = (
+                            s.platformKey ?? s.label
+                          ).toLowerCase();
+                          const icon =
+                            socialIcons[
+                              platformKey === "twitter" ? "x" : platformKey
+                            ];
                           
                           return (
                             <li key={s.label + i}>

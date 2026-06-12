@@ -346,22 +346,18 @@ function OnDarkCard({
   card: ExtendedFeatureCard;
   iconSize: { box: string; icon: string; image: string };
 }) {
-  const accent = stegaClean(card.accentColor) || "primary";
-  const accentBarClass = ACCENT_BAR[accent] ?? "bg-primary";
-  const text = card.description || card.title || "";
+  const accent = stegaClean(card.accentColor) || "secondary";
+  const accentBarClass = ACCENT_BAR[accent] ?? "bg-secondary";
 
   return (
-    <div className="group relative transition-transform duration-300 hover:translate-x-1">
-      <div
-        className="relative flex items-start gap-4 overflow-hidden rounded-2xl border border-white/10 p-5 transition-colors duration-300 hover:border-white/20"
-        style={{ background: "oklch(0.18 0.01 255)" }}
-      >
+    <div className="group relative h-full transition-transform duration-300 hover:-translate-y-0.5">
+      <div className="relative flex h-full flex-col gap-4 overflow-hidden rounded-2xl border border-white/10 bg-[oklch(0.18_0.01_255)] p-5 transition-colors duration-300 hover:border-white/20 md:p-6">
         <div
-          className={`absolute top-0 right-0 left-0 h-0.5 ${accentBarClass}`}
+          className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)}
           aria-hidden
         />
         {card.icon?.lucide && (
-          <div className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+          <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/5">
             <IconRenderer
               name={stegaClean(card.icon.lucide)}
               className={cn(iconSize.icon, "text-background")}
@@ -369,9 +365,18 @@ function OnDarkCard({
             />
           </div>
         )}
-        <p className="pt-1 text-sm leading-relaxed font-semibold text-background">
-          {text}
-        </p>
+        <div className="flex flex-1 flex-col gap-2">
+          {card.title && (
+            <h3 className="font-heading text-base font-semibold leading-snug tracking-tight text-background md:text-lg">
+              {card.title}
+            </h3>
+          )}
+          {card.description && (
+            <p className="text-sm font-normal leading-relaxed text-background/75">
+              {card.description}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -483,8 +488,9 @@ export function FeatureCardGridContent({
           {d.subtitle && (
             <p
               className={cn(
-                "mt-4 text-sm sm:text-base font-light leading-relaxed max-w-3xl",
+                "mt-4 max-w-3xl text-sm font-light leading-relaxed sm:text-base",
                 titleAlign === "center" && "mx-auto",
+                isOnDark ? "text-background/80" : "text-muted-foreground",
               )}
             >
               {d.subtitle}
@@ -496,7 +502,7 @@ export function FeatureCardGridContent({
         className={cn(
           "grid grid-cols-1",
           isOnDark
-            ? "flex flex-col gap-4"
+            ? cn("gap-4 md:gap-5", colClass)
             : isPathway
               ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
               : isAudience
