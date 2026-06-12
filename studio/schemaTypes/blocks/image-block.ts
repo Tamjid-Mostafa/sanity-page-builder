@@ -23,6 +23,19 @@ export const imageBlockType = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'display',
+      title: 'Display',
+      type: 'string',
+      initialValue: 'default',
+      options: {
+        list: [
+          {title: 'Default', value: 'default'},
+          {title: 'Portrait (4:5)', value: 'portrait'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
       name: 'blockStyles',
       title: 'Block Styles',
       type: 'blockStyles',

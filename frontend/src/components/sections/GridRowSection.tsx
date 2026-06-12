@@ -69,15 +69,20 @@ export function GridRowSection({ data }: { data: GridRowData }) {
     PADDING_Y_MAP[stegaClean(data.paddingY) || "compact"] || "";
   const paddingXClass =
     PADDING_X_MAP[stegaClean(d.paddingX) || "md"] || PADDING_X_MAP.md;
-  const maxWidthClass = contentMaxWidthClass(stegaClean(data.maxWidth), "full");
-  const alignClass =
-    ALIGN_MAP[stegaClean(d.containerAlign) || "center"] || "mx-auto";
+  const maxWidthKey = stegaClean(data.maxWidth as string | undefined) || "full";
+  const maxWidthClass = contentMaxWidthClass(maxWidthKey, "full");
+  const isConstrainedWidth = maxWidthKey === "narrow" || maxWidthKey === "content";
+  const alignKey =
+    stegaClean(d.containerAlign) || (isConstrainedWidth ? "left" : "center");
+  const contentAlignClass =
+    ALIGN_MAP[alignKey] || (isConstrainedWidth ? "mr-auto" : "mx-auto");
   const reverseClass = data.reverseOnMobile ? "flex-col-reverse md:grid" : "";
 
   return (
     <BlockStylesWrapper as="section" blockStyles={data.blockStyles} className={cn(paddingClass)}>
-      <div className={cn("container mx-auto", paddingXClass, maxWidthClass, alignClass)}>
-        <div className={cn("grid", gridClass, gapClass, reverseClass)}>
+      <div className={cn("container mx-auto", paddingXClass)}>
+        <div className={cn("w-full", maxWidthClass, contentAlignClass)}>
+          <div className={cn("grid", gridClass, gapClass, reverseClass)}>
             {data.columns?.map((column, colIdx) => {
               const valign =
                 VALIGN_MAP[stegaClean(column.verticalAlign) || "top"] || "";
@@ -85,7 +90,7 @@ export function GridRowSection({ data }: { data: GridRowData }) {
                 <ScrollReveal key={column._key} delay={colIdx * STAGGER_MS}>
                   <BlockStylesWrapper
                     blockStyles={column.blockStyles}
-                    className={valign}
+                    className={cn(valign, "flex flex-col gap-8")}
                   >
                     {column.content?.map((block) => (
                       <ContentRenderer key={block._key} block={block} />
@@ -101,6 +106,7 @@ export function GridRowSection({ data }: { data: GridRowData }) {
             })}
           </div>
         </div>
+      </div>
     </BlockStylesWrapper>
   );
 }

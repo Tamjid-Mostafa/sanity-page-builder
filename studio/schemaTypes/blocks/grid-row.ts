@@ -96,6 +96,7 @@ export const gridRowType = defineType({
                 defineArrayMember({type: 'tocBlock'}),
                 defineArrayMember({type: 'ctaSection'}),
                 defineArrayMember({type: 'partnersNetwork'}),
+                defineArrayMember({type: 'tagPills'}),
               ],
               options: {
                 insertMenu: {

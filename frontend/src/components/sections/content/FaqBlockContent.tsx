@@ -221,7 +221,7 @@ function GroupedFaq({data}: {data: GroupedFaqData}) {
   const allItems = groups.flatMap((g) => g.items ?? [])
   const enableSchema = data.enableSchema ?? true
   const showCta = data.showCta ?? false
-  const ctaLabel = stegaClean(data.ctaLabel) || 'Book a Conversation'
+  const ctaLabel = data.ctaLabel || 'Book a Conversation'
 
   return (
     <div>

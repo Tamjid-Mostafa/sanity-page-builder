@@ -86,6 +86,7 @@ export type ExperienceCardGridData = Extract<ContentBlock, {_type: 'experienceCa
 export type TestimonialCarouselData = Extract<ContentBlock, {_type: 'testimonialCarousel'}>
 export type ImageGalleryData = Extract<ContentBlock, {_type: 'imageGallery'}>
 export type TocBlockData = Extract<ContentBlock, {_type: 'tocBlock'}>
+export type TagPillsData = Extract<ContentBlock, {_type: 'tagPills'}>
 export type PartnersNetworkData = {
   _type: 'partnersNetwork'
   _key?: string
@@ -117,6 +118,7 @@ export type CtaSectionData = {
   eyebrow?: string
   heading?: string
   subtitle?: string
+  size?: 'large' | 'medium' | string | null
   bodyParagraphs?: Array<{
     _key?: string
     text?: string

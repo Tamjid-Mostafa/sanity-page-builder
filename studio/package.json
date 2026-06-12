@@ -19,10 +19,10 @@
     "@sanity/icons": "^3.7.4",
     "@sanity/table": "^2.0.1",
     "@sanity/ui": "^3.1.14",
-    "@sanity/vision": "^5.31.0",
+    "@sanity/vision": "^5.31.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "sanity": "^5.31.0",
+    "sanity": "^5.31.1",
     "sanity-plugin-lucide-icon-picker": "^1.0.3",
     "sanity-plugin-media": "^4.1.1",
     "styled-components": "^6.3.12"

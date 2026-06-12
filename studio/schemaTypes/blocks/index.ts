@@ -31,6 +31,7 @@ import {testimonialCarouselType} from './testimonial-carousel'
 import {imageGalleryType} from './image-gallery'
 import {ctaSectionType} from './cta-section'
 import {partnersNetworkType} from './partners-network'
+import {tagPillsType} from './tag-pills'
 
 // Grid Row (the page builder section)
 import {gridRowType} from './grid-row'
@@ -65,6 +66,7 @@ export {
   imageGalleryType,
   ctaSectionType,
   partnersNetworkType,
+  tagPillsType,
   tocBlockType,
   gridRowType,
 }
@@ -114,6 +116,7 @@ export const blockTypes = [
   imageGalleryType,
   ctaSectionType,
   partnersNetworkType,
+  tagPillsType,
   tocBlockType,
   gridRowType,
   pageBuilderType,

@@ -339,6 +339,44 @@ function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
   return <div className="h-full">{inner}</div>;
 }
 
+function OnDarkCard({
+  card,
+  iconSize,
+}: {
+  card: ExtendedFeatureCard;
+  iconSize: { box: string; icon: string; image: string };
+}) {
+  const accent = stegaClean(card.accentColor) || "primary";
+  const accentBarClass = ACCENT_BAR[accent] ?? "bg-primary";
+  const text = card.description || card.title || "";
+
+  return (
+    <div className="group relative transition-transform duration-300 hover:translate-x-1">
+      <div
+        className="relative flex items-start gap-4 overflow-hidden rounded-2xl border border-white/10 p-5 transition-colors duration-300 hover:border-white/20"
+        style={{ background: "oklch(0.18 0.01 255)" }}
+      >
+        <div
+          className={`absolute top-0 right-0 left-0 h-0.5 ${accentBarClass}`}
+          aria-hidden
+        />
+        {card.icon?.lucide && (
+          <div className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10">
+            <IconRenderer
+              name={stegaClean(card.icon.lucide)}
+              className={cn(iconSize.icon, "text-background")}
+              strokeWidth={1.5}
+            />
+          </div>
+        )}
+        <p className="pt-1 text-sm leading-relaxed font-semibold text-background">
+          {text}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
   return (
     <div className="group relative flex flex-col rounded-3xl border border-border/50 bg-card/70 p-6 shadow-none ring-1 ring-black/3 transition-[border-color,background-color] duration-300 hover:border-secondary/20 hover:bg-card md:p-7">
@@ -370,6 +408,7 @@ export function FeatureCardGridContent({
   const style = stegaClean(d.style);
   const isAudience = style === "audience";
   const isPathway = style === "pathway";
+  const isOnDark = style === "onDark";
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
   const cardStyle = stegaClean(d.style) || "simple";
@@ -422,12 +461,22 @@ export function FeatureCardGridContent({
           )}
         >
           {d.eyebrow && (
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] mb-2 text-primary">
+            <p
+              className={cn(
+                "mb-2 text-xs font-semibold uppercase tracking-[0.14em]",
+                isOnDark ? "text-secondary" : "text-primary",
+              )}
+            >
               {d.eyebrow}
             </p>
           )}
           {d.title && (
-            <h2 className="text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]">
+            <h2
+              className={cn(
+                "text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]",
+                isOnDark && "text-background",
+              )}
+            >
               {d.title}
             </h2>
           )}
@@ -446,15 +495,19 @@ export function FeatureCardGridContent({
       <div
         className={cn(
           "grid grid-cols-1",
-          isPathway
-            ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
-            : isAudience
-              ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7"
-              : `gap-4 ${colClass}`,
+          isOnDark
+            ? "flex flex-col gap-4"
+            : isPathway
+              ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
+              : isAudience
+                ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7"
+                : `gap-4 ${colClass}`,
         )}
       >
         {cards.map((card, index) =>
-          isPathway ? (
+          isOnDark ? (
+            <OnDarkCard key={card._key} card={card} iconSize={iconSize} />
+          ) : isPathway ? (
             <PathwayCard key={card._key} card={card} />
           ) : isAudience ? (
             <AudienceCard key={card._key} card={card} />

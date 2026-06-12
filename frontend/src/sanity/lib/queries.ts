@@ -59,6 +59,7 @@ const contentFragment = /* groq */ `
     _type == "imageBlock" => {
       image { ${imageFragment} },
       caption,
+      display,
       ${blockStylesFragment}
     },
     _type == "richTextBlock" => {
@@ -170,8 +171,12 @@ const contentFragment = /* groq */ `
       },
       ${blockStylesFragment}
     },
+    _type == "tagPills" => {
+      items,
+      ${blockStylesFragment}
+    },
     _type == "ctaSection" => {
-      eyebrow, heading, subtitle,
+      eyebrow, heading, subtitle, size,
       bodyParagraphs[] { _key, text, emphasis },
       buttons[] {
         _key, _type, label, action, color, textColor, hoverColor, variant,

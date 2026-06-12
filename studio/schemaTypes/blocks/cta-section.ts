@@ -60,6 +60,19 @@ export const ctaSectionType = defineType({
       validation: (rule) => rule.max(3),
     }),
     defineField({
+      name: 'size',
+      title: 'Size',
+      type: 'string',
+      initialValue: 'large',
+      options: {
+        list: [
+          {title: 'Large (home hero)', value: 'large'},
+          {title: 'Medium (page closing)', value: 'medium'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
       name: 'trustItems',
       title: 'Trust Indicator Chips',
       type: 'array',

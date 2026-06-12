@@ -1,3 +1,6 @@
+/** Brand dark surface — use in CMS blockStyles backgrounds (not #525252). */
+export const SITE_DARK_SURFACE = "#383838";
+
 /** Horizontal padding used site-wide (matches icollege.life). */
 export const SITE_CONTAINER_PADDING_X = "px-6 sm:px-8 lg:px-12";
 

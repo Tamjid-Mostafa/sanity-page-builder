@@ -40,7 +40,7 @@ function resolveBodyParagraphs(
     return bodyParagraphs
       .map((paragraph, index) => ({
         _key: paragraph._key ?? `body-${index}`,
-        text: stegaClean(paragraph.text) ?? '',
+        text: paragraph.text ?? '',
         emphasis: paragraph.emphasis ?? false,
       }))
       .filter((paragraph) => paragraph.text.length > 0)
@@ -58,14 +58,17 @@ function resolveBodyParagraphs(
 
 // --- Component ---------------------------------------------------------------
 export function CtaSectionContent({data}: {data: CtaSectionData}) {
-  const eyebrow = stegaClean(data.eyebrow)
-  const heading = stegaClean(data.heading)
-  const subtitle = stegaClean(data.subtitle)
+  const eyebrow = data.eyebrow
+  const heading = data.heading
+  const subtitle = data.subtitle
+  const size = stegaClean((data as {size?: string}).size) || 'large'
+  const isMedium = size === 'medium'
   const bodyParagraphs = resolveBodyParagraphs(data.bodyParagraphs, subtitle)
   const buttons = data.buttons ?? []
   const trustItems = (data.trustItems ?? []) as string[]
   const prospectus = data.prospectusLink
   const hasBody = bodyParagraphs.length > 0
+  const buttonTone = isMedium ? 'on-light' : 'on-dark'
 
   return (
     <motion.div
@@ -82,19 +85,35 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
       )}
 
       {heading && (
-        <h2 className="mb-6 max-w-3xl font-heading text-4xl font-bold tracking-tight leading-[1.06] sm:text-5xl md:text-6xl lg:text-[3.25rem]">
+        <h2
+          className={cn(
+            'font-heading font-bold tracking-tight leading-[1.08] text-foreground',
+            isMedium
+              ? 'mb-8 max-w-xl text-3xl sm:text-4xl md:text-[2.625rem]'
+              : 'mb-6 max-w-3xl text-4xl leading-[1.06] sm:text-5xl md:text-6xl lg:text-[3.25rem]',
+          )}
+        >
           {heading}
         </h2>
       )}
 
       {hasBody && (
-        <div className="mb-10 max-w-2xl space-y-4 text-base font-medium leading-relaxed md:text-lg">
+        <div
+          className={cn(
+            'max-w-2xl',
+            isMedium
+              ? 'mb-8 space-y-5 text-sm font-light leading-relaxed sm:text-base'
+              : 'mb-10 space-y-4 text-base font-medium leading-relaxed md:text-lg',
+          )}
+        >
           {bodyParagraphs.map((paragraph) => (
             <p
               key={paragraph._key}
               className={cn(
                 paragraph.emphasis &&
-                  'pt-1 font-heading text-lg font-semibold md:text-xl',
+                  (isMedium
+                    ? 'font-heading text-base font-semibold sm:text-lg'
+                    : 'pt-1 font-heading text-lg font-semibold md:text-xl'),
               )}
             >
               {paragraph.text}
@@ -104,20 +123,26 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
       )}
 
       {buttons.length > 0 && (
-        <div className="mb-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div
+          className={cn(
+            'flex flex-col items-center justify-center gap-3 sm:flex-row',
+            !isMedium && 'mb-10',
+          )}
+        >
           {buttons.map((btn) => {
             if (!btn.label) return null
             const action = stegaClean(btn.action) || 'link'
-            const label = stegaClean(btn.label)
+            const label = btn.label
+            const btnSize = isMedium ? 'default' : 'lg'
 
             if (action === 'calendly') {
               return (
                 <BookConversationButton
                   key={btn._key}
-                  tone="on-dark"
-                  size="lg"
-                  showIcon
-                  showArrow={false}
+                  tone={buttonTone}
+                  size={btnSize}
+                  showIcon={!isMedium}
+                  showArrow
                   label={label}
                 />
               )
@@ -129,8 +154,8 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
                 key={btn._key}
                 href={href}
                 label={label}
-                tone="on-dark"
-                size="lg"
+                tone={buttonTone}
+                size={btnSize}
                 newTab={isExternalLink(btn.link as Array<{_type: string; [key: string]: unknown}>)}
               />
             )
@@ -151,7 +176,7 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
             {trustItems.map((item, i) => (
               <span key={i} className="flex items-center gap-2">
                 <span className="inline-block h-1 w-1 rounded-full bg-secondary" />
-                {stegaClean(item)}
+                {item}
               </span>
             ))}
           </motion.div>

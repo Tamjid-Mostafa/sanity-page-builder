@@ -1,6 +1,17 @@
 import {stegaClean} from 'next-sanity'
 import {SanityImage} from '../../shared/SanityImage'
 import type {IconTextData} from '@/types/sanity'
+import {cn} from '@/lib/utils'
+
+function isDarkBackground(color?: string | null) {
+  if (!color) return false
+  const hex = color.replace('#', '')
+  if (hex.length !== 6) return false
+  const r = parseInt(hex.slice(0, 2), 16)
+  const g = parseInt(hex.slice(2, 4), 16)
+  const b = parseInt(hex.slice(4, 6), 16)
+  return 0.299 * r + 0.587 * g + 0.114 * b < 140
+}
 
 const LAYOUT_CLASSES: Record<string, {container: string; text: string}> = {
   left: {
@@ -20,6 +31,12 @@ const LAYOUT_CLASSES: Record<string, {container: string; text: string}> = {
 export function IconTextContent({data}: {data: IconTextData}) {
   const alignment = data.alignment || 'left'
   const layout = LAYOUT_CLASSES[stegaClean(alignment)] || LAYOUT_CLASSES.left
+  const onDark = isDarkBackground(
+    stegaClean(
+      (data.blockStyles as {background?: {color?: string | null}} | undefined)?.background
+        ?.color,
+    ),
+  )
 
   return (
     <div className={layout.container}>
@@ -35,12 +52,22 @@ export function IconTextContent({data}: {data: IconTextData}) {
       )}
       <div className={layout.text}>
         {data.title && (
-          <h4 className="text-lg font-heading font-semibold text-foreground">
+          <h4
+            className={cn(
+              'font-heading font-semibold',
+              onDark ? 'text-base font-bold text-background' : 'text-lg text-foreground',
+            )}
+          >
             {data.title}
           </h4>
         )}
         {data.description && (
-          <p className="mt-1 text-sm leading-relaxed text-muted">
+          <p
+            className={cn(
+              'mt-0.5 text-sm leading-relaxed',
+              onDark ? 'font-medium text-secondary' : 'text-muted',
+            )}
+          >
             {data.description}
           </p>
         )}

@@ -15,6 +15,7 @@ const STYLE_OPTIONS = [
   {title: 'Highlighted', value: 'highlighted'},
   {title: 'Audience', value: 'audience'},
   {title: 'Pathway', value: 'pathway'},
+  {title: 'On Dark', value: 'onDark'},
 ] as const
 
 const CARD_ICON_SIZE_OPTIONS = [
