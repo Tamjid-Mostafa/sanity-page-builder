@@ -60,7 +60,7 @@ const ACCENT_TEXT: Record<string, string> = {
 
 const ACCENT_ICON_BG: Record<string, string> = {
   primary: "bg-primary/10",
-  secondary: "bg-secondary/15",
+  secondary: "bg-secondary/10",
   none: "bg-muted",
 };
 
@@ -69,16 +69,18 @@ const ICON_SIZE_MAP: Record<
   { box: string; icon: string; image: string }
 > = {
   small: { box: "w-8 h-8 rounded-md", icon: "w-4 h-4", image: "w-4 h-4" },
-  medium: { box: "w-10 h-10 rounded-lg", icon: "w-5 h-5", image: "w-5 h-5" },
+  medium: { box: "w-10 h-10 rounded-xl", icon: "w-5 h-5", image: "w-5 h-5" },
   large: { box: "w-12 h-12 rounded-xl", icon: "w-6 h-6", image: "w-6 h-6" },
   xl: { box: "w-14 h-14 rounded-2xl", icon: "w-7 h-7", image: "w-7 h-7" },
 };
 
 const CARD_STYLE_CLASSES: Record<string, string> = {
   simple: "bg-card shadow-sm hover:shadow-md",
-  bordered: "bg-card border border-border shadow-sm hover:shadow-md",
+  bordered:
+    "bg-card border border-border shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-primary/25 hover:shadow-md",
   shadow: "bg-card shadow-md hover:shadow-lg",
-  highlighted: "bg-card border border-primary/20 shadow-sm hover:shadow-md",
+  highlighted:
+    "bg-card border border-primary/20 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-primary/25 hover:shadow-md",
 };
 
 function LightCard({
@@ -108,9 +110,16 @@ function LightCard({
   const cardStyleClass =
     CARD_STYLE_CLASSES[cardStyle] ?? CARD_STYLE_CLASSES.simple;
   const showAccentBar = cardStyle === "bordered" || cardStyle === "highlighted";
+  const isCompactCard = cardStyle === "bordered" || cardStyle === "highlighted";
+  const hasCustomTitleSize = Boolean(cardTitleStyle?.fontSize);
 
   return (
-    <div className="group relative hover:-translate-y-1 transition-transform duration-300">
+    <div
+      className={cn(
+        "group relative",
+        !isCompactCard && "hover:-translate-y-1 transition-transform duration-300",
+      )}
+    >
       <div
         className={cn(
           "relative h-full rounded-2xl transition-shadow duration-300 flex flex-col overflow-hidden",
@@ -138,7 +147,12 @@ function LightCard({
             />
           </div>
         )}
-        <div className="flex flex-col gap-3 p-5 flex-1">
+        <div
+          className={cn(
+            "flex flex-col gap-3 flex-1",
+            isCompactCard ? "p-6" : "p-5",
+          )}
+        >
           {(card.icon || showStepNumbers) && (
             <div
               className={cn(
@@ -196,7 +210,9 @@ function LightCard({
             {card.title && (
               <h3
                 className={cn(
-                  "text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]",
+                  hasCustomTitleSize
+                    ? "font-heading font-bold tracking-tight leading-[1.08]"
+                    : "font-heading text-base font-semibold leading-snug text-foreground sm:text-lg",
                   cardTitleAlign === "center"
                     ? "text-center"
                     : cardTitleAlign === "right"
@@ -222,7 +238,7 @@ function LightCard({
             {card.description && (
               <p
                 className={cn(
-                  "text-sm font-light leading-relaxed",
+                  "text-sm font-light leading-relaxed text-foreground",
                   accentTargets.has("description") && accentTextClass,
                 )}
               >
@@ -414,6 +430,8 @@ export function FeatureCardGridContent({
   const isAudience = style === "audience";
   const isPathway = style === "pathway";
   const isOnDark = style === "onDark";
+  const isCompactGrid =
+    style === "bordered" || style === "highlighted" || style === "audience";
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
   const cardStyle = stegaClean(d.style) || "simple";
@@ -461,7 +479,7 @@ export function FeatureCardGridContent({
       {(d.eyebrow || d.title || d.subtitle) && (
         <div
           className={cn(
-            "mb-8",
+            isCompactGrid ? "mb-10 max-w-3xl" : "mb-8",
             titleAlign === "center" ? "text-center" : "text-left",
           )}
         >
@@ -479,6 +497,7 @@ export function FeatureCardGridContent({
             <h2
               className={cn(
                 "text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]",
+                d.subtitle && !isOnDark && "mb-4",
                 isOnDark && "text-background",
               )}
             >
@@ -488,9 +507,12 @@ export function FeatureCardGridContent({
           {d.subtitle && (
             <p
               className={cn(
-                "mt-4 max-w-3xl text-sm font-light leading-relaxed sm:text-base",
+                "max-w-3xl text-sm font-light leading-relaxed sm:text-base",
+                !d.title && "mt-0",
+                d.title && !isOnDark && "mt-0",
+                d.title && isOnDark && "mt-4",
                 titleAlign === "center" && "mx-auto",
-                isOnDark ? "text-background/80" : "text-muted-foreground",
+                isOnDark ? "text-background/80" : "text-foreground",
               )}
             >
               {d.subtitle}
