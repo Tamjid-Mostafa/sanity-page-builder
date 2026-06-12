@@ -32,6 +32,27 @@ function isExternalLink(linkItems?: Array<{_type: string; [key: string]: unknown
 
 type BodyParagraph = { _key: string; text: string; emphasis?: boolean }
 
+function luminance(color: string) {
+  const hex = color.replace('#', '')
+  if (hex.length !== 6) return null
+  const r = parseInt(hex.slice(0, 2), 16)
+  const g = parseInt(hex.slice(2, 4), 16)
+  const b = parseInt(hex.slice(4, 6), 16)
+  return 0.299 * r + 0.587 * g + 0.114 * b
+}
+
+function isDarkSurface(blockStyles?: {
+  background?: {color?: string | null}
+  typography?: {textColor?: string | null}
+} | null) {
+  if (!blockStyles) return false
+  const bg = blockStyles.background?.color
+  const text = blockStyles.typography?.textColor
+  const bgL = bg ? luminance(bg) : null
+  const textL = text ? luminance(text) : null
+  return (bgL !== null && bgL < 140) || (textL !== null && textL > 200)
+}
+
 function resolveBodyParagraphs(
   bodyParagraphs: CtaSectionData['bodyParagraphs'],
   subtitle?: string | null,
@@ -68,7 +89,12 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
   const trustItems = (data.trustItems ?? []) as string[]
   const prospectus = data.prospectusLink
   const hasBody = bodyParagraphs.length > 0
-  const buttonTone = isMedium ? 'on-light' : 'on-dark'
+  const blockStyles = stegaClean(
+    (data as {blockStyles?: {background?: {color?: string | null}; typography?: {textColor?: string | null}}})
+      .blockStyles,
+  )
+  const onDark = isDarkSurface(blockStyles)
+  const buttonTone = onDark || !isMedium ? 'on-dark' : 'on-light'
 
   return (
     <motion.div
@@ -79,7 +105,12 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
       className="mx-auto flex w-full max-w-4xl flex-col items-center text-center"
     >
       {eyebrow && (
-        <p className="mb-5 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+        <p
+          className={cn(
+            'mb-5 text-xs font-semibold uppercase tracking-[0.18em]',
+            onDark ? 'text-secondary' : 'text-secondary',
+          )}
+        >
           {eyebrow}
         </p>
       )}
@@ -87,7 +118,8 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
       {heading && (
         <h2
           className={cn(
-            'font-heading font-bold tracking-tight leading-[1.08] text-foreground',
+            'font-heading font-bold tracking-tight leading-[1.08]',
+            onDark ? 'text-background' : 'text-foreground',
             isMedium
               ? 'mb-8 max-w-xl text-3xl sm:text-4xl md:text-[2.625rem]'
               : 'mb-6 max-w-3xl text-4xl leading-[1.06] sm:text-5xl md:text-6xl lg:text-[3.25rem]',
@@ -110,6 +142,7 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
             <p
               key={paragraph._key}
               className={cn(
+                onDark ? 'text-background/90' : undefined,
                 paragraph.emphasis &&
                   (isMedium
                     ? 'font-heading text-base font-semibold sm:text-lg'

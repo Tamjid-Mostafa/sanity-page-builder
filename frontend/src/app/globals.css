@@ -423,3 +423,13 @@ h3 {
     margin-left: var(--ml-lg) !important;
   }
 }
+
+/* Tag pills inherit tone from BlockStylesWrapper or local block styles */
+[data-block-text-tone="on-dark"] .tag-pill,
+[data-block-text-tone="on-image"] .tag-pill {
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--background) 15%, transparent);
+  background-color: color-mix(in oklab, var(--background) 5%, transparent);
+  padding: 0.375rem 0.75rem;
+  color: var(--background);
+}

@@ -1,20 +1,54 @@
-import type { TagPillsData } from "@/types/sanity";
+import {stegaClean} from 'next-sanity'
+import type {TagPillsData} from '@/types/sanity'
+import {cn} from '@/lib/utils'
 
-export function TagPillsContent({ data }: { data: TagPillsData }) {
+function luminance(color: string) {
+  const hex = color.replace('#', '')
+  if (hex.length !== 6) return null
+  const r = parseInt(hex.slice(0, 2), 16)
+  const g = parseInt(hex.slice(2, 4), 16)
+  const b = parseInt(hex.slice(4, 6), 16)
+  return 0.299 * r + 0.587 * g + 0.114 * b
+}
+
+function isDarkSurface(blockStyles?: {
+  background?: {color?: string | null}
+  typography?: {textColor?: string | null}
+} | null) {
+  if (!blockStyles) return false
+  const bg = blockStyles.background?.color
+  const text = blockStyles.typography?.textColor
+  const bgL = bg ? luminance(bg) : null
+  const textL = text ? luminance(text) : null
+  return (bgL !== null && bgL < 140) || (textL !== null && textL > 200)
+}
+
+export function TagPillsContent({data}: {data: TagPillsData}) {
+  const blockStyles = stegaClean(data.blockStyles) as {
+    background?: {color?: string | null}
+    typography?: {textColor?: string | null}
+  } | null
+  const onDark = isDarkSurface(blockStyles)
   const items = (data.items ?? []).filter((item): item is string => Boolean(item))
 
-  if (items.length === 0) return null;
+  if (items.length === 0) return null
 
   return (
-    <ul className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+    <ul
+      className="flex flex-wrap gap-2"
+      {...(onDark ? {'data-block-text-tone': 'on-dark'} : {})}
+    >
       {items.map((label) => (
         <li
           key={label}
-          className="rounded-xl bg-foreground px-4 py-3 text-sm font-semibold text-background"
+          className={cn(
+            'tag-pill inline-flex items-center text-sm font-semibold',
+            'rounded-xl bg-foreground px-4 py-3 text-background',
+          )}
         >
           {label}
         </li>
       ))}
     </ul>
-  );
+  )
 }

@@ -2,6 +2,8 @@ import type {CSSProperties, ReactNode} from 'react'
 import {stegaClean} from 'next-sanity'
 import {cn} from '@/lib/utils'
 
+export type BlockTextTone = 'on-image' | 'on-dark' | null
+
 interface BlockStyles {
   padding?: {
     top?: string | null; right?: string | null; bottom?: string | null; left?: string | null
@@ -27,6 +29,27 @@ const SHADOW_MAP: Record<string, string> = {
   md: '0 4px 6px rgba(0,0,0,0.07)',
   lg: '0 10px 15px rgba(0,0,0,0.1)',
   xl: '0 20px 25px rgba(0,0,0,0.1)',
+}
+
+function luminance(color: string) {
+  const hex = color.replace('#', '')
+  if (hex.length !== 6) return null
+  const r = parseInt(hex.slice(0, 2), 16)
+  const g = parseInt(hex.slice(2, 4), 16)
+  const b = parseInt(hex.slice(4, 6), 16)
+  return 0.299 * r + 0.587 * g + 0.114 * b
+}
+
+function resolveTextTone(bs: BlockStyles | undefined | null): BlockTextTone {
+  if (!bs) return null
+  if (bs.background?.image?.asset?.url) return 'on-image'
+  const textColor = bs.typography?.textColor
+  if (textColor && luminance(textColor) !== null && luminance(textColor)! > 200) {
+    return 'on-dark'
+  }
+  const bg = bs.background?.color
+  if (bg && luminance(bg) !== null && luminance(bg)! < 140) return 'on-dark'
+  return null
 }
 
 function overlayLayer(overlay: string) {
@@ -139,11 +162,13 @@ export function BlockStylesWrapper({
   const clean = blockStyles ? stegaClean(blockStyles) : blockStyles
   const inlineStyles = buildStyles(clean)
   const hasImageBg = Boolean(clean?.background?.image?.asset?.url)
+  const textTone = resolveTextTone(clean)
 
   return (
     <Tag
       className={cn(hasImageBg && 'relative overflow-hidden', className)}
       style={inlineStyles}
+      {...(textTone ? {'data-block-text-tone': textTone} : {})}
     >
       {children}
     </Tag>

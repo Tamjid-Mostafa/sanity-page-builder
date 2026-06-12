@@ -26,7 +26,7 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
   const eyebrow = data.eyebrow
   const blockStyles = stegaClean(data.blockStyles) as {
     background?: {color?: string | null}
-    typography?: {fontWeight?: string | null}
+    typography?: {fontWeight?: string | null; textColor?: string | null}
   } | null
   const typography = blockStyles?.typography
   const onDark =
@@ -43,8 +43,8 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
         'prose prose-slate max-w-none prose-p:my-0 prose-headings:text-inherit prose-p:text-inherit prose-li:text-inherit prose-strong:text-inherit',
         useHeadingFont
           ? 'font-heading prose-p:font-bold prose-p:text-xl md:prose-p:text-2xl prose-p:leading-snug'
-          : 'prose-p:text-sm sm:prose-p:text-base prose-p:font-medium prose-p:leading-relaxed prose-p:text-foreground [&_h2]:mt-0 [&_h2]:mb-8 [&_p]:mb-0 [&_p+p]:mt-5',
-        onDark && 'prose-headings:text-background',
+          : 'prose-p:text-sm sm:prose-p:text-base prose-p:font-medium prose-p:leading-relaxed prose-p:text-inherit [&_h2]:mt-0 [&_h2]:mb-8 [&_p]:mb-0 [&_p+p]:mt-5',
+        onDark && 'text-inherit prose-headings:text-inherit',
       )}
     >
       {eyebrow && (
