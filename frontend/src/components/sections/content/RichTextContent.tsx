@@ -43,7 +43,7 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
         'prose prose-slate max-w-none prose-p:my-0 prose-headings:text-inherit prose-p:text-inherit prose-li:text-inherit prose-strong:text-inherit',
         useHeadingFont
           ? 'font-heading prose-p:font-bold prose-p:text-xl md:prose-p:text-2xl prose-p:leading-snug'
-          : 'prose-p:text-sm sm:prose-p:text-base prose-p:font-medium prose-p:leading-relaxed prose-p:text-inherit [&_h2]:mt-0 [&_h2]:mb-8 [&_p]:mb-0 [&_p+p]:mt-5',
+          : 'prose-p:text-sm sm:prose-p:text-base prose-p:font-light prose-p:leading-relaxed prose-p:text-inherit [&_h2]:mt-0 [&_h2]:mb-4 [&_h3]:mt-0 [&_p]:mb-0 [&_p+p]:mt-4 [&_blockquote]:mt-4 [&_ul]:mt-0',
         onDark && 'text-inherit prose-headings:text-inherit',
       )}
     >

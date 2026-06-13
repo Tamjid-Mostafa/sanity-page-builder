@@ -46,6 +46,7 @@ const components: PortableTextComponents = {
     },
   },
   marks: {
+    strong: ({children}) => <strong className="font-medium">{children}</strong>,
     link: ({value, children}) => {
       const isExternal = value?.href?.startsWith('http')
       return (
@@ -64,34 +65,34 @@ const components: PortableTextComponents = {
     h2: ({children}) => {
       const id = slugify(extractText(children))
       return (
-        <h2 id={id} className="mt-8 mb-6 text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08] scroll-mt-20">
+        <h2 id={id} className="mt-0 mb-4 scroll-mt-20 font-heading text-3xl font-bold leading-[1.08] tracking-tight sm:text-4xl md:text-[2.625rem]">
           {children}
         </h2>
       )
     },
     h3: ({children}) => {
       const id = slugify(extractText(children))
-      return <h3 id={id} className="mt-6 mb-3 text-2xl font-semibold scroll-mt-20">{children}</h3>
+      return <h3 id={id} className="mt-0 mb-3 scroll-mt-20 font-heading text-2xl font-semibold">{children}</h3>
     },
     h4: ({children}) => {
       const id = slugify(extractText(children))
-      return <h4 id={id} className="mt-4 mb-2 text-xl font-semibold scroll-mt-20">{children}</h4>
+      return <h4 id={id} className="mt-0 mb-2 scroll-mt-20 text-xl font-semibold">{children}</h4>
     },
-    normal: ({children}) => <p className="mb-4 leading-relaxed">{children}</p>,
+    normal: ({children}) => <p className="mb-0 leading-relaxed">{children}</p>,
     blockquote: ({children}) => (
-      <blockquote className="my-6 border-l-2 border-secondary pl-4">
+      <blockquote className="my-0 border-l-2 border-primary pl-4 font-semibold not-italic">
         {children}
       </blockquote>
     ),
   },
   list: {
-    bullet: ({children}) => <ul className="mb-4 space-y-3">{children}</ul>,
-    number: ({children}) => <ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>,
+    bullet: ({children}) => <ul className="my-0 space-y-4">{children}</ul>,
+    number: ({children}) => <ol className="my-0 ml-6 list-decimal space-y-1">{children}</ol>,
   },
   listItem: {
     bullet: ({children}) => (
-      <li className="flex items-start gap-3 leading-relaxed">
-        <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-secondary" aria-hidden="true" />
+      <li className="flex items-start gap-3 text-sm font-medium leading-relaxed sm:text-base">
+        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />
         <span>{children}</span>
       </li>
     ),

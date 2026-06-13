@@ -207,7 +207,7 @@ export const gridRowType = defineType({
       title: 'Max Width',
       type: 'string',
       group: 'style',
-      initialValue: 'full',
+      initialValue: 'default',
       options: {
         list: [
           {title: 'Narrow (768px)', value: 'narrow'},

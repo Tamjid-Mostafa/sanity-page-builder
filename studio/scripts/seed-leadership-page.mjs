@@ -126,7 +126,7 @@ const page = {
       _key: 'leadership-founder-intro',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -155,7 +155,7 @@ const page = {
       _key: 'leadership-founder-split',
       _type: 'gridRow',
       layout: '50-50',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'none',
       gap: 'xl',
@@ -204,7 +204,7 @@ const page = {
       _key: 'leadership-support-row',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -257,7 +257,7 @@ const page = {
       _key: 'leadership-learning-row',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -306,7 +306,7 @@ const page = {
       _key: 'leadership-growth-row',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -351,7 +351,7 @@ const page = {
       _key: 'leadership-closing-row',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'center',
       paddingY: 'compact',
       blockStyles: {

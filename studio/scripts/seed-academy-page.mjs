@@ -6,13 +6,13 @@ const k = () => Math.random().toString(36).slice(2, 11)
 
 const span = (text, marks = []) => ({_key: k(), _type: 'span', marks, text})
 
-const block = (text, style = 'normal', listItem, level) => {
+const block = (text, style = 'normal', listItem, level, marks = []) => {
   const node = {
     _key: k(),
     _type: 'block',
     style,
     markDefs: [],
-    children: [span(text)],
+    children: [span(text, marks)],
   }
   if (listItem) {
     node.listItem = listItem
@@ -237,7 +237,7 @@ const page = {
       _key: 'academy-what-is',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -275,7 +275,7 @@ const page = {
       _key: 'academy-why-families',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -309,7 +309,7 @@ const page = {
       _key: 'academy-who-its-for',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       columns: [
@@ -344,7 +344,7 @@ const page = {
       _key: 'academy-right-fit',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       columns: [
@@ -378,7 +378,7 @@ const page = {
       _key: 'academy-how-it-works',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -417,7 +417,7 @@ const page = {
       _key: 'academy-pathways-intro',
       _type: 'gridRow',
       layout: '50-50',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       gap: 'xl',
@@ -461,7 +461,7 @@ const page = {
       _key: 'academy-pathways-cta',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'none',
       columns: [
@@ -500,7 +500,7 @@ const page = {
       _key: 'academy-support-row',
       _type: 'gridRow',
       layout: '50-50',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       gap: 'xl',
@@ -549,7 +549,7 @@ const page = {
       _key: 'academy-barcelona-hub',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -582,39 +582,17 @@ const page = {
       ],
     },
     {
-      _key: 'academy-outcomes-intro',
+      _key: 'academy-outcomes',
       _type: 'gridRow',
-      layout: 'full',
-      maxWidth: 'narrow',
+      layout: '50-50',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
+      gap: 'xl',
       blockStyles: {
         _type: 'blockStyles',
         borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
       },
-      columns: [
-        {
-          _key: 'academy-outcomes-intro-col',
-          verticalAlign: 'top',
-          content: [
-            {
-              _key: 'academy-outcomes-heading',
-              _type: 'richTextBlock',
-              eyebrow: 'Direction',
-              content: [block('Outcomes & Direction', 'h2')],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      _key: 'academy-outcomes-split',
-      _type: 'gridRow',
-      layout: '50-50',
-      maxWidth: 'narrow',
-      containerAlign: 'left',
-      paddingY: 'none',
-      gap: 'xl',
       columns: [
         {
           _key: 'academy-outcomes-left',
@@ -623,11 +601,19 @@ const page = {
             {
               _key: 'academy-outcomes-copy',
               _type: 'richTextBlock',
+              eyebrow: 'Direction',
               content: [
+                block('Outcomes & Direction', 'h2'),
                 block(
                   'Our goal is not simply for students to complete courses. It is to help them move forward with clarity, confidence, and credible options. iCollege Academy supports progression towards:',
                 ),
-                block('Every pathway is designed with the student\'s future in mind.'),
+                block(
+                  'Every pathway is designed with the student\'s future in mind.',
+                  'normal',
+                  null,
+                  null,
+                  ['strong'],
+                ),
               ],
             },
           ],
@@ -650,7 +636,7 @@ const page = {
       _key: 'academy-parents-trust',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'left',
       paddingY: 'compact',
       blockStyles: {
@@ -699,7 +685,7 @@ const page = {
       _key: 'academy-final-cta',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'center',
       paddingY: 'compact',
       blockStyles: {
@@ -776,7 +762,7 @@ const page = {
       _key: 'academy-footer-line',
       _type: 'gridRow',
       layout: 'full',
-      maxWidth: 'narrow',
+      maxWidth: 'default',
       containerAlign: 'center',
       paddingY: 'compact',
       blockStyles: {

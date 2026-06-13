@@ -11,7 +11,7 @@ const GAP_MAP: Record<string, string> = {
   sm: "gap-2 md:gap-4",
   md: "gap-4 md:gap-6",
   lg: "gap-6 md:gap-8",
-  xl: "gap-8 md:gap-12",
+  xl: "gap-10 md:gap-12 lg:gap-16",
 };
 
 const PADDING_Y_MAP: Record<string, string> = {
@@ -69,8 +69,8 @@ export function GridRowSection({ data }: { data: GridRowData }) {
     PADDING_Y_MAP[stegaClean(data.paddingY) || "compact"] || "";
   const paddingXClass =
     PADDING_X_MAP[stegaClean(d.paddingX) || "md"] || PADDING_X_MAP.md;
-  const maxWidthKey = stegaClean(data.maxWidth as string | undefined) || "full";
-  const maxWidthClass = contentMaxWidthClass(maxWidthKey, "full");
+  const maxWidthKey = stegaClean(data.maxWidth as string | undefined) || "default";
+  const maxWidthClass = contentMaxWidthClass(maxWidthKey, "default");
   const isConstrainedWidth = maxWidthKey === "narrow" || maxWidthKey === "content";
   const alignKey =
     stegaClean(d.containerAlign) || (isConstrainedWidth ? "left" : "center");
@@ -90,7 +90,7 @@ export function GridRowSection({ data }: { data: GridRowData }) {
                 <ScrollReveal key={column._key} delay={colIdx * STAGGER_MS}>
                   <BlockStylesWrapper
                     blockStyles={column.blockStyles}
-                    className={cn(valign, "flex flex-col gap-8")}
+                    className={cn(valign, "flex flex-col gap-6 md:gap-8")}
                   >
                     {column.content?.map((block) => (
                       <ContentRenderer key={block._key} block={block} />
