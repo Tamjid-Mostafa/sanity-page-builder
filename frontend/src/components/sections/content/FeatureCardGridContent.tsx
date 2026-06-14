@@ -132,7 +132,7 @@ function LightCard({
   return (
     <div
       className={cn(
-        "group relative",
+        "group relative h-full",
         !isCompactCard && "hover:-translate-y-1 transition-transform duration-300",
       )}
     >
@@ -531,7 +531,7 @@ function OnDarkCard({
   if (showStepNumbers) {
     return (
       <div className="h-full">
-        <div className="relative flex h-full min-h-[11rem] flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20">
+        <div className="relative flex h-full min-h-44 flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20">
           <div
             className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)}
             aria-hidden
@@ -602,7 +602,7 @@ function OnDarkCard({
 
 function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
   return (
-    <div className="group relative flex flex-col rounded-3xl border border-border/50 bg-card/70 p-6 shadow-none ring-1 ring-black/3 transition-[border-color,background-color] duration-300 hover:border-secondary/20 hover:bg-card md:p-7">
+    <div className="group relative flex h-full flex-col rounded-3xl border border-border/50 bg-card/70 p-6 shadow-none ring-1 ring-black/3 transition-[border-color,background-color] duration-300 hover:border-secondary/20 hover:bg-card md:p-7">
       <div
         className="absolute left-6 right-6 top-0 h-px bg-linear-to-r from-transparent via-secondary/50 to-transparent md:left-7 md:right-7"
         aria-hidden
@@ -701,7 +701,7 @@ export function FeatureCardGridContent({
     showStepNumbers &&
     (cards.length === 5 ||
       (gridLayout === "3-2" && cards.length >= 4));
-  const isPillarHeader = isOnDark && showStepNumbers;
+  const isPillarHeader = isOnDark && showStepNumbers && cards.length === 5;
 
   const renderCard = (card: ExtendedFeatureCard, index: number) => {
     if (isPathwayDetail) return <PathwayDetailCard card={card} />;
@@ -798,13 +798,17 @@ export function FeatureCardGridContent({
         {headerBlock}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {topCards.map((card, index) => (
-            <div key={card._key}>{renderCard(card, index)}</div>
+            <div key={card._key} className="h-full">
+              {renderCard(card, index)}
+            </div>
           ))}
         </div>
         {bottomCards.length > 0 && (
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:mx-auto lg:max-w-4xl">
             {bottomCards.map((card, index) => (
-              <div key={card._key}>{renderCard(card, index + 3)}</div>
+              <div key={card._key} className="h-full">
+                {renderCard(card, index + 3)}
+              </div>
             ))}
           </div>
         )}
@@ -820,7 +824,7 @@ export function FeatureCardGridContent({
       ) : (
         <div
           className={cn(
-            "grid grid-cols-1",
+            "grid grid-cols-1 items-stretch",
             isPathwayDetail
               ? cn("gap-5", colClass)
               : isCallout
@@ -841,7 +845,9 @@ export function FeatureCardGridContent({
           )}
         >
           {cards.map((card, index) => (
-            <div key={card._key}>{renderCard(card, index)}</div>
+            <div key={card._key} className="h-full">
+              {renderCard(card, index)}
+            </div>
           ))}
         </div>
       )}

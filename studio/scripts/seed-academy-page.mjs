@@ -397,6 +397,7 @@ const page = {
               _type: 'featureCardGrid',
               style: 'onDark',
               columns: '2',
+              showStepNumbers: true,
               eyebrow: 'Process',
               title: 'How It Works',
               cards: howItWorksSteps.map((card) => ({
