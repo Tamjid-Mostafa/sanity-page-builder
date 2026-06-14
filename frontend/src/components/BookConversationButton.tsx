@@ -38,6 +38,7 @@ export function BookConversationButton({
   label = "Book a Conversation",
 }: BookConversationButtonProps) {
   const url = calendlyUrl ?? SITE_CALENDLY_URL;
+  const isRoundedLg = className?.includes("rounded-lg");
 
   const baseClass =
     tone === "on-dark"
@@ -55,8 +56,10 @@ export function BookConversationButton({
         size={size}
         onClick={() => openCalendly(url)}
         className={cn(
-          "rounded-xl font-bold shadow-md transition-all duration-300 hover:shadow-lg group cursor-pointer",
-          size === "lg" ? "h-14 px-8 text-base" : "px-6 py-2.5 text-sm",
+          "font-semibold shadow-md transition-all duration-300 hover:shadow-lg group cursor-pointer",
+          isRoundedLg ? "rounded-lg" : "rounded-xl",
+          size === "lg" ? "h-14 px-8 text-sm" : "px-8 py-3 text-sm",
+          !isRoundedLg && size !== "lg" && "px-6 py-2.5",
           baseClass,
         )}
       >
@@ -91,8 +94,9 @@ export function OutlineCtaButton({
   className?: string;
   newTab?: boolean;
 }) {
+  const isRoundedLg = className?.includes("rounded-lg");
   const darkClass =
-    "border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white hover:border-white/40";
+    "border-white/20 bg-white/5 text-background hover:bg-white/10 hover:text-background hover:border-white/30";
   const lightClass =
     "border-border text-foreground hover:bg-muted";
 
@@ -108,8 +112,10 @@ export function OutlineCtaButton({
         variant="outline"
         asChild
         className={cn(
-          "rounded-xl font-bold transition-all duration-300 group",
-          size === "lg" ? "h-14 px-8 text-base" : "px-6 py-2.5 text-sm",
+          "font-semibold transition-all duration-300 group",
+          isRoundedLg ? "rounded-lg" : "rounded-xl",
+          size === "lg" ? "h-14 px-8 text-sm" : "px-8 py-3 text-sm",
+          !isRoundedLg && size !== "lg" && "px-6 py-2.5",
           tone === "on-dark" ? darkClass : lightClass,
         )}
       >

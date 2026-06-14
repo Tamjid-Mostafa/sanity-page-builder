@@ -95,6 +95,7 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
   )
   const onDark = isDarkSurface(blockStyles)
   const buttonTone = onDark || !isMedium ? 'on-dark' : 'on-light'
+  const isAcademyClosing = isMedium && onDark
 
   return (
     <motion.div
@@ -102,13 +103,18 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
       whileInView={{opacity: 1, y: 0}}
       viewport={{once: true, margin: '-80px'}}
       transition={{duration: 0.5}}
-      className="mx-auto flex w-full max-w-4xl flex-col items-center text-center"
+      className={cn(
+        'mx-auto flex w-full flex-col items-center text-center',
+        isAcademyClosing ? 'max-w-3xl' : 'max-w-4xl',
+      )}
     >
       {eyebrow && (
         <p
           className={cn(
-            'mb-5 text-xs font-semibold uppercase tracking-[0.18em]',
-            onDark ? 'text-secondary' : 'text-secondary',
+            'text-xs font-semibold uppercase text-secondary',
+            isAcademyClosing
+              ? 'mb-4 tracking-[0.14em]'
+              : 'mb-5 tracking-[0.18em]',
           )}
         >
           {eyebrow}
@@ -120,9 +126,11 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
           className={cn(
             'font-heading font-bold tracking-tight leading-[1.08]',
             onDark ? 'text-background' : 'text-foreground',
-            isMedium
-              ? 'mb-8 max-w-xl text-3xl sm:text-4xl md:text-[2.625rem]'
-              : 'mb-6 max-w-3xl text-4xl leading-[1.06] sm:text-5xl md:text-6xl lg:text-[3.25rem]',
+            isAcademyClosing
+              ? 'max-w-2xl text-3xl sm:text-4xl md:text-[2.625rem]'
+              : isMedium
+                ? 'mb-8 max-w-xl text-3xl sm:text-4xl md:text-[2.625rem]'
+                : 'mb-6 max-w-3xl text-4xl leading-[1.06] sm:text-5xl md:text-6xl lg:text-[3.25rem]',
           )}
         >
           {heading}
@@ -132,21 +140,31 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
       {hasBody && (
         <div
           className={cn(
-            'max-w-2xl',
-            isMedium
-              ? 'mb-8 space-y-5 text-sm font-light leading-relaxed sm:text-base'
-              : 'mb-10 space-y-4 text-base font-medium leading-relaxed md:text-lg',
+            isAcademyClosing
+              ? 'w-full'
+              : cn(
+                  'max-w-2xl',
+                  isMedium
+                    ? 'mb-8 space-y-5 text-sm font-light leading-relaxed sm:text-base'
+                    : 'mb-10 space-y-4 text-base font-medium leading-relaxed md:text-lg',
+                ),
           )}
         >
           {bodyParagraphs.map((paragraph) => (
             <p
               key={paragraph._key}
               className={cn(
-                onDark ? 'text-background/90' : undefined,
-                paragraph.emphasis &&
-                  (isMedium
-                    ? 'font-heading text-base font-semibold sm:text-lg'
-                    : 'pt-1 font-heading text-lg font-semibold md:text-xl'),
+                isAcademyClosing
+                  ? paragraph.emphasis
+                    ? 'mx-auto mt-4 max-w-xl text-xs font-medium leading-relaxed text-secondary sm:text-sm'
+                    : 'mx-auto mt-4 max-w-2xl text-sm font-light leading-relaxed text-background sm:text-base'
+                  : cn(
+                      onDark ? 'text-background/90' : undefined,
+                      paragraph.emphasis &&
+                        (isMedium
+                          ? 'font-heading text-base font-semibold sm:text-lg'
+                          : 'pt-1 font-heading text-lg font-semibold md:text-xl'),
+                    ),
               )}
             >
               {paragraph.text}
@@ -159,14 +177,15 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
         <div
           className={cn(
             'flex flex-col items-center justify-center gap-3 sm:flex-row',
-            !isMedium && 'mb-10',
+            isAcademyClosing ? 'mt-10' : !isMedium && 'mb-10',
           )}
         >
           {buttons.map((btn) => {
             if (!btn.label) return null
             const action = stegaClean(btn.action) || 'link'
             const label = btn.label
-            const btnSize = isMedium ? 'default' : 'lg'
+            const btnSize = isAcademyClosing ? 'lg' : isMedium ? 'default' : 'lg'
+            const btnShape = isAcademyClosing ? 'rounded-lg' : 'rounded-xl'
 
             if (action === 'calendly') {
               return (
@@ -174,9 +193,10 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
                   key={btn._key}
                   tone={buttonTone}
                   size={btnSize}
-                  showIcon={!isMedium}
+                  showIcon={!isMedium && !isAcademyClosing}
                   showArrow
                   label={label}
+                  className={btnShape}
                 />
               )
             }
@@ -190,6 +210,7 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
                 tone={buttonTone}
                 size={btnSize}
                 newTab={isExternalLink(btn.link as Array<{_type: string; [key: string]: unknown}>)}
+                className={btnShape}
               />
             )
           })}
@@ -197,23 +218,42 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
       )}
 
       {trustItems.length > 0 && (
-        <>
-          <div className="mb-8 h-px w-12 bg-current opacity-15" />
+        isAcademyClosing ? (
           <motion.div
             initial={{opacity: 0}}
             whileInView={{opacity: 1}}
             viewport={{once: true}}
-            transition={{delay: 0.35, duration: 0.5}}
-            className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-xs font-medium tracking-wide"
+            transition={{delay: 0.5, duration: 0.4}}
+            className="mt-8 flex flex-wrap justify-center gap-2"
           >
-            {trustItems.map((item, i) => (
-              <span key={i} className="flex items-center gap-2">
-                <span className="inline-block h-1 w-1 rounded-full bg-secondary" />
+            {trustItems.map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-medium text-background"
+              >
                 {item}
               </span>
             ))}
           </motion.div>
-        </>
+        ) : (
+          <>
+            <div className="mb-8 h-px w-12 bg-current opacity-15" />
+            <motion.div
+              initial={{opacity: 0}}
+              whileInView={{opacity: 1}}
+              viewport={{once: true}}
+              transition={{delay: 0.35, duration: 0.5}}
+              className="flex flex-wrap items-center justify-center gap-x-7 gap-y-3 text-xs font-medium tracking-wide"
+            >
+              {trustItems.map((item, i) => (
+                <span key={i} className="flex items-center gap-2">
+                  <span className="inline-block h-1 w-1 rounded-full bg-secondary" />
+                  {item}
+                </span>
+              ))}
+            </motion.div>
+          </>
+        )
       )}
 
       {prospectus?.label && (
