@@ -64,6 +64,8 @@ const contentFragment = /* groq */ `
     },
     _type == "richTextBlock" => {
       eyebrow,
+      leadingIcon,
+      eyebrowTone,
       content[] { ... },
       ${blockStylesFragment}
     },
@@ -100,6 +102,9 @@ const contentFragment = /* groq */ `
         title,
         subtitle,
         description,
+        bestFor,
+        includes,
+        note,
         cta,
         coverImage { ${imageFragment} },
         icon {

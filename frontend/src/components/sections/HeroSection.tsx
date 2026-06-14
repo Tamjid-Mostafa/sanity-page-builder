@@ -318,14 +318,47 @@ function FullWidthHero({ data }: { data: HeroSectionData }) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
-                  className="max-w-[52ch] space-y-4 text-sm font-bold leading-relaxed text-white whitespace-pre-line sm:text-base"
+                  className="max-w-[52ch] space-y-3 text-sm font-bold leading-relaxed text-white sm:text-base"
                 >
-                  {data.subtitle}
+                  {(data.subtitle ?? "")
+                    .split(/\n\n+/)
+                    .map((part) => part.trim())
+                    .filter(Boolean)
+                    .map((paragraph, index, parts) => (
+                      <p
+                        key={index}
+                        className={
+                          index === parts.length - 1 && parts.length > 2
+                            ? "text-sm font-semibold leading-relaxed text-white/95 sm:text-base"
+                            : undefined
+                        }
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
                 </motion.div>
               )}
 
               {data.buttons && data.buttons.length > 0 && (
                 <FullWidthHeroButtons buttons={data.buttons} darkSurface />
+              )}
+
+              {(data.pills?.length ?? 0) > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.55, duration: 0.4 }}
+                  className="flex flex-wrap gap-2"
+                >
+                  {data.pills!.map((pill) => (
+                    <span
+                      key={pill}
+                      className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-medium tracking-wide text-white backdrop-blur-sm"
+                    >
+                      {pill}
+                    </span>
+                  ))}
+                </motion.div>
               )}
             </div>
           </div>

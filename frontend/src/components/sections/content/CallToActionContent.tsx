@@ -1,8 +1,10 @@
 'use client'
 
 import {stegaClean} from 'next-sanity'
+import {ArrowRight} from 'lucide-react'
 import {openCalendly} from '@/lib/site-cta'
 import type {CallToActionData} from '@/types/sanity'
+import {cn} from '@/lib/utils'
 
 interface LinkInternal {
   _type: 'linkInternal'
@@ -23,10 +25,14 @@ interface PageSlugLink {
 type LinkItem = LinkInternal | LinkExternal | PageSlugLink
 
 const VARIANT_CLASSES: Record<string, string> = {
-  primary: 'bg-foreground text-background hover:bg-foreground/90',
-  secondary: 'bg-white/15 ring-1 ring-foreground/10 text-foreground hover:bg-foreground/5',
-  outline: 'border border-foreground/20 text-foreground hover:bg-foreground/5',
-  ghost: 'text-foreground hover:bg-foreground/5',
+  primary:
+    'inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg group',
+  secondary:
+    'inline-flex items-center gap-2 rounded-lg bg-white/15 px-6 py-2.5 text-sm font-medium text-foreground ring-1 ring-foreground/10 transition-colors hover:bg-foreground/5',
+  outline:
+    'inline-flex items-center gap-2 rounded-lg border border-foreground/20 px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5',
+  ghost:
+    'inline-flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5',
 }
 
 function resolveHref(linkItems: LinkItem[]): {href: string; isExternal: boolean} {
@@ -59,15 +65,15 @@ export function CallToActionContent({data}: {data: CallToActionData}) {
   const cleanColor = stegaClean(data.color)
   const cleanTextColor = stegaClean(data.textColor)
   const cleanVariant = stegaClean(data.variant) || 'primary'
+  const showArrow = cleanVariant === 'primary' && !hasCustomColors
 
   const inlineStyle: React.CSSProperties = hasCustomColors
     ? {backgroundColor: cleanColor || undefined, color: cleanTextColor || undefined}
     : {}
 
-  const baseClasses =
-    'inline-block rounded-full px-6 py-3 font-medium transition-colors duration-200 text-center text-sm'
+  const baseClasses = 'text-center'
   const colorClasses = hasCustomColors
-    ? 'hover:opacity-90'
+    ? 'inline-block rounded-lg px-6 py-2.5 text-sm font-medium transition-opacity hover:opacity-90'
     : VARIANT_CLASSES[cleanVariant] || VARIANT_CLASSES.primary
 
   if (cleanAction === 'calendly') {
@@ -75,10 +81,13 @@ export function CallToActionContent({data}: {data: CallToActionData}) {
       <button
         type="button"
         onClick={() => openCalendly()}
-        className={`${baseClasses} ${colorClasses} cursor-pointer`}
+        className={cn(baseClasses, colorClasses, 'cursor-pointer')}
         style={inlineStyle}
       >
         {data.label}
+        {showArrow && (
+          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+        )}
       </button>
     )
   }
@@ -90,11 +99,13 @@ export function CallToActionContent({data}: {data: CallToActionData}) {
       href={href}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      className={`${baseClasses} ${colorClasses}`}
+      className={cn(baseClasses, colorClasses, 'w-full sm:w-auto')}
       style={inlineStyle}
     >
       {data.label}
+      {showArrow && (
+        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+      )}
     </a>
   )
 }
-

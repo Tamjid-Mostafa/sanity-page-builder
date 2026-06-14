@@ -16,6 +16,9 @@ type ExtendedFeatureCard = FeatureCardGridData["cards"][number] & {
   subtitle?: string | null;
   accentColor?: string | null;
   accentApplyTo?: string[] | null;
+  bestFor?: string[] | null;
+  includes?: string[] | null;
+  note?: string | null;
   icon?: {
     source?: "lucide" | "image" | null;
     lucide?: string | null;
@@ -41,10 +44,21 @@ type ExtendedFeatureCardGridData = FeatureCardGridData & {
 
 
 const COLS_MAP: Record<string, string> = {
+  "1": "grid-cols-1",
   "2": "sm:grid-cols-2",
   "3": "sm:grid-cols-2 lg:grid-cols-3",
   "4": "sm:grid-cols-2 lg:grid-cols-4",
 };
+
+function resolveColumns(
+  columns: string | null | undefined,
+  cardCount: number,
+): string {
+  const cleaned = stegaClean(columns);
+  if (cleaned && COLS_MAP[cleaned]) return cleaned;
+  if (cardCount === 1) return "1";
+  return "3";
+}
 
 const ACCENT_BAR: Record<string, string> = {
   primary: "bg-primary",
@@ -355,7 +369,107 @@ function PathwayCard({ card }: { card: ExtendedFeatureCard }) {
   return <div className="h-full">{inner}</div>;
 }
 
-function OnDarkCard({
+function PathwayDetailCard({ card }: { card: ExtendedFeatureCard }) {
+  const accent = stegaClean(card.accentColor) || "primary";
+  const accentBarClass = ACCENT_BAR[accent] ?? "bg-primary";
+  const accentTextClass = ACCENT_TEXT[accent] ?? "text-primary";
+  const icon = stegaClean(card.icon?.lucide);
+  const bestFor = (card.bestFor || []).filter(Boolean);
+  const includes = (card.includes || []).filter(Boolean);
+
+  return (
+    <div className="group relative h-full transition-transform duration-300 hover:-translate-y-1">
+      <div className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20">
+        <div
+          className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)}
+          aria-hidden
+        />
+        <div className="flex flex-1 flex-col gap-4 p-6 sm:p-7">
+          <div className="flex items-start gap-3">
+            {icon && (
+              <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10">
+                <IconRenderer
+                  name={icon}
+                  className={cn("h-5 w-5", accentTextClass)}
+                  strokeWidth={1.5}
+                />
+              </div>
+            )}
+            <div className="min-w-0">
+              {card.title && (
+                <h3 className="font-heading text-lg font-bold leading-snug text-background">
+                  {card.title}
+                </h3>
+              )}
+              {card.subtitle && (
+                <p className="mt-1 text-sm font-light leading-relaxed text-background/85">
+                  {card.subtitle}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {card.description && (
+            <p className="text-sm font-light leading-relaxed text-background/90">
+              {card.description}
+            </p>
+          )}
+
+          {bestFor.length > 0 && (
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-background/70">
+                Best for
+              </p>
+              <ul className="space-y-2">
+                {bestFor.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 text-xs font-light leading-relaxed text-background sm:text-sm"
+                  >
+                    <span
+                      className={cn(
+                        "mt-1.5 h-1 w-1 shrink-0 rounded-full",
+                        accentBarClass,
+                      )}
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {includes.length > 0 && (
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-background/70">
+                Includes
+              </p>
+              <ul className="space-y-2">
+                {includes.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-2 text-xs font-light leading-relaxed text-background sm:text-sm"
+                  >
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-white/40" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {card.note && (
+            <p className="mt-auto border-l-2 border-white/25 pl-3 text-xs font-medium leading-relaxed text-background/90 sm:text-sm">
+              {card.note}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CalloutCard({
   card,
   iconSize,
 }: {
@@ -364,6 +478,90 @@ function OnDarkCard({
 }) {
   const accent = stegaClean(card.accentColor) || "secondary";
   const accentBarClass = ACCENT_BAR[accent] ?? "bg-secondary";
+  const accentTextClass = ACCENT_TEXT[accent] ?? "text-secondary";
+
+  return (
+    <div className="relative flex h-full min-h-48 flex-col justify-end overflow-hidden rounded-2xl border border-border bg-foreground p-6 shadow-sm sm:min-h-52 sm:p-8">
+      <div
+        className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)}
+        aria-hidden
+      />
+      {card.icon?.lucide && (
+        <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/10">
+          <IconRenderer
+            name={stegaClean(card.icon.lucide)}
+            className={cn(iconSize.icon, accentTextClass)}
+            strokeWidth={1.5}
+          />
+        </div>
+      )}
+      {card.title?.trim() && (
+        <h3 className="mb-2 font-heading text-base font-semibold leading-snug text-background">
+          {card.title}
+        </h3>
+      )}
+      {card.description && (
+        <p className="text-sm font-light leading-relaxed text-background">
+          {card.description}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function OnDarkCard({
+  card,
+  iconSize,
+  showStepNumbers,
+  index,
+}: {
+  card: ExtendedFeatureCard;
+  iconSize: { box: string; icon: string; image: string };
+  showStepNumbers?: boolean;
+  index: number;
+}) {
+  const accent = stegaClean(card.accentColor) || "secondary";
+  const accentBarClass = ACCENT_BAR[accent] ?? "bg-secondary";
+  const accentTextClass = ACCENT_TEXT[accent] ?? "text-secondary";
+
+  if (showStepNumbers) {
+    return (
+      <div className="h-full">
+        <div className="relative flex h-full min-h-[11rem] flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20">
+          <div
+            className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)}
+            aria-hidden
+          />
+          <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
+            <div className="flex items-center justify-between">
+              {card.icon?.lucide && (
+                <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+                  <IconRenderer
+                    name={stegaClean(card.icon.lucide)}
+                    className={cn("h-4 w-4", accentTextClass)}
+                    strokeWidth={1.5}
+                  />
+                </div>
+              )}
+              <span className="select-none text-2xl font-bold tabular-nums text-background">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
+            {card.title && (
+              <h3 className="text-sm font-semibold leading-snug text-background sm:text-base">
+                {card.title}
+              </h3>
+            )}
+            {card.description && (
+              <p className="text-sm font-light leading-relaxed text-background/90">
+                {card.description}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="group relative h-full transition-transform duration-300 hover:-translate-y-0.5">
@@ -424,16 +622,28 @@ export function FeatureCardGridContent({
 }) {
   const d = data as ExtendedFeatureCardGridData;
   const cards = (data.cards || []) as ExtendedFeatureCard[];
-  const columns = stegaClean(data.columns) || "3";
+  const columns = resolveColumns(stegaClean(data.columns), cards.length);
   const colClass = COLS_MAP[columns] || COLS_MAP["3"];
-  const style = stegaClean(d.style);
+  const style = stegaClean(d.style) as string | null | undefined;
   const isAudience = style === "audience";
   const isPathway = style === "pathway";
+  const isPathwayDetail = style === "pathwayDetail";
+  const isCallout = style === "callout";
   const isOnDark = style === "onDark";
   const isCompactGrid =
     style === "bordered" || style === "highlighted" || style === "audience";
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
+  const hasHeader = Boolean(d.eyebrow || d.title || d.subtitle);
+  const subtitleParts = (d.subtitle ?? "")
+    .split(/\n\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const subtitleLead = isOnDark && subtitleParts.length > 1 ? subtitleParts[0] : null;
+  const subtitleBody =
+    isOnDark && subtitleParts.length > 1
+      ? subtitleParts.slice(1).join("\n\n")
+      : d.subtitle;
   const cardStyle = stegaClean(d.style) || "simple";
   const iconSize =
     ICON_SIZE_MAP[stegaClean(d.cardIconSize) || "medium"] ||
@@ -474,12 +684,43 @@ export function FeatureCardGridContent({
       : undefined;
   if (cards.length === 0) return null;
 
+  const renderCard = (card: ExtendedFeatureCard, index: number) => {
+    if (isPathwayDetail) return <PathwayDetailCard card={card} />;
+    if (isCallout) return <CalloutCard card={card} iconSize={iconSize} />;
+    if (isOnDark) {
+      return (
+        <OnDarkCard
+          card={card}
+          iconSize={iconSize}
+          showStepNumbers={showStepNumbers}
+          index={index}
+        />
+      );
+    }
+    if (isPathway) return <PathwayCard card={card} />;
+    if (isAudience) return <AudienceCard card={card} />;
+    return (
+      <LightCard
+        card={card}
+        index={index}
+        showStepNumbers={showStepNumbers}
+        cardStyle={cardStyle}
+        iconSize={iconSize}
+        cardTitleStyle={cardTitleStyle}
+        cardTitleAlign={cardTitleAlign}
+      />
+    );
+  };
+
+  const isSingleStandalone =
+    cards.length === 1 && !hasHeader && (isCallout || columns === "1");
+
   return (
     <div>
       {(d.eyebrow || d.title || d.subtitle) && (
         <div
           className={cn(
-            isCompactGrid ? "mb-10 max-w-3xl" : "mb-8",
+            isCompactGrid || isPathwayDetail ? "mb-10 max-w-3xl" : "mb-8",
             titleAlign === "center" ? "text-center" : "text-left",
           )}
         >
@@ -487,7 +728,7 @@ export function FeatureCardGridContent({
             <p
               className={cn(
                 "mb-2 text-xs font-semibold uppercase tracking-[0.14em]",
-                isOnDark ? "text-secondary" : "text-primary",
+                isOnDark || isPathwayDetail ? "text-secondary" : "text-primary",
               )}
             >
               {d.eyebrow}
@@ -497,62 +738,66 @@ export function FeatureCardGridContent({
             <h2
               className={cn(
                 "text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]",
-                d.subtitle && !isOnDark && "mb-4",
-                isOnDark && "text-background",
+                subtitleBody && !isOnDark && "mb-4",
+                (isOnDark || isPathwayDetail) && "text-background",
               )}
             >
               {d.title}
             </h2>
           )}
-          {d.subtitle && (
+          {subtitleLead && (
+            <p className="mt-4 text-base font-semibold text-background sm:text-lg">
+              {subtitleLead}
+            </p>
+          )}
+          {subtitleBody && (
             <p
               className={cn(
                 "max-w-3xl text-sm font-light leading-relaxed sm:text-base",
                 !d.title && "mt-0",
-                d.title && !isOnDark && "mt-0",
-                d.title && isOnDark && "mt-4",
+                d.title && !isOnDark && !subtitleLead && "mt-0",
+                d.title && (isOnDark || subtitleLead) && "mt-2",
                 titleAlign === "center" && "mx-auto",
-                isOnDark ? "text-background/80" : "text-foreground",
+                isOnDark || isPathwayDetail
+                  ? "text-background/90"
+                  : "text-foreground",
               )}
             >
-              {d.subtitle}
+              {subtitleBody}
             </p>
           )}
         </div>
       )}
-      <div
-        className={cn(
-          "grid grid-cols-1",
-          isOnDark
-            ? cn("gap-4 md:gap-5", colClass)
-            : isPathway
-              ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
-              : isAudience
-                ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7"
-                : `gap-4 ${colClass}`,
-        )}
-      >
-        {cards.map((card, index) =>
-          isOnDark ? (
-            <OnDarkCard key={card._key} card={card} iconSize={iconSize} />
-          ) : isPathway ? (
-            <PathwayCard key={card._key} card={card} />
-          ) : isAudience ? (
-            <AudienceCard key={card._key} card={card} />
-          ) : (
-            <LightCard
-              key={card._key}
-              card={card}
-              index={index}
-              showStepNumbers={showStepNumbers}
-              cardStyle={cardStyle}
-              iconSize={iconSize}
-              cardTitleStyle={cardTitleStyle}
-              cardTitleAlign={cardTitleAlign}
-            />
-          ),
-        )}
-      </div>
+      {isSingleStandalone ? (
+        renderCard(cards[0], 0)
+      ) : (
+        <div
+          className={cn(
+            "grid grid-cols-1",
+            isPathwayDetail
+              ? cn("gap-5", colClass)
+              : isCallout
+                ? cn("gap-5", colClass)
+                : isOnDark
+                  ? cn(
+                      "gap-4 md:gap-5",
+                      colClass,
+                      !hasHeader &&
+                        cards.length <= 2 &&
+                        "mt-4 lg:mx-auto lg:max-w-4xl",
+                    )
+                  : isPathway
+                    ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
+                    : isAudience
+                      ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7"
+                      : `gap-4 ${colClass}`,
+          )}
+        >
+          {cards.map((card, index) => (
+            <div key={card._key}>{renderCard(card, index)}</div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

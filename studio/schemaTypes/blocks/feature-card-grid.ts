@@ -3,6 +3,7 @@ import {ThLargeIcon} from '@sanity/icons'
 import {TypographyInput} from '../../components/TypographyInput'
 
 const COLUMN_OPTIONS = [
+  {title: '1 Column', value: '1'},
   {title: '2 Columns', value: '2'},
   {title: '3 Columns', value: '3'},
   {title: '4 Columns', value: '4'},
@@ -15,7 +16,9 @@ const STYLE_OPTIONS = [
   {title: 'Highlighted', value: 'highlighted'},
   {title: 'Audience', value: 'audience'},
   {title: 'Pathway', value: 'pathway'},
+  {title: 'Pathway Detail (dark)', value: 'pathwayDetail'},
   {title: 'On Dark', value: 'onDark'},
+  {title: 'Callout (dark accent)', value: 'callout'},
 ] as const
 
 const CARD_ICON_SIZE_OPTIONS = [
@@ -141,7 +144,13 @@ export const featureCardGridType = defineType({
               name: 'title',
               title: 'Title',
               type: 'string',
-              validation: (rule) => rule.required(),
+              description: 'Optional for Callout cards when only body text is needed.',
+              validation: (rule) =>
+                rule.custom((title, context) => {
+                  const parent = context.parent as {description?: string}
+                  if (title?.trim() || parent?.description?.trim()) return true
+                  return 'Title or description is required'
+                }),
             }),
             defineField({
               name: 'subtitle',
@@ -154,6 +163,27 @@ export const featureCardGridType = defineType({
               title: 'Description',
               type: 'text',
               rows: 3,
+            }),
+            defineField({
+              name: 'bestFor',
+              title: 'Best For',
+              type: 'array',
+              of: [defineArrayMember({type: 'string'})],
+              description: 'Used with Pathway Detail (dark) card style.',
+            }),
+            defineField({
+              name: 'includes',
+              title: 'Includes',
+              type: 'array',
+              of: [defineArrayMember({type: 'string'})],
+              description: 'Used with Pathway Detail (dark) card style.',
+            }),
+            defineField({
+              name: 'note',
+              title: 'Footer Note',
+              type: 'text',
+              rows: 2,
+              description: 'Border-left callout at the bottom of Pathway Detail cards.',
             }),
             defineField({
               name: 'cta',
@@ -192,6 +222,7 @@ export const featureCardGridType = defineType({
       title: 'Columns',
       type: 'string',
       initialValue: '3',
+      description: 'Use 1 Column for a single full-width card (e.g. sidebar callouts).',
       options: {list: [...COLUMN_OPTIONS], layout: 'radio'},
     }),
     defineField({

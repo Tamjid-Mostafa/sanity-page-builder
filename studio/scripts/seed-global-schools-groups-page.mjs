@@ -1,0 +1,494 @@
+import {getCliClient} from 'sanity/cli'
+import {GRID_DEFAULTS, createKeyGenerator, createBlockHelpers} from './seed-helpers.mjs'
+
+const client = getCliClient({apiVersion: '2024-01-01'})
+const k = createKeyGenerator()
+const {block, faqAnswer} = createBlockHelpers(k)
+
+const whoWeWorkWith = [
+  {
+    title: 'Schools',
+    description:
+      'Barcelona visits with educational purpose, personal development, and cultural learning.',
+    accentColor: 'primary',
+    lucide: 'school',
+  },
+  {
+    title: 'Universities',
+    description:
+      'Short international experiences around business, entrepreneurship, life design, discovery, communication, culture, language and global learning.',
+    accentColor: 'secondary',
+    lucide: 'graduation-cap',
+  },
+  {
+    title: 'Education Agencies',
+    description: 'A trusted Barcelona partner to help design and deliver student experiences.',
+    accentColor: 'primary',
+    lucide: 'network',
+  },
+  {
+    title: 'Sports Academies',
+    description:
+      'Personal development, leadership, communication, or life-design workshops for athletes.',
+    accentColor: 'secondary',
+    lucide: 'dumbbell',
+  },
+  {
+    title: 'Residences and Student Organisations',
+    description: 'Workshops, short courses, or structured experiences for young adults and residents.',
+    accentColor: 'primary',
+    lucide: 'building-2',
+  },
+]
+
+const partnerWays = [
+  {
+    title: 'Programme Design',
+    description: 'Learning structure, themes, workshops, and outcomes.',
+    accentColor: 'primary',
+    lucide: 'layout-grid',
+  },
+  {
+    title: 'Add-On Workshops',
+    description:
+      'Life design, entrepreneurship, leadership, or communication sessions inside an existing trip.',
+    accentColor: 'secondary',
+    lucide: 'puzzle',
+  },
+  {
+    title: 'Local Delivery',
+    description: 'Workshops, mentoring, and local learning experiences in Barcelona.',
+    accentColor: 'primary',
+    lucide: 'map-pin',
+  },
+  {
+    title: 'Full Experience Support',
+    description:
+      'A broader programme including workshops, activities, learning spaces, and local partners where appropriate.',
+    accentColor: 'secondary',
+    lucide: 'layers',
+  },
+]
+
+const formatHeaders = ['Format', 'Best for', 'Example']
+const formatRows = [
+  ['Half-Day Workshop', 'Short visits or local groups', 'Life design, leadership, communication'],
+  ['1–3 Day Programme', 'School or university visits', 'Workshops + Barcelona experiences'],
+  ['1 Week Programme', 'Deeper group learning', 'Projects, culture, reflection'],
+  ['2 Week Programme', 'Residential or study-trip model', 'Workshops, excursions, mentoring'],
+  ['Custom Programme', 'Schools, agencies, academies, partners', 'Built around your goals and dates'],
+]
+
+const possibleThemes = [
+  'life design',
+  'entrepreneurship',
+  'leadership and communication',
+  'confidence and self-awareness',
+  'Barcelona culture and language',
+  'real-world projects',
+  'university and career exploration',
+  'sport, wellbeing, and lifestyle',
+  'reflection and mentoring',
+]
+
+const processSteps = [
+  {
+    title: 'Understand Your Group',
+    description:
+      'We discuss age, group size, dates, goals, budget, accommodation needs, and desired outcomes.',
+  },
+  {
+    title: 'Design the Programme',
+    description:
+      'We propose a structure that balances workshops, city experiences, reflection, and logistics.',
+  },
+  {
+    title: 'Deliver in Barcelona',
+    description:
+      'Students take part in a structured experience designed to help them learn, explore, and grow.',
+  },
+  {
+    title: 'Reflect and Move Forward',
+    description: 'The programme closes with reflection, next steps, and a clearer sense of direction.',
+  },
+]
+
+const schoolsFaqs = [
+  {
+    q: 'Can you customise programmes for our school or organisation?',
+    a: 'Yes. Programmes are usually adapted around age, goals, dates, numbers, budget, and desired outcomes.',
+  },
+  {
+    q: 'Can you work with an existing school trip?',
+    a: 'Yes. iCollege can add workshops, mentoring, reflection, or educational structure to an existing Barcelona visit.',
+  },
+  {
+    q: 'Can you help with accommodation?',
+    a: 'Where needed, we can help coordinate with local accommodation partners, depending on dates, availability, and group size.',
+  },
+  {
+    q: 'Do you work with sports academies?',
+    a: 'Yes. We can support academies with leadership, communication, life design, academic direction, or personal development workshops for athletes.',
+  },
+  {
+    q: 'What age groups do you work with?',
+    a: 'Global programmes are usually best for older school students, university students, gap-year students, and young adults. We can discuss younger groups where the fit is right.',
+  },
+  {
+    q: 'Are programmes accredited?',
+    a: 'Most Global programmes are non-credit experiences unless arranged through a partner institution. They are designed for learning, reflection, personal development, and future direction.',
+  },
+]
+
+function buildDataTable(headers, rows, caption) {
+  return {
+    _key: k(),
+    _type: 'dataTable',
+    caption,
+    striped: true,
+    compact: false,
+    headers: headers.map((text) => ({_key: k(), _type: 'tableHeader', text})),
+    rows: rows.map((cells) => ({
+      _key: k(),
+      _type: 'dataTableRow',
+      cells: cells.map((text) => ({_key: k(), _type: 'tableCell', text})),
+    })),
+  }
+}
+
+const page = {
+  _id: 'global-schools-groups-page',
+  _type: 'page',
+  title: 'For Schools and Groups',
+  slug: {_type: 'slug', current: 'global-experiences/for-schools-and-groups'},
+  seo: {
+    _type: 'seo',
+    metaTitle: 'For Schools & Groups | iCollege Global',
+    metaDescription:
+      'Barcelona learning experiences for schools, universities, and partner organisations.',
+    noIndex: false,
+  },
+  pageBuilder: [
+    {
+      _key: 'schools-groups-hero',
+      _type: 'heroSection',
+      layout: 'fullWidth',
+      alignment: 'left',
+      verticalAlign: 'end',
+      decorativeBackground: true,
+      backgroundType: 'gradient',
+      gradientFrom: '#0a1628',
+      gradientMid: '#0c2340',
+      gradientTo: '#0f1f35',
+      gradientDirection: 'to bottom right',
+      minHeight: '78vh',
+      badge: 'For Schools & Groups',
+      heading:
+        'Barcelona Learning Experiences for Schools, Universities, and Partner Organisations',
+      subtitle:
+        "iCollege Global helps schools, universities, agencies, academies, and partner organisations create meaningful Barcelona-based learning experiences for students.\n\nProgrammes combine workshops, cultural exploration, real-world learning, and structured reflection, designed around your group's age, goals, dates, and budget.",
+      pills: [
+        'School Visits',
+        'University Groups',
+        'Gap-Year Groups',
+        'Sports Academies',
+        'Partner Programmes',
+      ],
+      buttons: [
+        {
+          _key: k(),
+          _type: 'callToAction',
+          action: 'calendly',
+          label: 'Plan a Group Programme',
+          variant: 'primary',
+        },
+        {
+          _key: k(),
+          _type: 'callToAction',
+          action: 'link',
+          label: 'Explore Global Programmes',
+          variant: 'outline',
+          link: [{_key: k(), _type: 'pageSlug', slug: 'global-experiences/programmes'}],
+        },
+      ],
+    },
+    {
+      _key: 'schools-groups-who',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      blockStyles: {_type: 'blockStyles', borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}, background: {color: '#f7f7f7'}},
+      columns: [
+        {
+          _key: 'schools-groups-who-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-who-grid',
+              _type: 'featureCardGrid',
+              eyebrow: 'Partner organisations',
+              title: 'Who We Work With',
+              style: 'audience',
+              columns: '3',
+              cards: whoWeWorkWith.map((item) => ({
+                _key: k(),
+                _type: 'featureCard',
+                title: item.title,
+                description: item.description,
+                accentColor: item.accentColor,
+                accentApplyTo: ['icon', 'iconBg'],
+                icon: {source: 'lucide', lucide: item.lucide},
+              })),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'schools-groups-ways',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
+      columns: [
+        {
+          _key: 'schools-groups-ways-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-ways-grid',
+              _type: 'featureCardGrid',
+              eyebrow: 'Ways to Partner',
+              title: 'iCollege can support partners through:',
+              style: 'bordered',
+              columns: '2',
+              cards: partnerWays.map((item) => ({
+                _key: k(),
+                _type: 'featureCard',
+                title: item.title,
+                description: item.description,
+                accentColor: item.accentColor,
+                accentApplyTo: ['icon', 'iconBg'],
+                icon: {source: 'lucide', lucide: item.lucide},
+              })),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'schools-groups-build',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      columns: [
+        {
+          _key: 'schools-groups-build-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-build-copy',
+              _type: 'richTextBlock',
+              eyebrow: 'What We Can Build',
+              content: [block('Programmes can be designed as:', 'h2')],
+            },
+            buildDataTable(formatHeaders, formatRows, 'Programme formats'),
+            {
+              _key: 'schools-groups-themes',
+              _type: 'richTextBlock',
+              content: [
+                block('Possible themes include:'),
+                ...possibleThemes.map((item) => block(item, 'normal', 'bullet', 1)),
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'schools-groups-process',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}, borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}},
+      columns: [
+        {
+          _key: 'schools-groups-process-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-process-grid',
+              _type: 'featureCardGrid',
+              eyebrow: 'Process',
+              title: 'How It Works',
+              showStepNumbers: true,
+              style: 'bordered',
+              columns: '4',
+              cards: processSteps.map((step) => ({
+                _key: k(),
+                _type: 'featureCard',
+                title: step.title,
+                description: step.description,
+                accentColor: 'primary',
+                accentApplyTo: ['title'],
+              })),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'schools-groups-why',
+      _type: 'gridRow',
+      layout: '50-50',
+      ...GRID_DEFAULTS,
+      gap: 'xl',
+      columns: [
+        {
+          _key: 'schools-groups-why-left',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-why-copy',
+              _type: 'richTextBlock',
+              content: [
+                block('Why Barcelona Works', 'h2'),
+                block(
+                  'Barcelona offers a rare mix of culture, sport, design, history, entrepreneurship, universities, an international community, and a Mediterranean lifestyle.',
+                ),
+                block(
+                  'For students, it can become a living classroom, a city where they explore ideas, identity, independence, and future possibilities.',
+                ),
+              ],
+            },
+          ],
+        },
+        {
+          _key: 'schools-groups-more-right',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-more-copy',
+              _type: 'richTextBlock',
+              eyebrow: 'Partner programmes',
+              content: [
+                block('More Than a Standard Trip', 'h2'),
+                block(
+                  'A standard trip can be enjoyable. A well-designed learning experience can be transformational.',
+                ),
+                block(
+                  'iCollege Global helps groups explore independence, leadership, communication, entrepreneurship, culture, and future direction in Barcelona.',
+                ),
+                block('Barcelona gives the experience energy. iCollege gives it structure.'),
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'schools-groups-faq',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      columns: [
+        {
+          _key: 'schools-groups-faq-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-faq-block',
+              _type: 'faqBlock',
+              eyebrow: 'FAQ',
+              title: 'Questions Partners Often Ask',
+              subtitle:
+                'If you need something more specific, start with a short call — we can walk through fit, timing, and outcomes together.',
+              variation: 'default',
+              enableSchema: true,
+              items: schoolsFaqs.map((item) => ({
+                _key: k(),
+                _type: 'faqItem',
+                question: item.q,
+                answer: faqAnswer(item.a),
+              })),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'schools-groups-final-cta',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      containerAlign: 'center',
+      blockStyles: {
+        _type: 'blockStyles',
+        background: {color: '#0f172a'},
+        typography: {textColor: '#ffffff', textAlign: 'center'},
+      },
+      columns: [
+        {
+          _key: 'schools-groups-final-cta-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-final-cta-block',
+              _type: 'ctaSection',
+              heading: 'Plan a Group Programme',
+              size: 'medium',
+              bodyParagraphs: [
+                {
+                  _key: k(),
+                  _type: 'ctaBodyParagraph',
+                  emphasis: false,
+                  text: 'Tell us about your group, dates, goals, and what you want students to gain from their time in Barcelona.',
+                },
+                {
+                  _key: k(),
+                  _type: 'ctaBodyParagraph',
+                  emphasis: false,
+                  text: 'We can help design something meaningful, realistic, and worth doing.',
+                },
+                {
+                  _key: k(),
+                  _type: 'ctaBodyParagraph',
+                  emphasis: true,
+                  text: 'Programmes can be adapted around age, group size, dates, budget, accommodation, and desired outcomes.',
+                },
+              ],
+              buttons: [
+                {
+                  _key: k(),
+                  _type: 'callToAction',
+                  action: 'calendly',
+                  label: 'Plan a Group Programme',
+                  variant: 'primary',
+                },
+                {
+                  _key: k(),
+                  _type: 'callToAction',
+                  action: 'link',
+                  label: 'Explore Global Programmes',
+                  variant: 'outline',
+                  link: [{_key: k(), _type: 'pageSlug', slug: 'global-experiences/programmes'}],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}
+
+async function main() {
+  console.log('Seeding global schools and groups page…')
+  await client.createOrReplace(page)
+  console.log('Published document: global-schools-groups-page (/global-experiences/for-schools-and-groups)')
+}
+
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

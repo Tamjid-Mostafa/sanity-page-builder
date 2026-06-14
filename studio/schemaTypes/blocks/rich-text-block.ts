@@ -12,6 +12,26 @@ export const richTextBlockType = defineType({
       description: 'Small uppercase label above the content (e.g. "Home Page")',
     }),
     defineField({
+      name: 'leadingIcon',
+      title: 'Leading Icon',
+      type: 'lucide-icon',
+      description: 'Optional icon displayed above the eyebrow.',
+    }),
+    defineField({
+      name: 'eyebrowTone',
+      title: 'Eyebrow Tone',
+      type: 'string',
+      initialValue: 'primary',
+      options: {
+        list: [
+          {title: 'Primary', value: 'primary'},
+          {title: 'Muted', value: 'muted'},
+          {title: 'Secondary (on dark)', value: 'secondary'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
       name: 'content',
       title: 'Content',
       type: 'blockContent',
