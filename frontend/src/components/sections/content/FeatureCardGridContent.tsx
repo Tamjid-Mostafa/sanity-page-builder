@@ -30,6 +30,8 @@ type ExtendedFeatureCardGridData = FeatureCardGridData & {
   eyebrow?: string | null;
   titleAlign?: string | null;
   showStepNumbers?: boolean | null;
+  gridLayout?: string | null;
+  stepNumberOffset?: number | null;
   style?: string | null | undefined;
   cardIconSize?: string | null;
   cardTitleTypography?: {
@@ -514,11 +516,13 @@ function OnDarkCard({
   iconSize,
   showStepNumbers,
   index,
+  stepOffset = 0,
 }: {
   card: ExtendedFeatureCard;
   iconSize: { box: string; icon: string; image: string };
   showStepNumbers?: boolean;
   index: number;
+  stepOffset?: number;
 }) {
   const accent = stegaClean(card.accentColor) || "secondary";
   const accentBarClass = ACCENT_BAR[accent] ?? "bg-secondary";
@@ -544,7 +548,7 @@ function OnDarkCard({
                 </div>
               )}
               <span className="select-none text-2xl font-bold tabular-nums text-background">
-                {String(index + 1).padStart(2, "0")}
+                {String(index + 1 + stepOffset).padStart(2, "0")}
               </span>
             </div>
             {card.title && (
@@ -684,6 +688,21 @@ export function FeatureCardGridContent({
       : undefined;
   if (cards.length === 0) return null;
 
+  const gridLayout = stegaClean(d.gridLayout) || "default";
+  const stepNumberOffset = d.stepNumberOffset ?? 0;
+  const effectiveStepOffset =
+    stepNumberOffset > 0
+      ? stepNumberOffset
+      : isOnDark && showStepNumbers && !hasHeader && cards.length <= 2
+        ? 3
+        : 0;
+  const isPillarLayout =
+    isOnDark &&
+    showStepNumbers &&
+    (cards.length === 5 ||
+      (gridLayout === "3-2" && cards.length >= 4));
+  const isPillarHeader = isOnDark && showStepNumbers;
+
   const renderCard = (card: ExtendedFeatureCard, index: number) => {
     if (isPathwayDetail) return <PathwayDetailCard card={card} />;
     if (isCallout) return <CalloutCard card={card} iconSize={iconSize} />;
@@ -694,6 +713,7 @@ export function FeatureCardGridContent({
           iconSize={iconSize}
           showStepNumbers={showStepNumbers}
           index={index}
+          stepOffset={effectiveStepOffset}
         />
       );
     }
@@ -712,62 +732,89 @@ export function FeatureCardGridContent({
     );
   };
 
+  const headerBlock = (d.eyebrow || d.title || d.subtitle) && (
+    <div
+      className={cn(
+        isCompactGrid || isPathwayDetail || isPillarHeader
+          ? "mb-10 max-w-3xl"
+          : "mb-8",
+        titleAlign === "center" ? "text-center" : "text-left",
+      )}
+    >
+      {d.eyebrow && (
+        <p
+          className={cn(
+            "mb-2 text-xs font-semibold uppercase tracking-[0.14em]",
+            isOnDark || isPathwayDetail ? "text-secondary" : "text-primary",
+          )}
+        >
+          {d.eyebrow}
+        </p>
+      )}
+      {d.title && (
+        <h2
+          className={cn(
+            "font-heading text-3xl font-bold leading-[1.08] tracking-tight sm:text-4xl md:text-[2.625rem]",
+            subtitleBody && !isOnDark && "mb-4",
+            (isOnDark || isPathwayDetail) && "text-background",
+          )}
+        >
+          {d.title}
+        </h2>
+      )}
+      {subtitleLead && (
+        <p className="mt-4 text-base font-semibold text-background sm:text-lg">
+          {subtitleLead}
+        </p>
+      )}
+      {subtitleBody && (
+        <p
+          className={cn(
+            "max-w-3xl text-sm font-light leading-relaxed sm:text-base",
+            !d.title && "mt-0",
+            d.title && !isOnDark && !subtitleLead && "mt-0",
+            d.title && (isOnDark || subtitleLead) && "mt-2",
+            titleAlign === "center" && "mx-auto",
+            isOnDark || isPathwayDetail
+              ? "text-background/90"
+              : "text-foreground",
+          )}
+        >
+          {subtitleBody}
+        </p>
+      )}
+    </div>
+  );
+
   const isSingleStandalone =
     cards.length === 1 && !hasHeader && (isCallout || columns === "1");
 
+  if (isPillarLayout) {
+    const topCards = cards.slice(0, 3);
+    const bottomCards = cards.slice(3);
+
+    return (
+      <div>
+        {headerBlock}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {topCards.map((card, index) => (
+            <div key={card._key}>{renderCard(card, index)}</div>
+          ))}
+        </div>
+        {bottomCards.length > 0 && (
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:mx-auto lg:max-w-4xl">
+            {bottomCards.map((card, index) => (
+              <div key={card._key}>{renderCard(card, index + 3)}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div>
-      {(d.eyebrow || d.title || d.subtitle) && (
-        <div
-          className={cn(
-            isCompactGrid || isPathwayDetail ? "mb-10 max-w-3xl" : "mb-8",
-            titleAlign === "center" ? "text-center" : "text-left",
-          )}
-        >
-          {d.eyebrow && (
-            <p
-              className={cn(
-                "mb-2 text-xs font-semibold uppercase tracking-[0.14em]",
-                isOnDark || isPathwayDetail ? "text-secondary" : "text-primary",
-              )}
-            >
-              {d.eyebrow}
-            </p>
-          )}
-          {d.title && (
-            <h2
-              className={cn(
-                "text-3xl sm:text-4xl md:text-[2.625rem] font-heading font-bold tracking-tight leading-[1.08]",
-                subtitleBody && !isOnDark && "mb-4",
-                (isOnDark || isPathwayDetail) && "text-background",
-              )}
-            >
-              {d.title}
-            </h2>
-          )}
-          {subtitleLead && (
-            <p className="mt-4 text-base font-semibold text-background sm:text-lg">
-              {subtitleLead}
-            </p>
-          )}
-          {subtitleBody && (
-            <p
-              className={cn(
-                "max-w-3xl text-sm font-light leading-relaxed sm:text-base",
-                !d.title && "mt-0",
-                d.title && !isOnDark && !subtitleLead && "mt-0",
-                d.title && (isOnDark || subtitleLead) && "mt-2",
-                titleAlign === "center" && "mx-auto",
-                isOnDark || isPathwayDetail
-                  ? "text-background/90"
-                  : "text-foreground",
-              )}
-            >
-              {subtitleBody}
-            </p>
-          )}
-        </div>
-      )}
+      {headerBlock}
       {isSingleStandalone ? (
         renderCard(cards[0], 0)
       ) : (

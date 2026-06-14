@@ -226,6 +226,27 @@ export const featureCardGridType = defineType({
       options: {list: [...COLUMN_OPTIONS], layout: 'radio'},
     }),
     defineField({
+      name: 'gridLayout',
+      title: 'Grid Layout',
+      type: 'string',
+      initialValue: 'default',
+      description: 'Use 3 + 2 centred for support-system style step cards (5 cards).',
+      options: {
+        list: [
+          {title: 'Default', value: 'default'},
+          {title: '3 + 2 centred', value: '3-2'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'stepNumberOffset',
+      title: 'Step Number Offset',
+      type: 'number',
+      initialValue: 0,
+      description: 'Start step numbering from this offset (e.g. 3 continues 04, 05 in a second grid).',
+    }),
+    defineField({
       name: 'style',
       title: 'Card Style',
       type: 'string',

@@ -557,25 +557,17 @@ const page = {
           verticalAlign: 'top',
           content: [
             {
-              _key: 'curriculum-how-students-learn-grid-top',
+              _key: 'curriculum-how-students-learn-grid',
               _type: 'featureCardGrid',
               style: 'onDark',
               columns: '3',
+              gridLayout: '3-2',
               showStepNumbers: true,
               eyebrow: 'Every programme',
               title: 'What Every Programme Includes',
               subtitle:
                 'The iCollege Support System\n\nEvery iCollege Academy programme is built around the same core support system.',
-              cards: supportSystemCards.slice(0, 3).map(featureCard),
-              blockStyles: {_type: 'blockStyles', ...ON_DARK_TEXT},
-            },
-            {
-              _key: 'curriculum-how-students-learn-grid-bottom',
-              _type: 'featureCardGrid',
-              style: 'onDark',
-              columns: '2',
-              showStepNumbers: true,
-              cards: supportSystemCards.slice(3).map(featureCard),
+              cards: supportSystemCards.map(featureCard),
               blockStyles: {_type: 'blockStyles', ...ON_DARK_TEXT},
             },
           ],

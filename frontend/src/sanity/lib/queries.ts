@@ -94,6 +94,8 @@ const contentFragment = /* groq */ `
     _type == "featureCardGrid" => {
       eyebrow,
       showStepNumbers,
+      gridLayout,
+      stepNumberOffset,
       ...,
       cards[] {
         _key, _type,
