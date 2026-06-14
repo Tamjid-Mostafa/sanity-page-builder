@@ -29,6 +29,8 @@ export function TagPillsContent({data}: {data: TagPillsData}) {
     typography?: {textColor?: string | null}
   } | null
   const onDark = isDarkSurface(blockStyles)
+  const tone = stegaClean((data as {tone?: string | null}).tone) || 'solid'
+  const isOutline = tone === 'outline'
   const items = (data.items ?? []).filter((item): item is string => Boolean(item))
 
   if (items.length === 0) return null
@@ -42,8 +44,10 @@ export function TagPillsContent({data}: {data: TagPillsData}) {
         <li
           key={label}
           className={cn(
-            'tag-pill inline-flex items-center text-sm font-semibold',
-            'rounded-xl bg-foreground px-4 py-3 text-background',
+            'tag-pill inline-flex items-center',
+            isOutline
+              ? 'rounded-full border border-border bg-muted/40 px-3 py-1.5 text-xs font-light text-foreground sm:text-sm'
+              : 'rounded-xl bg-foreground px-4 py-3 text-sm font-semibold text-background',
           )}
         >
           {label}

@@ -1,13 +1,15 @@
 import {getCliClient} from 'sanity/cli'
 import {
   GRID_DEFAULTS,
+  GLOBAL_CTA_ROW_STYLES,
+  GLOBAL_HERO_GRADIENT,
   createKeyGenerator,
   createBlockHelpers,
 } from './seed-helpers.mjs'
 
 const client = getCliClient({apiVersion: '2024-01-01'})
 const k = createKeyGenerator()
-const {block, faqAnswer} = createBlockHelpers(k)
+const {block, faqAnswer, globalCtaBlock, globalFooterRow} = createBlockHelpers(k)
 
 const audienceCards = [
   {
@@ -135,25 +137,17 @@ const page = {
   slug: {_type: 'slug', current: 'global-experiences'},
   seo: {
     _type: 'seo',
-    metaTitle: 'iCollege Global | Global Experiences',
+    metaTitle: 'Global Overview | iCollege Global | iCollege Life',
     metaDescription:
-      'Barcelona-based learning experiences for groups and older students through iCollege Global.',
+      'Barcelona-based learning experiences for groups and older students — life design, entrepreneurship, leadership, culture, and structured programmes through iCollege Global.',
     noIndex: false,
   },
   pageBuilder: [
     {
       _key: 'global-overview-hero',
       _type: 'heroSection',
-      layout: 'fullWidth',
-      alignment: 'left',
-      verticalAlign: 'end',
-      decorativeBackground: true,
-      backgroundType: 'gradient',
-      gradientFrom: '#0a1628',
-      gradientMid: '#0c2340',
-      gradientTo: '#0f1f35',
-      gradientDirection: 'to bottom right',
-      minHeight: '70vh',
+      ...GLOBAL_HERO_GRADIENT,
+      minHeight: '58vh',
       badge: 'iCollege Global',
       heading: 'Barcelona-Based Learning Experiences for Groups and Older Students',
       subtitle:
@@ -189,7 +183,6 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}},
       columns: [
         {
           _key: 'global-overview-what-is-col',
@@ -207,7 +200,7 @@ const page = {
                 block(
                   'Students are encouraged to think more clearly about who they are, what they value, where they are going, and what kind of future they want to build.',
                 ),
-                block('Learning should not only happen in classrooms.'),
+                block('Learning should not only happen in classrooms.', 'normal', undefined, undefined, ['strong']),
               ],
             },
           ],
@@ -219,7 +212,11 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+        background: {color: '#f7f7f7'},
+      },
       columns: [
         {
           _key: 'global-overview-who-for-col',
@@ -241,38 +238,6 @@ const page = {
                 accentColor: card.accentColor,
                 accentApplyTo: ['icon', 'iconBg'],
                 icon: {source: 'lucide', lucide: card.lucide},
-              })),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      _key: 'global-overview-how',
-      _type: 'gridRow',
-      layout: 'full',
-      ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
-      columns: [
-        {
-          _key: 'global-overview-how-col',
-          verticalAlign: 'top',
-          content: [
-            {
-              _key: 'global-overview-how-grid',
-              _type: 'featureCardGrid',
-              eyebrow: 'Process',
-              title: 'How It Works',
-              showStepNumbers: true,
-              style: 'bordered',
-              columns: '4',
-              cards: howSteps.map((step) => ({
-                _key: k(),
-                _type: 'featureCard',
-                title: step.title,
-                description: step.description,
-                accentColor: 'primary',
-                accentApplyTo: ['title'],
               })),
             },
           ],
@@ -309,10 +274,41 @@ const page = {
       ],
     },
     {
+      _key: 'global-overview-why-barcelona',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
+      columns: [
+        {
+          _key: 'global-overview-why-barcelona-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'global-overview-why-barcelona-copy',
+              _type: 'richTextBlock',
+              eyebrow: 'Place',
+              content: [
+                block('Why Barcelona?', 'h2'),
+                block(
+                  'Barcelona is an ideal city for international learning. It combines culture, history, sport, design, entrepreneurship, universities, creativity, and Mediterranean lifestyle in one accessible global city.',
+                ),
+                block(
+                  'For students, Barcelona can become a living classroom, a place to explore ideas, independence, identity, and future direction.',
+                ),
+                block('Barcelona is not just the setting. It is part of the learning experience.', 'normal', undefined, undefined, ['strong']),
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
       _key: 'global-overview-themes',
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'lg',
       columns: [
         {
           _key: 'global-overview-themes-col',
@@ -323,15 +319,47 @@ const page = {
               _type: 'featureCardGrid',
               eyebrow: 'Themes',
               title: 'Example Programme Themes',
-              style: 'bordered',
-              columns: '3',
+              style: 'themePreview',
+              columns: '5',
               cards: themeCards.map((card) => ({
                 _key: k(),
                 _type: 'featureCard',
                 title: card.title,
                 description: card.description,
                 accentColor: card.accentColor,
-                accentApplyTo: ['title'],
+              })),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'global-overview-how',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+        background: {color: '#f7f7f7'},
+      },
+      columns: [
+        {
+          _key: 'global-overview-how-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'global-overview-how-grid',
+              _type: 'featureCardGrid',
+              eyebrow: 'Process',
+              title: 'How It Works',
+              style: 'processStep',
+              columns: '4',
+              cards: howSteps.map((step) => ({
+                _key: k(),
+                _type: 'featureCard',
+                title: step.title,
+                description: step.description,
               })),
             },
           ],
@@ -370,29 +398,41 @@ const page = {
       ],
     },
     {
-      _key: 'global-overview-why-barcelona',
+      _key: 'global-overview-explore-links',
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
       columns: [
         {
-          _key: 'global-overview-why-barcelona-col',
+          _key: 'global-overview-explore-col',
           verticalAlign: 'top',
           content: [
             {
-              _key: 'global-overview-why-barcelona-copy',
-              _type: 'richTextBlock',
-              eyebrow: 'Place',
-              content: [
-                block('Why Barcelona?', 'h2'),
-                block(
-                  'Barcelona is an ideal city for international learning. It combines culture, history, sport, design, entrepreneurship, universities, creativity, and Mediterranean lifestyle in one accessible global city.',
-                ),
-                block(
-                  'For students, Barcelona can become a living classroom, a place to explore ideas, independence, identity, and future direction.',
-                ),
-                block('Barcelona is not just the setting. It is part of the learning experience.'),
+              _key: 'global-overview-explore-cards',
+              _type: 'featureCardGrid',
+              eyebrow: 'Explore',
+              title: 'Go deeper',
+              subtitle: 'Programme detail and partner landing pages build on this overview.',
+              titleAlign: 'center',
+              style: 'exploreLink',
+              columns: '2',
+              cards: [
+                {
+                  _key: k(),
+                  _type: 'featureCard',
+                  title: 'Global Programmes',
+                  description: 'Themes, formats, and what every programme can include.',
+                  cta: {label: 'Continue', href: '/global-experiences/programmes'},
+                  icon: {source: 'lucide', lucide: 'graduation-cap'},
+                },
+                {
+                  _key: k(),
+                  _type: 'featureCard',
+                  title: 'For Schools & Groups',
+                  description: 'Partner pathways for school visits, universities, and organisations.',
+                  cta: {label: 'Continue', href: '/global-experiences/for-schools-and-groups'},
+                  icon: {source: 'lucide', lucide: 'landmark'},
+                },
               ],
             },
           ],
@@ -429,102 +469,27 @@ const page = {
       ],
     },
     {
-      _key: 'global-overview-explore-links',
-      _type: 'gridRow',
-      layout: '50-50',
-      ...GRID_DEFAULTS,
-      gap: 'xl',
-      columns: [
-        {
-          _key: 'global-overview-explore-left',
-          verticalAlign: 'top',
-          content: [
-            {
-              _key: 'global-overview-explore-intro',
-              _type: 'richTextBlock',
-              eyebrow: 'Explore',
-              content: [
-                block('Go deeper', 'h2'),
-                block('Programme detail and partner landing pages build on this overview.'),
-              ],
-            },
-          ],
-        },
-        {
-          _key: 'global-overview-explore-right',
-          verticalAlign: 'top',
-          content: [
-            {
-              _key: 'global-overview-explore-cards',
-              _type: 'featureCardGrid',
-              style: 'bordered',
-              columns: '2',
-              cards: [
-                {
-                  _key: k(),
-                  _type: 'featureCard',
-                  title: 'Global Programmes',
-                  description: 'Themes, formats, and what every programme can include.',
-                  cta: {label: 'Continue', href: '/global-experiences/programmes'},
-                  accentColor: 'primary',
-                  accentApplyTo: ['title'],
-                },
-                {
-                  _key: k(),
-                  _type: 'featureCard',
-                  title: 'For Schools & Groups',
-                  description: 'Partner pathways for school visits, universities, and organisations.',
-                  cta: {label: 'Continue', href: '/global-experiences/for-schools-and-groups'},
-                  accentColor: 'primary',
-                  accentApplyTo: ['title'],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
       _key: 'global-overview-final-cta',
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'none',
       containerAlign: 'center',
-      blockStyles: {
-        _type: 'blockStyles',
-        background: {color: '#0f172a'},
-        typography: {textColor: '#ffffff', textAlign: 'center'},
-      },
+      blockStyles: GLOBAL_CTA_ROW_STYLES,
       columns: [
         {
           _key: 'global-overview-final-cta-col',
           verticalAlign: 'top',
           content: [
-            {
-              _key: 'global-overview-final-cta-block',
-              _type: 'ctaSection',
+            globalCtaBlock({
+              key: 'global-overview-final-cta-block',
               heading: 'Enquire About iCollege Global',
-              size: 'medium',
-              bodyParagraphs: [
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: false,
-                  text: 'Every programme is designed around the student or group.',
-                },
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: false,
-                  text: 'Tell us who the programme is for, what you are looking for, and when you plan to come to Barcelona.',
-                },
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: true,
-                  text: 'We can help you understand what is possible, realistic, and worth building.',
-                },
+              paragraphs: [
+                'Every programme is designed around the student or group.',
+                'Tell us who the programme is for, what you are looking for, and when you plan to come to Barcelona.',
               ],
+              postButtonText:
+                'We can help you understand what is possible, realistic, and worth building.',
               buttons: [
                 {
                   _key: k(),
@@ -542,40 +507,12 @@ const page = {
                   link: [{_key: k(), _type: 'pageSlug', slug: 'global-experiences/programmes'}],
                 },
               ],
-            },
+            }),
           ],
         },
       ],
     },
-    {
-      _key: 'global-overview-footer-line',
-      _type: 'gridRow',
-      layout: 'full',
-      ...GRID_DEFAULTS,
-      containerAlign: 'center',
-      blockStyles: {
-        _type: 'blockStyles',
-        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
-        typography: {textAlign: 'center'},
-      },
-      columns: [
-        {
-          _key: 'global-overview-footer-line-col',
-          verticalAlign: 'top',
-          content: [
-            {
-              _key: 'global-overview-footer-line-copy',
-              _type: 'richTextBlock',
-              content: [
-                block(
-                  'iCollege Global is part of iCollege Life — helping young people build credible futures and meaningful lives.',
-                ),
-              ],
-            },
-          ],
-        },
-      ],
-    },
+    globalFooterRow('global-overview'),
   ],
 }
 

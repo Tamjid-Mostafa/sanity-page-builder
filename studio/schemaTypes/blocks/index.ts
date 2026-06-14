@@ -32,6 +32,7 @@ import {imageGalleryType} from './image-gallery'
 import {ctaSectionType} from './cta-section'
 import {partnersNetworkType} from './partners-network'
 import {tagPillsType} from './tag-pills'
+import {microFooterLineType} from './micro-footer-line'
 
 // Grid Row (the page builder section)
 import {gridRowType} from './grid-row'
@@ -67,6 +68,7 @@ export {
   ctaSectionType,
   partnersNetworkType,
   tagPillsType,
+  microFooterLineType,
   tocBlockType,
   gridRowType,
 }
@@ -117,6 +119,7 @@ export const blockTypes = [
   ctaSectionType,
   partnersNetworkType,
   tagPillsType,
+  microFooterLineType,
   tocBlockType,
   gridRowType,
   pageBuilderType,

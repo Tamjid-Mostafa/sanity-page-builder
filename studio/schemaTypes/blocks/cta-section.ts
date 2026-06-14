@@ -73,6 +73,18 @@ export const ctaSectionType = defineType({
       },
     }),
     defineField({
+      name: 'closingStyle',
+      title: 'Closing Style (deprecated)',
+      type: 'string',
+      hidden: true,
+      readOnly: true,
+      initialValue: 'global',
+    }),
+    stringField('postButtonText', 'Post-Button Text', {
+      rows: 2,
+      description: 'Optional line shown below the buttons (e.g. fees closing emphasis).',
+    }),
+    defineField({
       name: 'trustItems',
       title: 'Trust Indicator Chips',
       type: 'array',

@@ -8,10 +8,25 @@ export const dataTableType = defineType({
   icon: ThListIcon,
   fields: [
     defineField({
+      name: 'variant',
+      title: 'Variant',
+      type: 'string',
+      description: 'Formats tables use programme-style typography without a caption row.',
+      options: {
+        list: [
+          {title: 'Default', value: 'default'},
+          {title: 'Programme formats', value: 'formats'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'default',
+    }),
+    defineField({
       name: 'caption',
       title: 'Caption',
       type: 'string',
-      description: 'Optional table title.',
+      description: 'Optional table title (hidden for programme formats variant).',
+      hidden: ({parent}) => parent?.variant === 'formats',
     }),
     defineField({
       name: 'headers',

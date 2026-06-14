@@ -183,7 +183,7 @@ const contentFragment = /* groq */ `
       ${blockStylesFragment}
     },
     _type == "ctaSection" => {
-      eyebrow, heading, subtitle, size,
+      eyebrow, heading, subtitle, size, postButtonText,
       bodyParagraphs[] { _key, text, emphasis },
       buttons[] {
         _key, _type, label, action, color, textColor, hoverColor, variant,
@@ -221,7 +221,7 @@ export const HOME_PAGE_QUERY = defineQuery(/* groq */ `
 `)
 
 export const PAGE_QUERY = defineQuery(/* groq */ `
-  *[_type == "page" && slug.current == $slug][0] {
+  *[_type == "page" && slug.current == $slug && !(_id in path("drafts.**"))] | order(count(coalesce(pageBuilder, [])) desc)[0] {
     _id, title, slug,
     ${seoFragment},
     ${pageBuilderFragment}
@@ -229,8 +229,11 @@ export const PAGE_QUERY = defineQuery(/* groq */ `
 `)
 
 export const PAGE_SLUGS_QUERY = defineQuery(/* groq */ `
-  *[_type == "page" && defined(slug.current)] {
-    "slug": slug.current
+  *[_type == "page" && defined(slug.current) && !(_id in path("drafts.**"))] {
+    "slug": slug.current,
+    "sectionCount": count(coalesce(pageBuilder, []))
+  } | order(sectionCount desc) {
+    "slug": slug
   }
 `)
 

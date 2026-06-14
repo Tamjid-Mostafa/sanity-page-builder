@@ -15,6 +15,19 @@ export const tagPillsType = defineType({
       of: [defineArrayMember({type: 'string'})],
     }),
     defineField({
+      name: 'tone',
+      title: 'Tone',
+      type: 'string',
+      initialValue: 'solid',
+      options: {
+        list: [
+          {title: 'Solid', value: 'solid'},
+          {title: 'Outline', value: 'outline'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
       name: 'blockStyles',
       title: 'Block Styles',
       type: 'blockStyles',

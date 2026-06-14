@@ -7,6 +7,7 @@ const COLUMN_OPTIONS = [
   {title: '2 Columns', value: '2'},
   {title: '3 Columns', value: '3'},
   {title: '4 Columns', value: '4'},
+  {title: '5 Columns', value: '5'},
 ] as const
 
 const STYLE_OPTIONS = [
@@ -19,6 +20,18 @@ const STYLE_OPTIONS = [
   {title: 'Pathway Detail (dark)', value: 'pathwayDetail'},
   {title: 'On Dark', value: 'onDark'},
   {title: 'Callout (dark accent)', value: 'callout'},
+  {title: 'Programme Fees', value: 'programmeFees'},
+  {title: 'Programme Review', value: 'programmeReview'},
+  {title: 'Payment Option', value: 'paymentOption'},
+  {title: 'Included List', value: 'includedList'},
+  {title: 'Extra List', value: 'extraList'},
+  {title: 'Explore Link', value: 'exploreLink'},
+  {title: 'Programme Theme', value: 'programmeTheme'},
+  {title: 'Booking Chips', value: 'bookingChips'},
+  {title: 'Process Steps', value: 'processStep'},
+  {title: 'Theme Preview', value: 'themePreview'},
+  {title: 'Foundations', value: 'foundations'},
+  {title: 'Partner Grid', value: 'partnerGrid'},
 ] as const
 
 const CARD_ICON_SIZE_OPTIONS = [
@@ -153,6 +166,24 @@ export const featureCardGridType = defineType({
                 }),
             }),
             defineField({
+              name: 'price',
+              title: 'Price',
+              type: 'string',
+              description: 'Large price line (e.g. From €7,500/year). Used with Programme Fees and Programme Review styles.',
+            }),
+            defineField({
+              name: 'enrolmentFee',
+              title: 'Enrolment Fee',
+              type: 'string',
+              description: 'Secondary price line (e.g. Enrolment fee: €1,000). Used with Programme Fees style.',
+            }),
+            defineField({
+              name: 'format',
+              title: 'Format Badge',
+              type: 'string',
+              description: 'Optional uppercase badge (e.g. Online or Barcelona Hybrid). Used with Programme Fees style.',
+            }),
+            defineField({
               name: 'subtitle',
               title: 'Subtitle (bold)',
               type: 'string',
@@ -165,11 +196,17 @@ export const featureCardGridType = defineType({
               rows: 3,
             }),
             defineField({
+              name: 'bulletsLabel',
+              title: 'Bullets Label',
+              type: 'string',
+              description: 'Label above bullet lists (e.g. Can include). Used with Programme Theme style.',
+            }),
+            defineField({
               name: 'bestFor',
               title: 'Best For',
               type: 'array',
               of: [defineArrayMember({type: 'string'})],
-              description: 'Used with Pathway Detail (dark) card style.',
+              description: 'Used with Pathway Detail (dark) or Programme Theme card styles.',
             }),
             defineField({
               name: 'includes',

@@ -15,9 +15,16 @@ function resolveSlug(slug: string | string[]): string {
 
 export async function generateStaticParams() {
   const data = await client.withConfig({useCdn: false}).fetch(PAGE_SLUGS_QUERY)
-  return (data ?? []).map((page: {slug: string}) => ({
-    slug: page.slug.split('/').filter(Boolean),
-  }))
+  const seen = new Set<string>()
+  return (data ?? [])
+    .filter((page: {slug: string}) => {
+      if (seen.has(page.slug)) return false
+      seen.add(page.slug)
+      return true
+    })
+    .map((page: {slug: string}) => ({
+      slug: page.slug.split('/').filter(Boolean),
+    }))
 }
 
 export async function generateMetadata({

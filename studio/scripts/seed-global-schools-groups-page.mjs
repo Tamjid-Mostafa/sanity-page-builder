@@ -1,9 +1,15 @@
 import {getCliClient} from 'sanity/cli'
-import {GRID_DEFAULTS, createKeyGenerator, createBlockHelpers} from './seed-helpers.mjs'
+import {
+  GRID_DEFAULTS,
+  GLOBAL_CTA_ROW_STYLES,
+  GLOBAL_HERO_GRADIENT,
+  createKeyGenerator,
+  createBlockHelpers,
+} from './seed-helpers.mjs'
 
 const client = getCliClient({apiVersion: '2024-01-01'})
 const k = createKeyGenerator()
-const {block, faqAnswer} = createBlockHelpers(k)
+const {block, faqAnswer, globalCtaBlock, globalFooterRow} = createBlockHelpers(k)
 
 const whoWeWorkWith = [
   {
@@ -140,12 +146,13 @@ const schoolsFaqs = [
   },
 ]
 
-function buildDataTable(headers, rows, caption) {
+function buildDataTable(headers, rows, {caption, variant = 'default'} = {}) {
   return {
     _key: k(),
     _type: 'dataTable',
+    variant,
     caption,
-    striped: true,
+    striped: variant !== 'formats',
     compact: false,
     headers: headers.map((text) => ({_key: k(), _type: 'tableHeader', text})),
     rows: rows.map((cells) => ({
@@ -163,25 +170,17 @@ const page = {
   slug: {_type: 'slug', current: 'global-experiences/for-schools-and-groups'},
   seo: {
     _type: 'seo',
-    metaTitle: 'For Schools & Groups | iCollege Global',
+    metaTitle: 'For Schools & Groups | Global | iCollege Life',
     metaDescription:
-      'Barcelona learning experiences for schools, universities, and partner organisations.',
+      "Barcelona learning experiences for schools, universities, and partner organisations — workshops, culture, real-world learning, and structured reflection around your group's goals.",
     noIndex: false,
   },
   pageBuilder: [
     {
       _key: 'schools-groups-hero',
       _type: 'heroSection',
-      layout: 'fullWidth',
-      alignment: 'left',
-      verticalAlign: 'end',
-      decorativeBackground: true,
-      backgroundType: 'gradient',
-      gradientFrom: '#0a1628',
-      gradientMid: '#0c2340',
-      gradientTo: '#0f1f35',
-      gradientDirection: 'to bottom right',
-      minHeight: '78vh',
+      ...GLOBAL_HERO_GRADIENT,
+      minHeight: '90vh',
       badge: 'For Schools & Groups',
       heading:
         'Barcelona Learning Experiences for Schools, Universities, and Partner Organisations',
@@ -213,11 +212,47 @@ const page = {
       ],
     },
     {
+      _key: 'schools-groups-more-than-trip',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      blockStyles: {_type: 'blockStyles', borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}},
+      columns: [
+        {
+          _key: 'schools-groups-more-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'schools-groups-more-copy',
+              _type: 'richTextBlock',
+              eyebrow: 'Partner programmes',
+              content: [
+                block('More Than a Standard Trip', 'h2'),
+                block(
+                  'A standard trip can be enjoyable. A well-designed learning experience can be transformational.',
+                ),
+                block(
+                  'iCollege Global helps groups explore independence, leadership, communication, entrepreneurship, culture, and future direction in Barcelona.',
+                ),
+                block(
+                  'Barcelona gives the experience energy. iCollege gives it structure.',
+                  'normal',
+                  undefined,
+                  undefined,
+                  ['strong'],
+                ),
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
       _key: 'schools-groups-who',
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}, background: {color: '#f7f7f7'}},
+      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
       columns: [
         {
           _key: 'schools-groups-who-col',
@@ -231,38 +266,6 @@ const page = {
               style: 'audience',
               columns: '3',
               cards: whoWeWorkWith.map((item) => ({
-                _key: k(),
-                _type: 'featureCard',
-                title: item.title,
-                description: item.description,
-                accentColor: item.accentColor,
-                accentApplyTo: ['icon', 'iconBg'],
-                icon: {source: 'lucide', lucide: item.lucide},
-              })),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      _key: 'schools-groups-ways',
-      _type: 'gridRow',
-      layout: 'full',
-      ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
-      columns: [
-        {
-          _key: 'schools-groups-ways-col',
-          verticalAlign: 'top',
-          content: [
-            {
-              _key: 'schools-groups-ways-grid',
-              _type: 'featureCardGrid',
-              eyebrow: 'Ways to Partner',
-              title: 'iCollege can support partners through:',
-              style: 'bordered',
-              columns: '2',
-              cards: partnerWays.map((item) => ({
                 _key: k(),
                 _type: 'featureCard',
                 title: item.title,
@@ -292,14 +295,17 @@ const page = {
               eyebrow: 'What We Can Build',
               content: [block('Programmes can be designed as:', 'h2')],
             },
-            buildDataTable(formatHeaders, formatRows, 'Programme formats'),
+            buildDataTable(formatHeaders, formatRows, {variant: 'formats'}),
+            {
+              _key: 'schools-groups-themes-label',
+              _type: 'richTextBlock',
+              content: [block('Possible themes include:')],
+            },
             {
               _key: 'schools-groups-themes',
-              _type: 'richTextBlock',
-              content: [
-                block('Possible themes include:'),
-                ...possibleThemes.map((item) => block(item, 'normal', 'bullet', 1)),
-              ],
+              _type: 'tagPills',
+              tone: 'outline',
+              items: possibleThemes,
             },
           ],
         },
@@ -310,7 +316,11 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}, borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}},
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+        background: {color: '#f7f7f7'},
+      },
       columns: [
         {
           _key: 'schools-groups-process-col',
@@ -321,16 +331,13 @@ const page = {
               _type: 'featureCardGrid',
               eyebrow: 'Process',
               title: 'How It Works',
-              showStepNumbers: true,
-              style: 'bordered',
+              style: 'processStep',
               columns: '4',
               cards: processSteps.map((step) => ({
                 _key: k(),
                 _type: 'featureCard',
                 title: step.title,
                 description: step.description,
-                accentColor: 'primary',
-                accentApplyTo: ['title'],
               })),
             },
           ],
@@ -340,12 +347,11 @@ const page = {
     {
       _key: 'schools-groups-why',
       _type: 'gridRow',
-      layout: '50-50',
+      layout: 'full',
       ...GRID_DEFAULTS,
-      gap: 'xl',
       columns: [
         {
-          _key: 'schools-groups-why-left',
+          _key: 'schools-groups-why-col',
           verticalAlign: 'top',
           content: [
             {
@@ -363,24 +369,40 @@ const page = {
             },
           ],
         },
+      ],
+    },
+    {
+      _key: 'schools-groups-ways',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      paddingY: 'lg',
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+        background: {color: '#f7f7f7'},
+      },
+      columns: [
         {
-          _key: 'schools-groups-more-right',
+          _key: 'schools-groups-ways-col',
           verticalAlign: 'top',
           content: [
             {
-              _key: 'schools-groups-more-copy',
-              _type: 'richTextBlock',
-              eyebrow: 'Partner programmes',
-              content: [
-                block('More Than a Standard Trip', 'h2'),
-                block(
-                  'A standard trip can be enjoyable. A well-designed learning experience can be transformational.',
-                ),
-                block(
-                  'iCollege Global helps groups explore independence, leadership, communication, entrepreneurship, culture, and future direction in Barcelona.',
-                ),
-                block('Barcelona gives the experience energy. iCollege gives it structure.'),
-              ],
+              _key: 'schools-groups-ways-grid',
+              _type: 'featureCardGrid',
+              eyebrow: 'Ways to Partner',
+              title: 'iCollege can support partners through:',
+              style: 'partnerGrid',
+              columns: '2',
+              cards: partnerWays.map((item) => ({
+                _key: k(),
+                _type: 'featureCard',
+                title: item.title,
+                description: item.description,
+                accentColor: item.accentColor,
+                accentApplyTo: ['icon', 'iconBg'],
+                icon: {source: 'lucide', lucide: item.lucide},
+              })),
             },
           ],
         },
@@ -421,42 +443,23 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'none',
       containerAlign: 'center',
-      blockStyles: {
-        _type: 'blockStyles',
-        background: {color: '#0f172a'},
-        typography: {textColor: '#ffffff', textAlign: 'center'},
-      },
+      blockStyles: GLOBAL_CTA_ROW_STYLES,
       columns: [
         {
           _key: 'schools-groups-final-cta-col',
           verticalAlign: 'top',
           content: [
-            {
-              _key: 'schools-groups-final-cta-block',
-              _type: 'ctaSection',
+            globalCtaBlock({
+              key: 'schools-groups-final-cta-block',
               heading: 'Plan a Group Programme',
-              size: 'medium',
-              bodyParagraphs: [
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: false,
-                  text: 'Tell us about your group, dates, goals, and what you want students to gain from their time in Barcelona.',
-                },
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: false,
-                  text: 'We can help design something meaningful, realistic, and worth doing.',
-                },
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: true,
-                  text: 'Programmes can be adapted around age, group size, dates, budget, accommodation, and desired outcomes.',
-                },
+              paragraphs: [
+                'Tell us about your group, dates, goals, and what you want students to gain from their time in Barcelona.',
+                'We can help design something meaningful, realistic, and worth doing.',
               ],
+              postButtonText:
+                'Programmes can be adapted around age, group size, dates, budget, accommodation, and desired outcomes.',
               buttons: [
                 {
                   _key: k(),
@@ -474,11 +477,12 @@ const page = {
                   link: [{_key: k(), _type: 'pageSlug', slug: 'global-experiences/programmes'}],
                 },
               ],
-            },
+            }),
           ],
         },
       ],
     },
+    globalFooterRow('schools-groups'),
   ],
 }
 

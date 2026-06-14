@@ -3,7 +3,6 @@ import {
   FIT_FORM_URL,
   GRID_DEFAULTS,
   HERO_GRADIENT,
-  CARD_BLOCK_STYLES,
   DARK_SURFACE,
   MUTED_SURFACE,
   createKeyGenerator,
@@ -14,7 +13,7 @@ const client = getCliClient({apiVersion: '2024-01-01'})
 const k = createKeyGenerator()
 const {block, faqAnswer, ctaButtons, academyFooterRow} = createBlockHelpers(k)
 
-const programmeCards = [
+const pathwayCards = [
   {
     title: 'Flex/Online Pathway',
     price: 'From €7,500/year',
@@ -43,28 +42,23 @@ const programmeCards = [
     bestFor:
       'Complex cases, high achievers, competitive university goals, and students needing a bespoke route.',
   },
-  {
-    title: 'Academic Pathway Review',
-    price: '€350',
-    enrolment: 'Credited against enrolment fee if joining within 30 days',
-    description:
-      'For families who need detailed guidance before choosing a programme. Helps clarify the best qualification route, previous schooling, university options, support level, and whether iCollege is the right fit.',
-    bestFor: 'Families who need detailed advice before committing.',
-  },
 ]
 
 const paymentOptions = [
   {
     title: 'Annual Payment',
     body: 'Pay tuition in full before the programme begins and receive a 5% annual payment reduction in tuition fees.',
+    icon: 'coins',
   },
   {
     title: 'Termly Payment',
     body: 'Tuition is paid in three instalments across the academic year.',
+    icon: 'calendar-range',
   },
   {
     title: 'Monthly Instalments',
     body: 'Monthly instalments may be available by agreement. These are a payment plan for the annual programme, not a month-to-month service.',
+    icon: 'calendar-clock',
   },
 ]
 
@@ -141,12 +135,25 @@ const parentFaqs = [
   },
 ]
 
-function buildDataTable(headers, rows, caption) {
+function programmeCard(card) {
+  return {
+    _key: k(),
+    _type: 'featureCard',
+    title: card.title,
+    price: card.price,
+    enrolmentFee: card.enrolment,
+    ...(card.format ? {format: card.format} : {}),
+    description: card.description,
+    bestFor: [card.bestFor],
+    cta: {label: 'Get Started', href: FIT_FORM_URL},
+  }
+}
+
+function buildDataTable(headers, rows) {
   return {
     _key: k(),
     _type: 'dataTable',
-    caption,
-    striped: true,
+    striped: false,
     compact: false,
     headers: headers.map((text) => ({_key: k(), _type: 'tableHeader', text})),
     rows: rows.map((cells) => ({
@@ -164,9 +171,9 @@ const page = {
   slug: {_type: 'slug', current: 'academy/fees'},
   seo: {
     _type: 'seo',
-    metaTitle: 'Academy Fees | iCollege Academy',
+    metaTitle: 'Fees | iCollege Academy | iCollege Life',
     metaDescription:
-      'Clear iCollege Academy fees for flexible academic pathways, with programme options, payment methods, and parent FAQs.',
+      'Clear programme fees for Flex/Online, University, and Premier pathways at iCollege Academy — plus payment options, what is included, and answers for parents.',
     noIndex: false,
   },
   pageBuilder: [
@@ -188,7 +195,10 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}},
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+      },
       columns: [
         {
           _key: 'fees-programmes-col',
@@ -201,17 +211,44 @@ const page = {
               title: 'Programme Fees',
               subtitle:
                 'Three core pathways. Each includes structure, mentoring, and clear academic direction.',
-              style: 'bordered',
-              columns: '2',
-              cards: programmeCards.map((card) => ({
-                _key: k(),
-                _type: 'featureCard',
-                title: card.title,
-                subtitle: `${card.price} · ${card.enrolment}`,
-                description: `${card.description}\n\nBest for: ${card.bestFor}${card.format ? `\n\nFormat: ${card.format}` : ''}`,
-                accentColor: 'primary',
-                accentApplyTo: ['title'],
-              })),
+              titleAlign: 'center',
+              style: 'programmeFees',
+              columns: '3',
+              cards: pathwayCards.map(programmeCard),
+            },
+            {
+              _key: 'fees-programmes-ctas',
+              _type: 'buttonGroup',
+              alignment: 'center',
+              direction: 'horizontal',
+              blockStyles: {
+                _type: 'blockStyles',
+                margin: {top: '64px'},
+                typography: {textAlign: 'center'},
+              },
+              buttons: ctaButtons('fees-programmes-primary', 'fees-programmes-secondary'),
+            },
+            {
+              _key: 'fees-pathway-review',
+              _type: 'featureCardGrid',
+              style: 'programmeReview',
+              columns: '1',
+              blockStyles: {
+                _type: 'blockStyles',
+                margin: {top: '80px'},
+              },
+              cards: [
+                {
+                  _key: k(),
+                  _type: 'featureCard',
+                  title: 'Academic Pathway Review',
+                  price: '€350',
+                  description:
+                    'For families who need detailed guidance before choosing a programme.\n\nHelps clarify the best qualification route, previous schooling, university options, support level, and whether iCollege is the right fit.',
+                  note: 'Credited against the enrolment fee if the student joins within 30 days.',
+                  cta: {label: 'Get Started', href: FIT_FORM_URL},
+                },
+              ],
             },
           ],
         },
@@ -233,15 +270,15 @@ const page = {
               _type: 'featureCardGrid',
               eyebrow: 'Billing',
               title: 'Payment Options',
-              style: 'bordered',
+              titleAlign: 'center',
+              style: 'paymentOption',
               columns: '3',
-              cards: paymentOptions.map((item, idx) => ({
+              cards: paymentOptions.map((item) => ({
                 _key: k(),
                 _type: 'featureCard',
                 title: item.title,
                 description: item.body,
-                accentColor: idx % 2 === 0 ? 'primary' : 'secondary',
-                accentApplyTo: ['title'],
+                icon: {source: 'lucide', lucide: item.icon},
               })),
             },
           ],
@@ -262,6 +299,10 @@ const page = {
               _key: 'fees-annual-table-copy',
               _type: 'richTextBlock',
               eyebrow: 'Annual pay',
+              blockStyles: {
+                _type: 'blockStyles',
+                typography: {textAlign: 'center'},
+              },
               content: [
                 block('Annual Payment Example', 'h2'),
                 block(
@@ -269,7 +310,32 @@ const page = {
                 ),
               ],
             },
-            buildDataTable(annualHeaders, annualRows, 'Annual payment example'),
+            buildDataTable(annualHeaders, annualRows),
+          ],
+        },
+      ],
+    },
+    {
+      _key: 'fees-included-extra-header',
+      _type: 'gridRow',
+      layout: 'full',
+      ...GRID_DEFAULTS,
+      blockStyles: {_type: 'blockStyles', background: {color: MUTED_SURFACE}},
+      columns: [
+        {
+          _key: 'fees-included-extra-header-col',
+          verticalAlign: 'top',
+          content: [
+            {
+              _key: 'fees-included-extra-heading',
+              _type: 'richTextBlock',
+              eyebrow: 'Transparency',
+              blockStyles: {
+                _type: 'blockStyles',
+                typography: {textAlign: 'center'},
+              },
+              content: [block("What's Included, and What May Be Extra", 'h2')],
+            },
           ],
         },
       ],
@@ -287,14 +353,17 @@ const page = {
           verticalAlign: 'top',
           content: [
             {
-              _key: 'fees-included-copy',
-              _type: 'richTextBlock',
-              eyebrow: 'Transparency',
-              blockStyles: CARD_BLOCK_STYLES,
-              content: [
-                block("What's Included, and What May Be Extra", 'h2'),
-                block('Usually included', 'h3'),
-                ...usuallyIncluded.map((item) => block(item, 'normal', 'bullet', 1)),
+              _key: 'fees-included-grid',
+              _type: 'featureCardGrid',
+              style: 'includedList',
+              columns: '1',
+              cards: [
+                {
+                  _key: k(),
+                  _type: 'featureCard',
+                  title: 'Usually included',
+                  includes: usuallyIncluded,
+                },
               ],
             },
           ],
@@ -304,15 +373,18 @@ const page = {
           verticalAlign: 'top',
           content: [
             {
-              _key: 'fees-extra-copy',
-              _type: 'richTextBlock',
-              blockStyles: CARD_BLOCK_STYLES,
-              content: [
-                block('Maybe extra', 'h3'),
-                ...maybeExtra.map((item) => block(item, 'normal', 'bullet', 1)),
-                block(
-                  'Guide: 1-to-1 tuition is usually charged from €60–€90 per hour, depending on subject, level, tutor, and support required.',
-                ),
+              _key: 'fees-extra-grid',
+              _type: 'featureCardGrid',
+              style: 'extraList',
+              columns: '1',
+              cards: [
+                {
+                  _key: k(),
+                  _type: 'featureCard',
+                  title: 'Maybe extra',
+                  includes: maybeExtra,
+                  note: '1-to-1 tuition is usually charged from €60–€90 per hour, depending on subject, level, tutor, and support required.',
+                },
               ],
             },
           ],
@@ -324,6 +396,7 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      containerAlign: 'center',
       columns: [
         {
           _key: 'fees-faq-col',
@@ -332,9 +405,9 @@ const page = {
             {
               _key: 'fees-faq-block',
               _type: 'faqBlock',
+              variation: 'stacked',
               eyebrow: 'Parents',
               title: 'Questions Parents Often Ask',
-              variation: 'default',
               enableSchema: true,
               items: parentFaqs.map((item) => ({
                 _key: k(),
@@ -357,6 +430,7 @@ const page = {
         _type: 'blockStyles',
         background: {color: DARK_SURFACE},
         typography: {textColor: '#ffffff', textAlign: 'center'},
+        borderTop: {width: '1px', style: 'solid', color: 'rgba(255,255,255,0.1)'},
       },
       columns: [
         {
@@ -376,14 +450,9 @@ const page = {
                   emphasis: false,
                   text: "The right programme depends on the student's goals, academic history, independence, and level of support needed.",
                 },
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: true,
-                  text: 'We will explain fees clearly before enrolment.',
-                },
               ],
               buttons: ctaButtons(k(), k()),
+              postButtonText: 'We will explain fees clearly before enrolment.',
               trustItems: ['Flex / online', 'University pathway', 'Premier pathway'],
             },
           ],

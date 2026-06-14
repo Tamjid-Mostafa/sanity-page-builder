@@ -39,6 +39,7 @@ export const faqBlockType = defineType({
         list: [
           {title: 'Default (accordion per item)', value: 'default'},
           {title: 'Grouped (single outer accordion)', value: 'grouped'},
+          {title: 'Stacked (single column)', value: 'stacked'},
         ],
         layout: 'radio',
       },

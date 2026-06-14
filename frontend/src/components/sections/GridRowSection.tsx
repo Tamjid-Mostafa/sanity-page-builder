@@ -82,18 +82,32 @@ export function GridRowSection({ data }: { data: GridRowData }) {
     <BlockStylesWrapper as="section" blockStyles={data.blockStyles} className={cn(paddingClass)}>
       <div className={cn("container mx-auto", paddingXClass)}>
         <div className={cn("w-full", maxWidthClass, contentAlignClass)}>
-          <div className={cn("grid", gridClass, gapClass, reverseClass)}>
+          <div className={cn("grid items-stretch", gridClass, gapClass, reverseClass)}>
             {data.columns?.map((column, colIdx) => {
+              const valignKey = stegaClean(column.verticalAlign) || "top";
+              const isMultiColumn =
+                layout !== "full" && (data.columns?.length ?? 0) > 1;
               const valign =
-                VALIGN_MAP[stegaClean(column.verticalAlign) || "top"] || "";
+                isMultiColumn && valignKey === "top"
+                  ? "h-full"
+                  : VALIGN_MAP[valignKey] || "";
               return (
-                <ScrollReveal key={column._key} delay={colIdx * STAGGER_MS}>
+                <ScrollReveal
+                  key={column._key}
+                  delay={colIdx * STAGGER_MS}
+                  className="h-full"
+                >
                   <BlockStylesWrapper
                     blockStyles={column.blockStyles}
-                    className={cn(valign, "flex flex-col gap-6 md:gap-8")}
+                    className={cn(valign, "flex h-full flex-col gap-6 md:gap-8")}
                   >
                     {column.content?.map((block) => (
-                      <ContentRenderer key={block._key} block={block} />
+                      <div
+                        key={block._key}
+                        className={cn(isMultiColumn && "h-full")}
+                      >
+                        <ContentRenderer block={block} />
+                      </div>
                     ))}
                     {(!column.content || column.content.length === 0) && (
                       <div className="flex min-h-[100px] items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted">

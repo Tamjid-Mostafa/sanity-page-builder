@@ -2,8 +2,12 @@
 
 import { stegaClean } from "next-sanity";
 import { Image } from "next-sanity/image";
+import { ArrowRight, Check } from "lucide-react";
+import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
 import { IconRenderer } from "@/lib/icon-registry";
+import { Button } from "@/components/ui/button";
+import { openCalendly } from "@/lib/site-cta";
 import type { FeatureCardGridData } from "@/types/sanity";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +18,10 @@ type ExtendedFeatureCard = FeatureCardGridData["cards"][number] & {
     crop?: unknown;
   } | null;
   subtitle?: string | null;
+  price?: string | null;
+  enrolmentFee?: string | null;
+  format?: string | null;
+  bulletsLabel?: string | null;
   accentColor?: string | null;
   accentApplyTo?: string[] | null;
   bestFor?: string[] | null;
@@ -50,6 +58,7 @@ const COLS_MAP: Record<string, string> = {
   "2": "sm:grid-cols-2",
   "3": "sm:grid-cols-2 lg:grid-cols-3",
   "4": "sm:grid-cols-2 lg:grid-cols-4",
+  "5": "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5",
 };
 
 function resolveColumns(
@@ -138,7 +147,8 @@ function LightCard({
     >
       <div
         className={cn(
-          "relative h-full rounded-2xl transition-shadow duration-300 flex flex-col overflow-hidden",
+          "relative h-full flex flex-col overflow-hidden transition-shadow duration-300",
+          isCompactCard ? "rounded-xl" : "rounded-2xl",
           cardStyleClass,
         )}
       >
@@ -165,8 +175,8 @@ function LightCard({
         )}
         <div
           className={cn(
-            "flex flex-col gap-3 flex-1",
-            isCompactCard ? "p-6" : "p-5",
+            "flex flex-1 flex-col",
+            isCompactCard ? "gap-2 p-4 pt-1" : "gap-3 p-5",
           )}
         >
           {(card.icon || showStepNumbers) && (
@@ -222,13 +232,15 @@ function LightCard({
               )}
             </div>
           )}
-          <div className="flex-1 space-y-2.5 text-left">
+          <div className={cn("flex-1 text-left", isCompactCard ? "space-y-2" : "space-y-2.5")}>
             {card.title && (
               <h3
                 className={cn(
                   hasCustomTitleSize
                     ? "font-heading font-bold tracking-tight leading-[1.08]"
-                    : "font-heading text-base font-semibold leading-snug text-foreground sm:text-lg",
+                    : isCompactCard
+                      ? "font-heading text-sm font-semibold leading-snug text-foreground"
+                      : "font-heading text-base font-semibold leading-snug text-foreground sm:text-lg",
                   cardTitleAlign === "center"
                     ? "text-center"
                     : cardTitleAlign === "right"
@@ -254,8 +266,10 @@ function LightCard({
             {card.description && (
               <p
                 className={cn(
-                  "text-sm font-light leading-relaxed text-foreground",
-                  accentTargets.has("description") && accentTextClass,
+                  isCompactCard
+                    ? "text-xs font-light leading-relaxed text-muted-foreground sm:text-[13px]"
+                    : "text-sm font-light leading-relaxed text-foreground",
+                  !isCompactCard && accentTargets.has("description") && accentTextClass,
                 )}
               >
                 {card.description}
@@ -619,6 +633,346 @@ function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
   );
 }
 
+function resolveCardHref(card: ExtendedFeatureCard): string | null {
+  const href = card.cta?.href?.trim();
+  return href || null;
+}
+
+function ProgrammeFeesCard({ card }: { card: ExtendedFeatureCard }) {
+  const href = resolveCardHref(card);
+  const bestFor = (card.bestFor || []).filter(Boolean);
+  const bestForText = bestFor.length > 0 ? bestFor.join(" ") : null;
+
+  return (
+    <div className="relative flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-sm transition-shadow duration-300 hover:border-primary/30 hover:shadow-md">
+      {card.title && (
+        <h3 className="font-heading text-xl font-bold text-foreground">{card.title}</h3>
+      )}
+      {card.price && (
+        <p className="mt-5 font-heading text-3xl font-bold tracking-tight text-foreground">
+          {card.price}
+        </p>
+      )}
+      {card.enrolmentFee && (
+        <p className="mt-2 text-sm font-medium text-muted-foreground">{card.enrolmentFee}</p>
+      )}
+      {card.format && (
+        <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-secondary">
+          {card.format}
+        </p>
+      )}
+      {card.description && (
+        <p className="mt-6 flex-1 text-sm leading-relaxed text-foreground">{card.description}</p>
+      )}
+      {bestForText && (
+        <>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            Best for
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{bestForText}</p>
+        </>
+      )}
+      {card.cta?.label && href && (
+        <Button className="mt-8 w-full group" variant="secondary" asChild>
+          <Link href={href} target="_blank" rel="noopener noreferrer">
+            {card.cta.label}
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function ThemePreviewCard({ card }: { card: ExtendedFeatureCard }) {
+  const accent = stegaClean(card.accentColor) || "primary";
+  const accentBarClass = accent === "secondary" ? "bg-secondary" : "bg-primary";
+
+  return (
+    <article className="relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-4 shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-md">
+      <div className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)} aria-hidden />
+      {card.title && (
+        <h3 className="pt-1 font-heading text-sm font-semibold leading-snug text-foreground">
+          {card.title}
+        </h3>
+      )}
+      {card.description && (
+        <p className="mt-2 text-xs font-light leading-relaxed text-muted-foreground sm:text-[13px]">
+          {card.description}
+        </p>
+      )}
+    </article>
+  );
+}
+
+function ExploreLinkCard({
+  card,
+  iconSize,
+}: {
+  card: ExtendedFeatureCard;
+  iconSize: { box: string; icon: string; image: string };
+}) {
+  const href = resolveCardHref(card);
+  const icon = stegaClean(card.icon?.lucide);
+  if (!href) return null;
+
+  return (
+    <Link
+      href={href}
+      className="group flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
+    >
+      {icon && (
+        <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <IconRenderer name={icon} className={iconSize.icon} strokeWidth={1.5} aria-hidden />
+        </span>
+      )}
+      {card.title && (
+        <span className="mt-4 font-heading text-lg font-semibold text-foreground group-hover:text-primary">
+          {card.title}
+        </span>
+      )}
+      {card.description && (
+        <span className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+          {card.description}
+        </span>
+      )}
+      <span className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary">
+        Continue
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+      </span>
+    </Link>
+  );
+}
+
+function ProgrammeThemeCard({
+  card,
+  iconSize,
+}: {
+  card: ExtendedFeatureCard;
+  iconSize: { box: string; icon: string; image: string };
+}) {
+  const accent = stegaClean(card.accentColor) || "primary";
+  const accentBarClass = ACCENT_BAR[accent] ?? "bg-primary";
+  const iconBgClass = ACCENT_ICON_BG[accent] ?? "bg-primary/10";
+  const accentTextClass = ACCENT_TEXT[accent] ?? "text-primary";
+  const icon = stegaClean(card.icon?.lucide);
+  const bullets = (card.includes || []).filter(Boolean);
+  const bestFor = (card.bestFor || []).filter(Boolean);
+  const bestForText = bestFor.join(" ");
+  const bulletsLabel = card.bulletsLabel || "Can include";
+
+  return (
+    <article className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 pt-6 shadow-sm transition-shadow duration-300 hover:shadow-md">
+      <div className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)} aria-hidden />
+      {icon && (
+        <div className={cn("mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl", iconBgClass, accentTextClass)}>
+          <IconRenderer name={icon} className={iconSize.icon} strokeWidth={1.5} />
+        </div>
+      )}
+      {card.title && (
+        <h3 className="font-heading text-lg font-semibold leading-snug text-foreground">{card.title}</h3>
+      )}
+      {card.description && (
+        <p className="mt-2 text-sm font-light leading-relaxed text-muted-foreground">{card.description}</p>
+      )}
+      {bullets.length > 0 && (
+        <>
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-primary/90">
+            {bulletsLabel}
+          </p>
+          <ul className="mt-2 flex-1 space-y-1.5 text-sm font-light leading-relaxed text-foreground">
+            {bullets.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary/60" aria-hidden />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {bestForText && (
+        <p className="mt-4 border-t border-border pt-4 text-xs text-foreground sm:text-sm">
+          <span className="font-semibold text-foreground">Best for:</span> {bestForText}
+        </p>
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="mt-4 w-full font-semibold"
+        onClick={() => openCalendly()}
+      >
+        Enquire about this theme
+      </Button>
+    </article>
+  );
+}
+
+function BookingChipCard({
+  card,
+  iconSize,
+}: {
+  card: ExtendedFeatureCard;
+  iconSize: { box: string; icon: string; image: string };
+}) {
+  const icon = stegaClean(card.icon?.lucide);
+
+  return (
+    <div className="flex h-full flex-col items-center gap-2 rounded-xl border border-border bg-card px-3 py-4 text-center shadow-sm transition-shadow duration-300 hover:shadow-md">
+      {icon && (
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <IconRenderer name={icon} className={iconSize.icon} strokeWidth={1.5} aria-hidden />
+        </span>
+      )}
+      {card.title && (
+        <span className="text-xs font-medium leading-snug text-foreground sm:text-[13px]">
+          {card.title}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ProcessStepCard({
+  card,
+  index,
+}: {
+  card: ExtendedFeatureCard;
+  index: number;
+}) {
+  return (
+    <li className="relative flex flex-col lg:pt-0">
+      <div className="flex gap-4 lg:flex-col lg:items-center lg:gap-3 lg:text-center">
+        <div
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-background font-heading text-lg font-bold text-primary lg:relative lg:z-1"
+          aria-hidden
+        >
+          {String(index + 1)}
+        </div>
+        <div className="min-w-0">
+          {card.title && (
+            <h3 className="mb-2 text-sm font-semibold leading-snug text-foreground">{card.title}</h3>
+          )}
+          {card.description && (
+            <p className="text-sm font-light leading-relaxed text-foreground">{card.description}</p>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+}
+
+function ProgrammeReviewCard({ card }: { card: ExtendedFeatureCard }) {
+  const href = resolveCardHref(card);
+  const descriptionParts = (card.description || "")
+    .split(/\n\n+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const lead = descriptionParts[0];
+  const secondary = descriptionParts.slice(1).join(" ");
+
+  return (
+    <div className="rounded-2xl border border-border bg-muted/30 p-8 shadow-sm sm:p-10">
+      {card.title && (
+        <h3 className="font-heading text-xl font-bold text-foreground">{card.title}</h3>
+      )}
+      {card.price && (
+        <p className="mt-4 font-heading text-3xl font-bold text-foreground">{card.price}</p>
+      )}
+      {lead && (
+        <p className="mt-6 text-sm leading-relaxed text-foreground">{lead}</p>
+      )}
+      {secondary && (
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{secondary}</p>
+      )}
+      {card.note && (
+        <p className="mt-4 text-sm font-medium leading-relaxed text-foreground">{card.note}</p>
+      )}
+      {card.cta?.label && href && (
+        <Button className="mt-8 w-full group" asChild>
+          <Link href={href} target="_blank" rel="noopener noreferrer">
+            {card.cta.label}
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function PaymentOptionCard({
+  card,
+  iconSize,
+}: {
+  card: ExtendedFeatureCard;
+  iconSize: { box: string; icon: string; image: string };
+}) {
+  const icon = stegaClean(card.icon?.lucide);
+
+  return (
+    <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+      {icon && (
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <IconRenderer name={icon} className={iconSize.icon} strokeWidth={1.5} aria-hidden />
+        </div>
+      )}
+      {card.title && (
+        <h3 className="mt-6 font-heading text-lg font-semibold text-foreground">{card.title}</h3>
+      )}
+      {card.description && (
+        <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{card.description}</p>
+      )}
+    </div>
+  );
+}
+
+function IncludedListCard({ card }: { card: ExtendedFeatureCard }) {
+  const items = (card.includes || []).filter(Boolean);
+
+  return (
+    <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-sm sm:p-10">
+      {card.title && (
+        <h3 className="font-heading text-lg font-semibold text-foreground">{card.title}</h3>
+      )}
+      <ul className="mt-6 flex-1 space-y-3">
+        {items.map((item) => (
+          <li key={item} className="flex gap-3 text-sm leading-relaxed text-foreground">
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" strokeWidth={2} aria-hidden />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ExtraListCard({ card }: { card: ExtendedFeatureCard }) {
+  const items = (card.includes || []).filter(Boolean);
+
+  return (
+    <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-sm sm:p-10">
+      {card.title && (
+        <h3 className="font-heading text-lg font-semibold text-foreground">{card.title}</h3>
+      )}
+      <ul className="mt-6 flex-1 space-y-3">
+        {items.map((item) => (
+          <li
+            key={item}
+            className="flex gap-3 border-l-2 border-border pl-3 text-sm leading-relaxed text-muted-foreground"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+      {card.note && (
+        <p className="mt-8 border-t border-border pt-6 text-sm leading-relaxed text-muted-foreground">
+          <span className="font-semibold text-foreground">Guide:</span> {card.note}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function FeatureCardGridContent({
   data,
 }: {
@@ -634,8 +988,26 @@ export function FeatureCardGridContent({
   const isPathwayDetail = style === "pathwayDetail";
   const isCallout = style === "callout";
   const isOnDark = style === "onDark";
+  const isProgrammeFees = style === "programmeFees";
+  const isProgrammeReview = style === "programmeReview";
+  const isPaymentOption = style === "paymentOption";
+  const isIncludedList = style === "includedList";
+  const isExtraList = style === "extraList";
+  const isExploreLink = style === "exploreLink";
+  const isProgrammeTheme = style === "programmeTheme";
+  const isBookingChips = style === "bookingChips";
+  const isProcessStep = style === "processStep";
+  const isThemePreview = style === "themePreview";
+  const isFeesSection =
+    isProgrammeFees || isPaymentOption || isIncludedList || isExtraList;
+  const isGlobalSection =
+    isExploreLink || isProgrammeTheme || isBookingChips || isProcessStep;
   const isCompactGrid =
-    style === "bordered" || style === "highlighted" || style === "audience";
+    style === "bordered" ||
+    style === "highlighted" ||
+    style === "audience" ||
+    isThemePreview ||
+    isFeesSection;
   const titleAlign = stegaClean(d.titleAlign) === "center" ? "center" : "left";
   const showStepNumbers = d.showStepNumbers ?? false;
   const hasHeader = Boolean(d.eyebrow || d.title || d.subtitle);
@@ -704,6 +1076,16 @@ export function FeatureCardGridContent({
   const isPillarHeader = isOnDark && showStepNumbers && cards.length === 5;
 
   const renderCard = (card: ExtendedFeatureCard, index: number) => {
+    if (isProgrammeFees) return <ProgrammeFeesCard card={card} />;
+    if (isProgrammeReview) return <ProgrammeReviewCard card={card} />;
+    if (isPaymentOption) return <PaymentOptionCard card={card} iconSize={iconSize} />;
+    if (isThemePreview) return <ThemePreviewCard card={card} />;
+    if (isExploreLink) return <ExploreLinkCard card={card} iconSize={iconSize} />;
+    if (isProgrammeTheme) return <ProgrammeThemeCard card={card} iconSize={iconSize} />;
+    if (isBookingChips) return <BookingChipCard card={card} iconSize={iconSize} />;
+    if (isProcessStep) return <ProcessStepCard card={card} index={index} />;
+    if (isIncludedList) return <IncludedListCard card={card} />;
+    if (isExtraList) return <ExtraListCard card={card} />;
     if (isPathwayDetail) return <PathwayDetailCard card={card} />;
     if (isCallout) return <CalloutCard card={card} iconSize={iconSize} />;
     if (isOnDark) {
@@ -736,9 +1118,14 @@ export function FeatureCardGridContent({
     <div
       className={cn(
         isCompactGrid || isPathwayDetail || isPillarHeader
-          ? "mb-10 max-w-3xl"
+          ? cn(
+              "mb-10 max-w-3xl",
+              (isFeesSection || isGlobalSection) && "mx-auto",
+              isExploreLink && "max-w-2xl mx-auto",
+            )
           : "mb-8",
         titleAlign === "center" ? "text-center" : "text-left",
+        (isFeesSection || isExploreLink) && titleAlign === "center" && "max-w-2xl mx-auto",
       )}
     >
       {d.eyebrow && (
@@ -754,7 +1141,11 @@ export function FeatureCardGridContent({
       {d.title && (
         <h2
           className={cn(
-            "font-heading text-3xl font-bold leading-[1.08] tracking-tight sm:text-4xl md:text-[2.625rem]",
+            "font-heading font-bold leading-[1.08] tracking-tight",
+            isExploreLink
+              ? "text-2xl sm:text-3xl"
+              : "text-3xl sm:text-4xl md:text-[2.625rem]",
+            isCompactGrid && !subtitleBody && "max-w-2xl",
             subtitleBody && !isOnDark && "mb-4",
             (isOnDark || isPathwayDetail) && "text-background",
           )}
@@ -774,6 +1165,9 @@ export function FeatureCardGridContent({
             !d.title && "mt-0",
             d.title && !isOnDark && !subtitleLead && "mt-0",
             d.title && (isOnDark || subtitleLead) && "mt-2",
+            d.title && isFeesSection && !isOnDark && "mt-4 text-muted-foreground",
+            d.title && isBookingChips && !isOnDark && "mt-4 text-muted-foreground",
+            isExploreLink && !isOnDark && "mt-3 text-muted-foreground",
             titleAlign === "center" && "mx-auto",
             isOnDark || isPathwayDetail
               ? "text-background/90"
@@ -787,7 +1181,9 @@ export function FeatureCardGridContent({
   );
 
   const isSingleStandalone =
-    cards.length === 1 && !hasHeader && (isCallout || columns === "1");
+    cards.length === 1 &&
+    !hasHeader &&
+    (isCallout || isProgrammeReview || columns === "1");
 
   if (isPillarLayout) {
     const topCards = cards.slice(0, 3);
@@ -816,11 +1212,34 @@ export function FeatureCardGridContent({
     );
   }
 
+  if (isProcessStep) {
+    return (
+      <div>
+        {headerBlock}
+        <div className="relative">
+          <div
+            className="pointer-events-none hidden h-px bg-border lg:absolute lg:left-[6%] lg:right-[6%] lg:top-8"
+            aria-hidden
+          />
+          <ol className="relative grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-8 lg:grid-cols-4 lg:gap-6">
+            {cards.map((card, index) => renderCard(card, index))}
+          </ol>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className={cn((isIncludedList || isExtraList || isExploreLink) && "h-full")}>
       {headerBlock}
       {isSingleStandalone ? (
-        renderCard(cards[0], 0)
+        isProgrammeReview ? (
+          <div className="mx-auto max-w-lg">{renderCard(cards[0], 0)}</div>
+        ) : (
+          <div className={cn((isIncludedList || isExtraList) && "h-full")}>
+            {renderCard(cards[0], 0)}
+          </div>
+        )
       ) : (
         <div
           className={cn(
@@ -829,6 +1248,20 @@ export function FeatureCardGridContent({
               ? cn("gap-5", colClass)
               : isCallout
                 ? cn("gap-5", colClass)
+                : isProgrammeFees
+                  ? cn("mx-auto max-w-6xl gap-8", colClass)
+                : isPaymentOption
+                  ? cn("mx-auto max-w-5xl gap-8 md:gap-8", colClass)
+                : isIncludedList || isExtraList
+                  ? cn("mx-auto max-w-5xl gap-8 lg:grid-cols-2 lg:gap-12", colClass)
+                : isExploreLink
+                  ? cn("mx-auto max-w-5xl gap-5 md:grid-cols-2", colClass)
+                : isThemePreview
+                  ? "gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+                : isProgrammeTheme
+                  ? cn("gap-6 sm:grid-cols-2 xl:grid-cols-3", colClass)
+                : isBookingChips
+                  ? "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
                 : isOnDark
                   ? cn(
                       "gap-4 md:gap-5",
@@ -841,7 +1274,13 @@ export function FeatureCardGridContent({
                     ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
                     : isAudience
                       ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7"
-                      : `gap-4 ${colClass}`,
+                      : isCompactGrid
+                        ? cn(
+                            "gap-4 sm:gap-4 md:gap-5",
+                            colClass,
+                            columns === "5" && "xl:gap-5",
+                          )
+                        : `gap-4 ${colClass}`,
           )}
         >
           {cards.map((card, index) => (

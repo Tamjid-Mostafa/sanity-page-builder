@@ -1,7 +1,10 @@
 'use client'
 
 import {stegaClean} from 'next-sanity'
+import {ArrowRight} from 'lucide-react'
 import {openCalendly} from '@/lib/site-cta'
+import {Button} from '@/components/ui/button'
+import {cn} from '@/lib/utils'
 import type {ButtonGroupData} from '@/types/sanity'
 
 interface LinkInternal {
@@ -63,13 +66,51 @@ export function ButtonGroupContent({data}: {data: ButtonGroupData}) {
   const justifyClass = ALIGN_MAP[cleanAlignment] || ALIGN_MAP.left
 
   return (
-    <div className={`flex ${flexDirection} ${justifyClass} gap-3`}>
+    <div className={cn('flex', flexDirection, justifyClass, 'items-center gap-3')}>
       {buttons.map((button) => {
         if (!button.label) return null
 
         const cleanAction = stegaClean((button as {action?: string}).action) || 'link'
+        const cleanVariant = stegaClean((button as {variant?: string}).variant) || 'primary'
+        const label = stegaClean(button.label) || button.label
         const {href, isExternal} = resolveHref((button.link || []) as unknown as LinkItem[])
         const hasCustomColors = Boolean(button.color || button.textColor)
+        const isOutline = cleanVariant === 'outline' && !hasCustomColors
+
+        if (cleanAction === 'calendly') {
+          return (
+            <Button
+              key={button._key}
+              size="lg"
+              onClick={() => openCalendly()}
+              className="group cursor-pointer rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground shadow-md transition-all duration-300 hover:bg-primary/90 hover:shadow-lg"
+            >
+              {label}
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Button>
+          )
+        }
+
+        if (isOutline) {
+          return (
+            <Button
+              key={button._key}
+              size="lg"
+              variant="ghost"
+              asChild
+              className="group rounded-lg border border-border bg-background px-8 py-3 text-sm font-semibold text-foreground transition-all duration-300 hover:bg-muted"
+            >
+              <a
+                href={href}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
+              >
+                {label}
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </a>
+            </Button>
+          )
+        }
 
         const inlineStyle: React.CSSProperties = hasCustomColors
           ? {
@@ -78,36 +119,16 @@ export function ButtonGroupContent({data}: {data: ButtonGroupData}) {
             }
           : {}
 
-        const colorClasses = hasCustomColors
-          ? 'hover:opacity-90'
-          : 'bg-primary text-primary-foreground hover:bg-primary/90'
-
-        const baseClasses = `inline-block rounded-lg px-6 py-3 text-center font-medium transition-colors duration-200 ${colorClasses}`
-
-        if (cleanAction === 'calendly') {
-          return (
-            <button
-              key={button._key}
-              type="button"
-              onClick={() => openCalendly()}
-              className={`${baseClasses} cursor-pointer`}
-              style={inlineStyle}
-            >
-              {button.label}
-            </button>
-          )
-        }
-
         return (
           <a
             key={button._key}
             href={href}
             target={isExternal ? '_blank' : undefined}
             rel={isExternal ? 'noopener noreferrer' : undefined}
-            className={baseClasses}
+            className="inline-flex items-center rounded-lg bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             style={inlineStyle}
           >
-            {button.label}
+            {label}
           </a>
         )
       })}

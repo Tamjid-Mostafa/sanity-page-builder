@@ -95,8 +95,9 @@ export function OutlineCtaButton({
   newTab?: boolean;
 }) {
   const isRoundedLg = className?.includes("rounded-lg");
+  const isOnDark = tone === "on-dark";
   const darkClass =
-    "border-white/20 bg-white/5 text-background hover:bg-white/10 hover:text-background hover:border-white/30";
+    "border border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white hover:border-white/30";
   const lightClass =
     "border-border text-foreground hover:bg-muted";
 
@@ -109,14 +110,14 @@ export function OutlineCtaButton({
     >
       <Button
         size={size}
-        variant="outline"
+        variant={isOnDark ? "ghost" : "outline"}
         asChild
         className={cn(
           "font-semibold transition-all duration-300 group",
           isRoundedLg ? "rounded-lg" : "rounded-xl",
           size === "lg" ? "h-14 px-8 text-sm" : "px-8 py-3 text-sm",
           !isRoundedLg && size !== "lg" && "px-6 py-2.5",
-          tone === "on-dark" ? darkClass : lightClass,
+          isOnDark ? darkClass : lightClass,
         )}
       >
         <a

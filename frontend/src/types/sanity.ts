@@ -66,6 +66,7 @@ export type TestimonialCarouselData = Extract<ContentBlock, {_type: 'testimonial
 export type ImageGalleryData = Extract<ContentBlock, {_type: 'imageGallery'}>
 export type TocBlockData = Extract<ContentBlock, {_type: 'tocBlock'}>
 export type TagPillsData = Extract<ContentBlock, {_type: 'tagPills'}>
+export type CtaSectionData = Extract<ContentBlock, {_type: 'ctaSection'}>
 export type PartnersNetworkData = {
   _type: 'partnersNetwork'
   _key?: string
@@ -89,36 +90,6 @@ export type PartnersNetworkData = {
   gridColumns?: number | null
   grayscale?: boolean | null
   size?: 'small' | 'medium' | 'large' | null
-  blockStyles?: Record<string, unknown>
-}
-export type CtaSectionData = {
-  _type: 'ctaSection'
-  _key?: string
-  eyebrow?: string
-  heading?: string
-  subtitle?: string
-  size?: 'large' | 'medium' | string | null
-  bodyParagraphs?: Array<{
-    _key?: string
-    text?: string
-    emphasis?: boolean
-  }>
-  buttons?: Array<{
-    _key?: string
-    _type: 'callToAction'
-    label?: string
-    action?: string
-    link?: Array<{_type: string; [key: string]: unknown}>
-    color?: string
-    textColor?: string
-    hoverColor?: string
-    variant?: string
-  }>
-  trustItems?: string[]
-  prospectusLink?: {
-    label?: string
-    link?: Array<{_type: string; [key: string]: unknown}>
-  }
   blockStyles?: Record<string, unknown>
 }
 

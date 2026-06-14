@@ -1,9 +1,15 @@
 import {getCliClient} from 'sanity/cli'
-import {GRID_DEFAULTS, createKeyGenerator, createBlockHelpers} from './seed-helpers.mjs'
+import {
+  GRID_DEFAULTS,
+  GLOBAL_CTA_ROW_STYLES,
+  GLOBAL_HERO_GRADIENT,
+  createKeyGenerator,
+  createBlockHelpers,
+} from './seed-helpers.mjs'
 
 const client = getCliClient({apiVersion: '2024-01-01'})
 const k = createKeyGenerator()
-const {block, faqAnswer} = createBlockHelpers(k)
+const {block, faqAnswer, globalCtaBlock, globalFooterRow} = createBlockHelpers(k)
 
 const programmeThemes = [
   {
@@ -20,6 +26,7 @@ const programmeThemes = [
     ],
     bestFor: '18+ students, gap-year students, young adults, and pre-university groups.',
     accentColor: 'primary',
+    lucide: 'compass',
   },
   {
     title: 'Entrepreneurship & Future Skills',
@@ -37,6 +44,7 @@ const programmeThemes = [
     bestFor:
       'School groups, university groups, gap-year students, and young people interested in business or creativity.',
     accentColor: 'secondary',
+    lucide: 'lightbulb',
   },
   {
     title: 'Leadership & Communication',
@@ -52,6 +60,7 @@ const programmeThemes = [
     ],
     bestFor: 'Schools, universities, sports academies, and youth organisations.',
     accentColor: 'primary',
+    lucide: 'mic-2',
   },
   {
     title: 'Barcelona Learning Experience',
@@ -68,6 +77,7 @@ const programmeThemes = [
     bestFor:
       'Visiting school groups, university groups, international partners, and educational travel organisations.',
     accentColor: 'secondary',
+    lucide: 'map-pinned',
   },
   {
     title: 'Custom Partner Programme',
@@ -87,6 +97,7 @@ const programmeThemes = [
     ],
     bestFor: 'Partners who want a bespoke Barcelona-based learning experience.',
     accentColor: 'primary',
+    lucide: 'sliders-horizontal',
   },
 ]
 
@@ -124,15 +135,15 @@ const includesCards = [
 ]
 
 const bookers = [
-  'School groups',
-  'University groups',
-  'Gap-year students',
-  '18+ students and young adults',
-  'Sports academies',
-  'Education agencies',
-  'Residences and student accommodation partners',
-  'International organisations',
-  'Families seeking a short, structured experience',
+  {title: 'School groups', lucide: 'users'},
+  {title: 'University groups', lucide: 'graduation-cap'},
+  {title: 'Gap-year students', lucide: 'plane'},
+  {title: '18+ students and young adults', lucide: 'user-check'},
+  {title: 'Sports academies', lucide: 'dumbbell'},
+  {title: 'Education agencies', lucide: 'handshake'},
+  {title: 'Residences and student accommodation partners', lucide: 'building-2'},
+  {title: 'International organisations', lucide: 'globe-2'},
+  {title: 'Families seeking a short, structured experience', lucide: 'heart-handshake'},
 ]
 
 const programmeFaqs = [
@@ -166,12 +177,13 @@ const programmeFaqs = [
   },
 ]
 
-function buildDataTable(headers, rows, caption) {
+function buildDataTable(headers, rows, {caption, variant = 'default'} = {}) {
   return {
     _key: k(),
     _type: 'dataTable',
+    variant,
     caption,
-    striped: true,
+    striped: variant !== 'formats',
     compact: false,
     headers: headers.map((text) => ({_key: k(), _type: 'tableHeader', text})),
     rows: rows.map((cells) => ({
@@ -189,24 +201,17 @@ const page = {
   slug: {_type: 'slug', current: 'global-experiences/programmes'},
   seo: {
     _type: 'seo',
-    metaTitle: 'Global Programmes | iCollege Global',
-    metaDescription: 'Short learning experiences with purpose in Barcelona for groups and older students.',
+    metaTitle: 'Global Programmes | iCollege Global | iCollege Life',
+    metaDescription:
+      'Barcelona-based short learning experiences for schools, universities, gap-year students, and partners — life design, entrepreneurship, leadership, culture, and structured reflection.',
     noIndex: false,
   },
   pageBuilder: [
     {
       _key: 'global-programmes-hero',
       _type: 'heroSection',
-      layout: 'fullWidth',
-      alignment: 'left',
-      verticalAlign: 'end',
-      decorativeBackground: true,
-      backgroundType: 'gradient',
-      gradientFrom: '#0a1628',
-      gradientMid: '#0c2340',
-      gradientTo: '#0f1f35',
-      gradientDirection: 'to bottom right',
-      minHeight: '78vh',
+      ...GLOBAL_HERO_GRADIENT,
+      minHeight: '82vh',
       badge: 'Global Programmes',
       heading: 'Short Learning Experiences With Purpose',
       subtitle:
@@ -246,15 +251,19 @@ const page = {
               _type: 'featureCardGrid',
               eyebrow: 'Explore',
               title: 'Programme Themes',
-              style: 'pathway',
+              style: 'programmeTheme',
               columns: '3',
               cards: programmeThemes.map((theme) => ({
                 _key: k(),
                 _type: 'featureCard',
                 title: theme.title,
-                description: `${theme.summary}\n\n${theme.bulletsLabel}:\n${theme.bullets.join('\n')}\n\nBest for: ${theme.bestFor}`,
+                description: theme.summary,
+                bulletsLabel: theme.bulletsLabel,
+                includes: theme.bullets,
+                bestFor: [theme.bestFor],
                 accentColor: theme.accentColor,
-                accentApplyTo: ['title'],
+                accentApplyTo: ['icon', 'iconBg'],
+                icon: {source: 'lucide', lucide: theme.lucide},
               })),
             },
           ],
@@ -266,7 +275,12 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
+      paddingY: 'lg',
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+        background: {color: '#f7f7f7'},
+      },
       columns: [
         {
           _key: 'global-programmes-formats-col',
@@ -278,7 +292,7 @@ const page = {
               eyebrow: 'Formats',
               content: [block('Programme Formats', 'h2')],
             },
-            buildDataTable(formatHeaders, formatRows, 'Programme Formats'),
+            buildDataTable(formatHeaders, formatRows, {variant: 'formats'}),
           ],
         },
       ],
@@ -288,6 +302,7 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'lg',
       columns: [
         {
           _key: 'global-programmes-includes-col',
@@ -298,7 +313,7 @@ const page = {
               _type: 'featureCardGrid',
               eyebrow: 'Foundations',
               title: 'What Every Programme Includes',
-              style: 'bordered',
+              style: 'foundations',
               columns: '3',
               cards: includesCards.map((card) => ({
                 _key: k(),
@@ -317,34 +332,32 @@ const page = {
     {
       _key: 'global-programmes-bookers',
       _type: 'gridRow',
-      layout: '50-50',
+      layout: 'full',
       ...GRID_DEFAULTS,
-      gap: 'xl',
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+        background: {color: '#f7f7f7'},
+      },
       columns: [
         {
-          _key: 'global-programmes-bookers-left',
+          _key: 'global-programmes-bookers-col',
           verticalAlign: 'top',
           content: [
             {
-              _key: 'global-programmes-bookers-copy',
-              _type: 'richTextBlock',
+              _key: 'global-programmes-bookers-grid',
+              _type: 'featureCardGrid',
               eyebrow: 'Bookings',
-              content: [
-                block('Who Can Book?', 'h2'),
-                block('iCollege Global can work with:'),
-              ],
-            },
-          ],
-        },
-        {
-          _key: 'global-programmes-bookers-right',
-          verticalAlign: 'top',
-          content: [
-            {
-              _key: 'global-programmes-bookers-list',
-              _type: 'richTextBlock',
-              content: bookers.map((item) => block(item, 'normal', 'bullet', 1)),
+              title: 'Who Can Book?',
+              subtitle: 'iCollege Global can work with:',
+              style: 'bookingChips',
+              columns: '5',
+              cards: bookers.map((item) => ({
+                _key: k(),
+                _type: 'featureCard',
+                title: item.title,
+                icon: {source: 'lucide', lucide: item.lucide},
+              })),
             },
           ],
         },
@@ -383,42 +396,23 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'none',
       containerAlign: 'center',
-      blockStyles: {
-        _type: 'blockStyles',
-        background: {color: '#0f172a'},
-        typography: {textColor: '#ffffff', textAlign: 'center'},
-      },
+      blockStyles: GLOBAL_CTA_ROW_STYLES,
       columns: [
         {
           _key: 'global-programmes-final-cta-col',
           verticalAlign: 'top',
           content: [
-            {
-              _key: 'global-programmes-final-cta-block',
-              _type: 'ctaSection',
+            globalCtaBlock({
+              key: 'global-programmes-final-cta-block',
               heading: 'Build a Programme With Us',
-              size: 'medium',
-              bodyParagraphs: [
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: false,
-                  text: 'Tell us who the programme is for, what you want students to gain, and when you are thinking of coming to Barcelona.',
-                },
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: false,
-                  text: 'We can help shape a programme that is meaningful, realistic, and worth doing.',
-                },
-                {
-                  _key: k(),
-                  _type: 'ctaBodyParagraph',
-                  emphasis: true,
-                  text: 'Programmes can be adapted around age, dates, group size, goals, and budget.',
-                },
+              paragraphs: [
+                'Tell us who the programme is for, what you want students to gain, and when you are thinking of coming to Barcelona.',
+                'We can help shape a programme that is meaningful, realistic, and worth doing.',
               ],
+              postButtonText:
+                'Programmes can be adapted around age, dates, group size, goals, and budget.',
               buttons: [
                 {
                   _key: k(),
@@ -436,11 +430,12 @@ const page = {
                   link: [{_key: k(), _type: 'pageSlug', slug: 'global-experiences/for-schools-and-groups'}],
                 },
               ],
-            },
+            }),
           ],
         },
       ],
     },
+    globalFooterRow('global-programmes'),
   ],
 }
 

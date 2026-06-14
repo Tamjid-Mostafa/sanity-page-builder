@@ -64,6 +64,26 @@ export const HERO_GRADIENT = {
   minHeight: '78vh',
 }
 
+export const GLOBAL_HERO_GRADIENT = {
+  layout: 'fullWidth',
+  alignment: 'left',
+  verticalAlign: 'end',
+  decorativeBackground: true,
+  backgroundType: 'gradient',
+  gradientFrom: '#0a1628',
+  gradientMid: '#0c2340',
+  gradientTo: '#0f1f35',
+  gradientDirection: 'to bottom right',
+}
+
+export const GLOBAL_CTA_ROW_STYLES = {
+  _type: 'blockStyles',
+  typography: {textAlign: 'center'},
+}
+
+/** Shared CTA row wrapper — background/blobs render in CtaSectionContent. */
+export const CTA_ROW_STYLES = GLOBAL_CTA_ROW_STYLES
+
 export function createKeyGenerator() {
   return () => Math.random().toString(36).slice(2, 11)
 }
@@ -106,6 +126,53 @@ export function createBlockHelpers(k) {
     },
   ]
 
+  const globalCtaBlock = ({
+    key,
+    heading,
+    paragraphs,
+    postButtonText,
+    buttons,
+  }) => ({
+    _key: key,
+    _type: 'ctaSection',
+    heading,
+    size: 'medium',
+    bodyParagraphs: paragraphs.map((text) => ({
+      _key: k(),
+      _type: 'ctaBodyParagraph',
+      text,
+      emphasis: false,
+    })),
+    postButtonText,
+    buttons,
+  })
+
+  const globalFooterRow = (pageKey) => ({
+    _key: `${pageKey}-footer-line`,
+    _type: 'gridRow',
+    layout: 'full',
+    maxWidth: 'default',
+    containerAlign: 'center',
+    paddingY: 'compact',
+    blockStyles: {
+      _type: 'blockStyles',
+      borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+    },
+    columns: [
+      {
+        _key: `${pageKey}-footer-line-col`,
+        verticalAlign: 'top',
+        content: [
+          {
+            _key: `${pageKey}-footer-line-block`,
+            _type: 'microFooterLine',
+            variant: 'global',
+          },
+        ],
+      },
+    ],
+  })
+
   const academyFooterRow = (pageKey) => ({
     _key: `${pageKey}-footer-line`,
     _type: 'gridRow',
@@ -116,7 +183,6 @@ export function createBlockHelpers(k) {
     blockStyles: {
       _type: 'blockStyles',
       borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
-      typography: {textAlign: 'center'},
     },
     columns: [
       {
@@ -124,18 +190,14 @@ export function createBlockHelpers(k) {
         verticalAlign: 'top',
         content: [
           {
-            _key: `${pageKey}-footer-line-copy`,
-            _type: 'richTextBlock',
-            content: [
-              block(
-                'iCollege Academy is part of iCollege Life — helping young people design smarter lives, academically and beyond.',
-              ),
-            ],
+            _key: `${pageKey}-footer-line-block`,
+            _type: 'microFooterLine',
+            variant: 'academy',
           },
         ],
       },
     ],
   })
 
-  return {span, block, faqAnswer, ctaButtons, academyFooterRow}
+  return {span, block, faqAnswer, ctaButtons, globalCtaBlock, globalFooterRow, academyFooterRow}
 }

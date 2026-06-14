@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import {ChevronDown} from 'lucide-react'
 import {PortableTextRenderer} from '../../shared/PortableTextRenderer'
 import {cn} from '@/lib/utils'
 import {easing} from '@/lib/animations'
@@ -216,6 +217,11 @@ type GroupedFaqData = FaqBlockData & {
   groups?: FaqGroup[]
 }
 
+type StackedFaqData = FaqBlockData & {
+  variation?: string
+  eyebrow?: string
+}
+
 function GroupedFaq({data}: {data: GroupedFaqData}) {
   const groups: FaqGroup[] = (data.groups as FaqGroup[] | undefined) ?? []
   const allItems = groups.flatMap((g) => g.items ?? [])
@@ -330,15 +336,78 @@ function GroupedFaq({data}: {data: GroupedFaqData}) {
   )
 }
 
+// --- Stacked variation (fees page style) ------------------------------------
+
+function StackedFaq({data}: {data: FaqBlockData}) {
+  const items = data.items || []
+  const enableSchema = data.enableSchema ?? true
+  const hasHeader = Boolean(data.eyebrow || data.title)
+
+  if (items.length === 0) return null
+
+  return (
+    <div>
+      {enableSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{__html: JSON.stringify(buildJsonLd(items))}}
+        />
+      )}
+
+      {hasHeader && (
+        <div className="text-center">
+          {data.eyebrow && (
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+              {data.eyebrow}
+            </p>
+          )}
+          {data.title && (
+            <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-[2.625rem] md:leading-[1.08]">
+              {data.title}
+            </h2>
+          )}
+        </div>
+      )}
+
+      <div className="mt-12 divide-y divide-border rounded-2xl border border-border bg-card">
+        {items.map((item) => (
+          <details key={item._key} className="group px-5 py-4 sm:px-6 sm:py-5">
+            <summary className="cursor-pointer list-none font-medium text-foreground outline-none marker:content-none [&::-webkit-details-marker]:hidden">
+              <span className="flex items-start justify-between gap-3 text-left sm:text-[1.05rem]">
+                {item.question || 'Untitled'}
+                <ChevronDown
+                  className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+                  aria-hidden
+                />
+              </span>
+            </summary>
+            <div className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {item.answer && item.answer.length > 0 ? (
+                <PortableTextRenderer value={item.answer} />
+              ) : (
+                <p>No answer provided.</p>
+              )}
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // --- Main export -------------------------------------------------------------
 
 export function FaqBlockContent({data}: {data: FaqBlockData}) {
   const enableSchema = data.enableSchema ?? true
   const items = data.items || []
-  const variation = stegaClean((data as GroupedFaqData).variation) || 'default'
+  const variation = stegaClean((data as {variation?: string | null}).variation) || 'default'
 
   if (variation === 'grouped') {
     return <GroupedFaq data={data as GroupedFaqData} />
+  }
+
+  if (variation === 'stacked') {
+    return <StackedFaq data={data as StackedFaqData} />
   }
 
   return (
