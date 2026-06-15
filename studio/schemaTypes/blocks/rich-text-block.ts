@@ -32,6 +32,19 @@ export const richTextBlockType = defineType({
       },
     }),
     defineField({
+      name: 'headingScale',
+      title: 'Heading Scale',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Default', value: 'default'},
+          {title: 'Compact', value: 'compact'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'default',
+    }),
+    defineField({
       name: 'content',
       title: 'Content',
       type: 'blockContent',

@@ -336,6 +336,133 @@ function GroupedFaq({data}: {data: GroupedFaqData}) {
   )
 }
 
+// --- Cards variation (global partner FAQ style) ------------------------------
+
+function CardsFaqRow({
+  item,
+  index,
+}: {
+  item: FaqItem
+  index: number
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <motion.div
+      initial={{opacity: 0, y: 14}}
+      whileInView={{opacity: 1, y: 0}}
+      viewport={{once: true, margin: '-10%'}}
+      transition={{
+        delay: (index % 4) * 0.06,
+        duration: 0.5,
+        ease: easing.apple,
+      }}
+    >
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-card transition-shadow duration-300 hover:shadow-sm">
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-primary" aria-hidden />
+        <button
+          type="button"
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          className="flex w-full items-start justify-between gap-4 px-5 py-5 text-left"
+        >
+          <span
+            className={cn(
+              'text-sm font-semibold leading-snug transition-colors duration-200 sm:text-[15px]',
+              open ? 'text-primary' : 'text-foreground',
+            )}
+          >
+            {item.question || 'Untitled'}
+          </span>
+          <span
+            className={cn(
+              'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-sm font-light transition-all duration-200',
+              open
+                ? 'border-primary bg-primary/8 text-primary'
+                : 'border-border text-foreground',
+            )}
+            aria-hidden
+          >
+            {open ? '−' : '+'}
+          </span>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              initial={{height: 0, opacity: 0}}
+              animate={{height: 'auto', opacity: 1}}
+              exit={{height: 0, opacity: 0}}
+              transition={{duration: 0.28, ease: easing.smooth}}
+              className="overflow-hidden"
+            >
+              <div className="px-5 pb-5">
+                {item.answer && item.answer.length > 0 ? (
+                  <div className="text-sm font-light leading-relaxed text-foreground">
+                    <PortableTextRenderer value={item.answer} />
+                  </div>
+                ) : (
+                  <p className="text-sm font-light leading-relaxed text-foreground">
+                    No answer provided.
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  )
+}
+
+function CardsFaq({data}: {data: FaqBlockData}) {
+  const items = data.items || []
+  const eyebrow = data.eyebrow
+
+  if (items.length === 0) return null
+
+  const mid = Math.ceil(items.length / 2)
+  const left = items.slice(0, mid)
+  const right = items.slice(mid)
+
+  return (
+    <div>
+      {(eyebrow || data.title || data.subtitle) && (
+        <div className="mb-8">
+          {eyebrow && (
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+              {eyebrow}
+            </p>
+          )}
+          {data.title && (
+            <h2 className="max-w-2xl font-heading text-3xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-4xl md:text-[2.625rem]">
+              {data.title}
+            </h2>
+          )}
+          {data.subtitle && (
+            <p className="mt-4 max-w-2xl text-sm font-light leading-relaxed text-foreground sm:text-base">
+              {data.subtitle}
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="grid items-start gap-3 md:grid-cols-2 md:gap-4">
+        <div className="flex flex-col gap-3 md:gap-4">
+          {left.map((item, index) => (
+            <CardsFaqRow key={item._key} item={item} index={index} />
+          ))}
+        </div>
+        <div className="flex flex-col gap-3 md:gap-4">
+          {right.map((item, index) => (
+            <CardsFaqRow key={item._key} item={item} index={index + left.length} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // --- Stacked variation (fees page style) ------------------------------------
 
 function StackedFaq({data}: {data: FaqBlockData}) {
@@ -408,6 +535,20 @@ export function FaqBlockContent({data}: {data: FaqBlockData}) {
 
   if (variation === 'stacked') {
     return <StackedFaq data={data as StackedFaqData} />
+  }
+
+  if (variation === 'cards') {
+    return (
+      <div>
+        {enableSchema && items.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{__html: JSON.stringify(buildJsonLd(items))}}
+          />
+        )}
+        <CardsFaq data={data} />
+      </div>
+    )
   }
 
   return (

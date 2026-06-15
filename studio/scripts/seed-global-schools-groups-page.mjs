@@ -216,7 +216,7 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'}},
+      paddingY: 'lg',
       columns: [
         {
           _key: 'schools-groups-more-col',
@@ -252,7 +252,12 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
-      blockStyles: {_type: 'blockStyles', background: {color: '#f7f7f7'}},
+      paddingY: 'lg',
+      blockStyles: {
+        _type: 'blockStyles',
+        borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+        background: {color: '#f7f7f7'},
+      },
       columns: [
         {
           _key: 'schools-groups-who-col',
@@ -264,7 +269,7 @@ const page = {
               eyebrow: 'Partner organisations',
               title: 'Who We Work With',
               style: 'audience',
-              columns: '3',
+              columns: '5',
               cards: whoWeWorkWith.map((item) => ({
                 _key: k(),
                 _type: 'featureCard',
@@ -284,6 +289,7 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'lg',
       columns: [
         {
           _key: 'schools-groups-build-col',
@@ -297,13 +303,9 @@ const page = {
             },
             buildDataTable(formatHeaders, formatRows, {variant: 'formats'}),
             {
-              _key: 'schools-groups-themes-label',
-              _type: 'richTextBlock',
-              content: [block('Possible themes include:')],
-            },
-            {
               _key: 'schools-groups-themes',
               _type: 'tagPills',
+              label: 'Possible themes include:',
               tone: 'outline',
               items: possibleThemes,
             },
@@ -316,10 +318,11 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'lg',
       blockStyles: {
         _type: 'blockStyles',
         borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
-        background: {color: '#f7f7f7'},
+        background: {color: '#f5f5f5'},
       },
       columns: [
         {
@@ -349,6 +352,7 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'lg',
       columns: [
         {
           _key: 'schools-groups-why-col',
@@ -357,6 +361,7 @@ const page = {
             {
               _key: 'schools-groups-why-copy',
               _type: 'richTextBlock',
+              headingScale: 'compact',
               content: [
                 block('Why Barcelona Works', 'h2'),
                 block(
@@ -413,6 +418,7 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'lg',
       columns: [
         {
           _key: 'schools-groups-faq-col',
@@ -425,7 +431,7 @@ const page = {
               title: 'Questions Partners Often Ask',
               subtitle:
                 'If you need something more specific, start with a short call — we can walk through fit, timing, and outcomes together.',
-              variation: 'default',
+              variation: 'cards',
               enableSchema: true,
               items: schoolsFaqs.map((item) => ({
                 _key: k(),

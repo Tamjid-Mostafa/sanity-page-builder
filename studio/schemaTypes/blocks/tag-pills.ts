@@ -15,6 +15,12 @@ export const tagPillsType = defineType({
       of: [defineArrayMember({type: 'string'})],
     }),
     defineField({
+      name: 'label',
+      title: 'Label',
+      type: 'string',
+      description: 'Optional heading above the pills.',
+    }),
+    defineField({
       name: 'tone',
       title: 'Tone',
       type: 'string',

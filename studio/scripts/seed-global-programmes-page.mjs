@@ -368,6 +368,7 @@ const page = {
       _type: 'gridRow',
       layout: 'full',
       ...GRID_DEFAULTS,
+      paddingY: 'lg',
       columns: [
         {
           _key: 'global-programmes-faq-col',

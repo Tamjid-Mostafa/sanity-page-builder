@@ -32,6 +32,7 @@ const EYEBROW_TONE: Record<string, string> = {
 type ExtendedRichTextBlockData = RichTextBlockData & {
   leadingIcon?: string | null
   eyebrowTone?: string | null
+  headingScale?: string | null
 }
 
 export function RichTextContent({data}: {data: RichTextBlockData}) {
@@ -39,6 +40,8 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
   const eyebrow = data.eyebrow
   const leadingIcon = stegaClean(d.leadingIcon)
   const eyebrowTone = stegaClean(d.eyebrowTone) || 'primary'
+  const headingScale = stegaClean(d.headingScale) || 'default'
+  const isCompactHeading = headingScale === 'compact'
   const blockStyles = stegaClean(data.blockStyles) as {
     background?: {color?: string | null}
     typography?: {fontWeight?: string | null; textColor?: string | null}
@@ -60,6 +63,8 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
         useHeadingFont
           ? 'font-heading prose-p:font-bold prose-p:text-xl md:prose-p:text-2xl prose-p:leading-snug'
           : 'prose-p:text-sm sm:prose-p:text-base prose-p:font-light prose-p:leading-relaxed prose-p:text-inherit [&_h2]:mb-0 [&_h2+*]:mt-6 [&_h3]:mt-0 [&_p]:mb-0 [&_p+p]:mt-4 [&_blockquote]:mt-0 [&_ul]:mt-0',
+        isCompactHeading &&
+          '[&_h2]:text-2xl [&_h2]:sm:text-3xl [&_h2]:md:text-[2.25rem] [&_h2]:leading-[1.1]',
         onDark && 'text-inherit prose-headings:text-inherit',
       )}
     >

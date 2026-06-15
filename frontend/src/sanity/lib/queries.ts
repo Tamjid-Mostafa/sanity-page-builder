@@ -66,6 +66,7 @@ const contentFragment = /* groq */ `
       eyebrow,
       leadingIcon,
       eyebrowTone,
+      headingScale,
       content[] { ... },
       ${blockStylesFragment}
     },
@@ -180,6 +181,8 @@ const contentFragment = /* groq */ `
     },
     _type == "tagPills" => {
       items,
+      tone,
+      label,
       ${blockStylesFragment}
     },
     _type == "ctaSection" => {

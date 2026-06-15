@@ -303,7 +303,7 @@ export function CtaSectionContent({data}: {data: CtaSectionData}) {
   }
 
   return (
-    <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden border-t border-white/10 py-16 md:py-20 lg:py-24 -my-6 md:-my-8 lg:-my-10">
+    <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden border-t border-white/10 py-16 md:py-20 lg:py-24">
       <CtaSectionBackdrop />
       <div className="relative z-10 px-6 sm:px-8 lg:px-12">{content}</div>
     </div>

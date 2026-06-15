@@ -30,16 +30,21 @@ export function TagPillsContent({data}: {data: TagPillsData}) {
   } | null
   const onDark = isDarkSurface(blockStyles)
   const tone = stegaClean((data as {tone?: string | null}).tone) || 'solid'
+  const label = stegaClean((data as {label?: string | null}).label)
   const isOutline = tone === 'outline'
   const items = (data.items ?? []).filter((item): item is string => Boolean(item))
 
   if (items.length === 0) return null
 
   return (
-    <ul
-      className="flex flex-wrap gap-2"
-      {...(onDark ? {'data-block-text-tone': 'on-dark'} : {})}
-    >
+    <div className={label ? 'mt-10' : undefined}>
+      {label && (
+        <p className="mb-3 text-sm font-semibold text-foreground">{label}</p>
+      )}
+      <ul
+        className="flex flex-wrap gap-2"
+        {...(onDark ? {'data-block-text-tone': 'on-dark'} : {})}
+      >
       {items.map((label) => (
         <li
           key={label}
@@ -54,5 +59,6 @@ export function TagPillsContent({data}: {data: TagPillsData}) {
         </li>
       ))}
     </ul>
+    </div>
   )
 }

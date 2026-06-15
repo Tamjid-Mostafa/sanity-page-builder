@@ -615,20 +615,45 @@ function OnDarkCard({
 }
 
 function AudienceCard({ card }: { card: ExtendedFeatureCard }) {
+  const accent = stegaClean(card.accentColor) || "primary";
+  const accentBarClass = ACCENT_BAR[accent] ?? "bg-primary";
+  const iconWrapClass =
+    accent === "secondary"
+      ? "bg-secondary/15 text-secondary"
+      : "bg-primary/10 text-primary";
+
   return (
-    <div className="group relative flex h-full flex-col rounded-3xl border border-border/50 bg-card/70 p-6 shadow-none ring-1 ring-black/3 transition-[border-color,background-color] duration-300 hover:border-secondary/20 hover:bg-card md:p-7">
-      <div
-        className="absolute left-6 right-6 top-0 h-px bg-linear-to-r from-transparent via-secondary/50 to-transparent md:left-7 md:right-7"
-        aria-hidden
-      />
-      <h3 className="mb-3 pt-1 font-heading text-lg font-semibold leading-snug tracking-tight text-foreground md:text-xl">
-        {card.title}
-      </h3>
-      {card.description && (
-        <p className="text-sm font-normal leading-relaxed text-muted-foreground md:text-[0.9375rem]">
-          {card.description}
-        </p>
-      )}
+    <div className="group relative h-full transition-transform duration-300 hover:translate-y-[-3px]">
+      <div className="relative flex h-full flex-col gap-2.5 overflow-hidden rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow duration-300 hover:shadow-md">
+        <div
+          className={cn("absolute inset-x-0 top-0 h-0.5", accentBarClass)}
+          aria-hidden
+        />
+        {card.icon?.lucide && (
+          <div
+            className={cn(
+              "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+              iconWrapClass,
+            )}
+          >
+            <IconRenderer
+              name={stegaClean(card.icon.lucide)}
+              className="h-4 w-4"
+              strokeWidth={1.5}
+            />
+          </div>
+        )}
+        {card.title && (
+          <h3 className="text-sm font-semibold leading-snug text-foreground">
+            {card.title}
+          </h3>
+        )}
+        {card.description && (
+          <p className="text-xs font-light leading-relaxed text-foreground sm:text-sm">
+            {card.description}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -1144,6 +1169,8 @@ export function FeatureCardGridContent({
             "font-heading font-bold leading-[1.08] tracking-tight",
             isExploreLink
               ? "text-2xl sm:text-3xl"
+              : isAudience
+                ? "text-2xl sm:text-3xl md:text-[2.25rem] leading-[1.1]"
               : "text-3xl sm:text-4xl md:text-[2.625rem]",
             isCompactGrid && !subtitleBody && "max-w-2xl",
             subtitleBody && !isOnDark && "mb-4",
@@ -1273,7 +1300,7 @@ export function FeatureCardGridContent({
                   : isPathway
                     ? "gap-5 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-7"
                     : isAudience
-                      ? "gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7"
+                      ? cn("gap-4", colClass)
                       : isCompactGrid
                         ? cn(
                             "gap-4 sm:gap-4 md:gap-5",
