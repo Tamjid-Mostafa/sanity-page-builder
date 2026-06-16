@@ -42,6 +42,7 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
   const eyebrowTone = stegaClean(d.eyebrowTone) || 'primary'
   const headingScale = stegaClean(d.headingScale) || 'default'
   const isCompactHeading = headingScale === 'compact'
+  const isLegalHeading = headingScale === 'legal'
   const blockStyles = stegaClean(data.blockStyles) as {
     background?: {color?: string | null}
     typography?: {fontWeight?: string | null; textColor?: string | null}
@@ -54,7 +55,9 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
     typography?.fontWeight === '700' || typography?.fontWeight === '800'
   const inCard = Boolean(blockStyles?.background?.color)
 
-  if (!eyebrow && !leadingIcon && !data.content) return null
+  if (!leadingIcon && !eyebrow && (!data.content || data.content.length === 0)) {
+    return null
+  }
 
   return (
     <div
@@ -65,6 +68,8 @@ export function RichTextContent({data}: {data: RichTextBlockData}) {
           : 'prose-p:text-sm sm:prose-p:text-base prose-p:font-light prose-p:leading-relaxed prose-p:text-inherit [&_h2]:mb-0 [&_h2+*]:mt-6 [&_h3]:mt-0 [&_p]:mb-0 [&_p+p]:mt-4 [&_blockquote]:mt-0 [&_ul]:mt-0',
         isCompactHeading &&
           '[&_h2]:text-2xl [&_h2]:sm:text-3xl [&_h2]:md:text-[2.25rem] [&_h2]:leading-[1.1]',
+        isLegalHeading &&
+          '[&_h2]:text-xl [&_h2]:sm:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2:not(:first-child)]:mt-12 [&_h2]:scroll-mt-28 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-0 [&_h3+*]:mt-2',
         onDark && 'text-inherit prose-headings:text-inherit',
       )}
     >

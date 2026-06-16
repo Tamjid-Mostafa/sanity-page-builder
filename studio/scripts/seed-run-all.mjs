@@ -13,6 +13,7 @@ const scripts = [
   'seed-global-experiences-page.mjs',
   'seed-global-programmes-page.mjs',
   'seed-global-schools-groups-page.mjs',
+  'seed-legal-pages.mjs',
 ]
 
 function run(script) {

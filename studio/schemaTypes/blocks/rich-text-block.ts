@@ -39,6 +39,7 @@ export const richTextBlockType = defineType({
         list: [
           {title: 'Default', value: 'default'},
           {title: 'Compact', value: 'compact'},
+          {title: 'Legal (numbered sections)', value: 'legal'},
         ],
         layout: 'radio',
       },

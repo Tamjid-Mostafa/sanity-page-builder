@@ -106,6 +106,115 @@ export function createBlockHelpers(k) {
     return node
   }
 
+  const linkBlock = (text, href) => {
+    const markKey = k()
+    return {
+      _key: k(),
+      _type: 'block',
+      style: 'normal',
+      markDefs: [{_key: markKey, _type: 'link', href, openInNewTab: false}],
+      children: [{_key: k(), _type: 'span', marks: [markKey], text}],
+    }
+  }
+
+  const legalSectionBlocks = (index, section) => {
+    const blocks = [block(`${index}. ${section.title}`, 'h2')]
+    for (const paragraph of section.paragraphs ?? []) {
+      blocks.push(block(paragraph))
+    }
+    for (const item of section.bullets ?? []) {
+      blocks.push(block(item, 'normal', 'bullet'))
+    }
+    for (const paragraph of section.afterBullets ?? []) {
+      blocks.push(block(paragraph))
+    }
+    for (const sub of section.subsections ?? []) {
+      blocks.push(block(sub.title, 'h3'))
+      blocks.push(block(sub.body))
+    }
+    if (section.inlineLink) {
+      blocks.push(linkBlock(section.inlineLink.label, section.inlineLink.href))
+    }
+    if (section.contactEmail) {
+      blocks.push(linkBlock(section.contactEmail, `mailto:${section.contactEmail}`))
+    }
+    return blocks
+  }
+
+  const legalHero = ({key, heading, subtitle, intro = []}) => ({
+    _key: key,
+    _type: 'heroSection',
+    ...GLOBAL_HERO_GRADIENT,
+    minHeight: '70vh',
+    badge: 'Legal',
+    heading,
+    subtitle: [subtitle, ...intro].filter(Boolean).join('\n\n'),
+  })
+
+  const legalContentRow = (pageKey, sections) => ({
+    _key: `${pageKey}-content`,
+    _type: 'gridRow',
+    layout: 'full',
+    maxWidth: 'narrow',
+    containerAlign: 'left',
+    paddingY: 'lg',
+    columns: [
+      {
+        _key: `${pageKey}-content-col`,
+        verticalAlign: 'top',
+        content: [
+          {
+            _key: `${pageKey}-content-block`,
+            _type: 'richTextBlock',
+            headingScale: 'legal',
+            content: sections.flatMap((section, index) =>
+              legalSectionBlocks(index + 1, section),
+            ),
+          },
+        ],
+      },
+    ],
+  })
+
+  const legalClosingRow = (pageKey, microLine, lastUpdated = 'May 2026') => ({
+    _key: `${pageKey}-closing`,
+    _type: 'gridRow',
+    layout: 'full',
+    maxWidth: 'narrow',
+    containerAlign: 'left',
+    paddingY: 'compact',
+    columns: [
+      {
+        _key: `${pageKey}-closing-col`,
+        verticalAlign: 'top',
+        content: [
+          {
+            _key: `${pageKey}-updated`,
+            _type: 'richTextBlock',
+            headingScale: 'legal',
+            content: [block(`Last updated: ${lastUpdated}`)],
+            blockStyles: {
+              _type: 'blockStyles',
+              typography: {textColor: '#737373', fontSize: '14px'},
+            },
+          },
+          {
+            _key: `${pageKey}-micro`,
+            _type: 'richTextBlock',
+            headingScale: 'legal',
+            content: [block(microLine)],
+            blockStyles: {
+              _type: 'blockStyles',
+              typography: {textAlign: 'center', textColor: '#737373', fontSize: '14px'},
+              borderTop: {width: '1px', style: 'solid', color: '#e0e0e0'},
+              padding: {top: '32px'},
+            },
+          },
+        ],
+      },
+    ],
+  })
+
   const faqAnswer = (text) => [block(text)]
 
   const ctaButtons = (primaryKey, secondaryKey) => [
@@ -199,5 +308,18 @@ export function createBlockHelpers(k) {
     ],
   })
 
-  return {span, block, faqAnswer, ctaButtons, globalCtaBlock, globalFooterRow, academyFooterRow}
+  return {
+    span,
+    block,
+    linkBlock,
+    legalSectionBlocks,
+    legalHero,
+    legalContentRow,
+    legalClosingRow,
+    faqAnswer,
+    ctaButtons,
+    globalCtaBlock,
+    globalFooterRow,
+    academyFooterRow,
+  }
 }
