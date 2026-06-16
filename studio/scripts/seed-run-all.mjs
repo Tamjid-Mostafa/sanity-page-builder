@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url'
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const scripts = [
   'seed-about-page.mjs',
+  'seed-about-partners-page.mjs',
   'seed-academy-admissions-page.mjs',
   'seed-academy-personal-support-page.mjs',
   'seed-academy-curriculum-page.mjs',

@@ -155,8 +155,7 @@ export function createBlockHelpers(k) {
     _key: `${pageKey}-content`,
     _type: 'gridRow',
     layout: 'full',
-    maxWidth: 'narrow',
-    containerAlign: 'left',
+    ...GRID_DEFAULTS,
     paddingY: 'lg',
     columns: [
       {
@@ -180,9 +179,7 @@ export function createBlockHelpers(k) {
     _key: `${pageKey}-closing`,
     _type: 'gridRow',
     layout: 'full',
-    maxWidth: 'narrow',
-    containerAlign: 'left',
-    paddingY: 'compact',
+    ...GRID_DEFAULTS,
     columns: [
       {
         _key: `${pageKey}-closing-col`,
