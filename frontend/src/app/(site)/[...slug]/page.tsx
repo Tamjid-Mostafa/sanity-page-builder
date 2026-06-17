@@ -6,6 +6,7 @@ import {PAGE_QUERY, PAGE_SLUGS_QUERY, SITE_SETTINGS_QUERY} from '@/sanity/lib/qu
 import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {SectionRenderer} from '@/components/SectionRenderer'
+import {seoTitle} from '@/utils/seo'
 
 export const revalidate = 86400
 
@@ -40,7 +41,7 @@ export async function generateMetadata({
   const seo = page.seo
 
   return {
-    title: seo?.metaTitle || page.title || undefined,
+    title: seoTitle(seo?.metaTitle, page.title),
     description: seo?.metaDescription || undefined,
     robots: seo?.noIndex ? {index: false, follow: false} : undefined,
     openGraph: seo?.ogImage?.asset?.url

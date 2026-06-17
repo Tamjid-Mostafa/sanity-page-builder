@@ -6,6 +6,7 @@ import {BLOG_POST_QUERY, BLOG_SLUGS_QUERY, SITE_SETTINGS_QUERY} from '@/sanity/l
 import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {BlogPost} from '@/components/blog/BlogPost'
+import {seoTitle} from '@/utils/seo'
 
 export const revalidate = 86400
 
@@ -27,7 +28,7 @@ export async function generateMetadata({
   const seo = post.seo
 
   return {
-    title: seo?.metaTitle || post.title || undefined,
+    title: seoTitle(seo?.metaTitle, post.title),
     description: seo?.metaDescription || post.excerpt || undefined,
     robots: seo?.noIndex ? {index: false, follow: false} : undefined,
     openGraph: seo?.ogImage?.asset?.url

@@ -4,6 +4,7 @@ import {HOME_PAGE_QUERY, SITE_SETTINGS_QUERY} from '@/sanity/lib/queries'
 import {Header} from '@/components/shared/Header'
 import {Footer} from '@/components/shared/Footer'
 import {SectionRenderer} from '@/components/SectionRenderer'
+import {seoTitle} from '@/utils/seo'
 
 export const revalidate = 86400
 
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = settings?.siteName
 
   return {
-    title: seo?.metaTitle || siteName || 'Home',
+    title: seoTitle(seo?.metaTitle, siteName || 'Home'),
     description: seo?.metaDescription || undefined,
     robots: seo?.noIndex ? {index: false, follow: false} : undefined,
     openGraph: seo?.ogImage?.asset?.url
